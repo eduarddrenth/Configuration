@@ -1,0 +1,100 @@
+/*
+ * #%L
+ * VectorPrintConfig3.0
+ * %%
+ * Copyright (C) 2011 - 2013 VectorPrint
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+options {
+    STATIC = false;
+    DEBUG_TOKEN_MANAGER = false;
+    DEBUG_PARSER = false;
+}
+PARSER_BEGIN(MultiValueParser)
+    package com.vectorprint.configuration.parser;
+
+    import java.util.List;
+    import java.util.ArrayList;
+    
+    /**
+      * A parser for values in the form value1;value2\;value2:
+      *
+      * <pre>
+
+          # To change this template, choose Tools | Templates
+          # and open the template in the editor.
+          diameter=7
+          marks=0;89;95
+          markcolors=#ee0000;#f7931e;#8cc63f
+          lightmarkcolors=#ff0000;#ff9922;#90cf49
+      * <pre>
+      */
+    public class MultiValueParser {
+
+    }
+
+PARSER_END(MultiValueParser)
+
+List<String> parse():
+{ List<String> l = new ArrayList<String>(); Token t = null; StringBuilder v = null; boolean add = false;}
+{
+    t=<VALUE>
+    {
+         v=new StringBuilder(t.image);
+    }
+    (    
+         (
+            t=<ESCAPEDSEMICOLON>
+            { v.append(';'); }
+            (t=<VALUE>
+            {
+              v.append(t.image);
+            }
+            )?
+         )
+         |
+         (
+            t=<SEMICOLON>
+            { 
+               l.add(v.toString());
+               v=new StringBuilder();
+            }
+            (t=<VALUE>
+            {
+              v.append(t.image);
+            }
+            )?
+         )
+    )*
+    {
+         if (v!=null&&v.length()>0) {
+            l.add(v.toString());
+         }
+         return l;
+    }
+   <EOF>
+    |
+   <EOF>
+    {
+         return l;
+    }
+}
+
+TOKEN:
+{
+    <SEMICOLON: ";">
+|   <ESCAPEDSEMICOLON: "\\;" >
+|   <VALUE: ( ~[";"] )* ~["\\",";"] >
+}

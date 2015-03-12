@@ -1,0 +1,178 @@
+/*
+ * #%L
+ * VectorPrintReport4.0
+ * %%
+ * Copyright (C) 2012 - 2013 VectorPrint
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+options {
+    STATIC = false;
+    DEBUG_TOKEN_MANAGER = false;
+    DEBUG_PARSER = false;
+}
+
+/* Parser to instantiate and configure a Configurable and Parameterizable object
+Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
+*/
+
+PARSER_BEGIN(ObjectParser)
+   
+    package com.vectorprint.configuration.parser;
+
+    import com.vectorprint.configuration.Configurable;
+    import com.vectorprint.configuration.parameters.Parameterizable;
+    import com.vectorprint.configuration.parameters.ParameterizableImpl;
+    import com.vectorprint.configuration.parameters.ParameterHelper;
+    import com.vectorprint.configuration.parameters.annotation.*;
+    import com.vectorprint.VectorPrintRuntimeException;
+
+    import java.util.Map;
+    import java.util.HashMap;
+
+    /**
+      * A parser for objects that may be Parameterizable and / or Configurable in the form
+         class(param1=v1|v2,param2=v3) separators ("," or ")") can be escaped, example configuration:
+      *
+      * <pre>
+
+         Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
+      * <pre>
+      *
+      * For Parameterizable objects parameter annotations will be processed and setup will be called.
+      */
+    public class ObjectParser {
+      public static final ParamAnnotationProcessor processor = new ParamAnnotationProcessorImpl();
+
+      private void checkKey(Object st, String key) throws ParseException {
+         if (st instanceof Parameterizable && !((Parameterizable)st).getParameters().containsKey(key)) {
+            throw new ParseException(String.format("wrong paramter(s) for %s: %s; parameters allowed are: %s",
+                      st.getClass().getSimpleName(), key, ((Parameterizable)st).getParameters()));
+         }
+      }
+
+      public <S> S parse(String pkg, Map settings, Class<S> clazz)
+      throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, ParseException {
+         return (S)parseAsObject(pkg,settings);
+      }
+
+    }
+
+
+PARSER_END(ObjectParser)
+
+TOKEN:
+{
+    <LEFTPAREN: "("   >: PARAMMODE
+}
+
+TOKEN :
+{
+  < IDENTIFIER: <LETTER> (<PART_LETTER>)* >
+|
+  < #LETTER:
+      [  
+         "$",
+         "A"-"Z",
+         "_",
+         "a"-"z"
+      ]
+  >
+|
+  < #PART_LETTER:
+      [  
+         "$",
+         "0"-"9",
+         "A"-"Z",
+         "_",
+         "a"-"z",
+         "."
+      ]
+  >
+}
+
+<PARAMMODE>
+TOKEN:
+{
+    <KEY: <IDENTIFIER>>
+|   <EQ: "="    >: VALUEMODE
+}
+
+<VALUEMODE>
+TOKEN:
+{
+    <RIGHTPAREN: ")"    >: DEFAULT
+|   <ESC_RIGHTPAREN: "\\" <RIGHTPAREN>   >
+|   <KOMMA: ","    >: PARAMMODE
+|   <ESC_KOMMA: "\\" <KOMMA>    >
+|   <VALUE: ( ~[",",")","="] )* ~["\\",",",")","="] >
+}
+
+/* stuf like this should be parsed
+Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
+*/
+
+Object parseAsObject(String pkg, Map settings)
+throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException:
+{ Token t = null; Map<String, String> params = new HashMap<String,String>(5); String[] kv = null; }
+{
+   t=<IDENTIFIER>
+   {
+      Object st = Class.forName(pkg + "." + t.image).newInstance();
+      if (st instanceof Configurable) {
+         ((Configurable)st).initSettings(settings);
+      }
+      if (st instanceof Parameterizable && !(st instanceof ParameterizableImpl)) {
+         try {
+            processor.initParameters((Parameterizable) st);
+         } catch (Exception ex) {
+            throw new VectorPrintRuntimeException(ex);
+         }
+      }
+   }
+   (
+      (" ")* <LEFTPAREN> (" ")*
+      (
+         kv=keyValue() {checkKey(st,kv[0]); params.put(kv[0],kv[1]);}
+         (
+            <KOMMA> (" ")*
+            
+            kv=keyValue() {checkKey(st,kv[0]); params.put(kv[0],kv[1]);}
+         )*
+      )
+      (" ")* <RIGHTPAREN> (" ")*
+   )?
+   {
+      if (st instanceof Parameterizable) {
+         ((Parameterizable)st).setup(params,settings);
+      }
+      return st;
+   }
+}
+
+
+String[] keyValue():
+{ String[] kv = new String[2]; Token t = null; StringBuilder v = new StringBuilder();}
+{
+   t=<KEY> {kv[0] = t.image;}
+   <EQ>
+   (
+      <ESC_KOMMA> {v.append(',');}
+      |
+      <ESC_RIGHTPAREN> {v.append(')');}
+      |
+      t=<VALUE> {v.append(t.image);}
+   )*
+   {kv[1]=v.toString();return kv;}
+}

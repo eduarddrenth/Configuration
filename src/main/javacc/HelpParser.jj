@@ -1,0 +1,139 @@
+/*
+ * #%L
+ * VectorPrintConfig3.0
+ * %%
+ * Copyright (C) 2011 - 2013 VectorPrint
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+options {
+    STATIC = false;
+    DEBUG_TOKEN_MANAGER = false;
+    DEBUG_PARSER = false;
+}
+PARSER_BEGIN(HelpParser)
+    package com.vectorprint.configuration.parser;
+    
+    import java.util.Map;
+    import com.vectorprint.configuration.PropertyHelp;
+    import com.vectorprint.configuration.PropertyHelpImpl;
+
+    /**
+      * A parser for key based help in the form key=type;helptext, helptext can span lines by escaping the end of a line:
+      *
+      * <pre>
+
+            help=Double;dit is een\
+            mooie help tekst\
+            !
+      * <pre>
+      */
+    public class HelpParser {
+
+    }
+PARSER_END(HelpParser)
+
+void parse(Map<String, PropertyHelp> h):
+{  }
+{
+    (
+        help(h)
+    )* <EOF>
+}
+
+void help(Map<String, PropertyHelp> h):
+{ Token t = null; StringBuilder v = new StringBuilder(""); String[] kt = null;}
+{
+    kt=keyAndType()
+
+    t=<VALUE>
+    {v.append(t.image);}
+
+    (
+      t=<CONTINUATION>
+      {v.append(t.image.substring(1));}
+      (t=<VALUE>
+      {v.append(t.image);}
+      )?
+    )*
+    {h.put(kt[0],new PropertyHelpImpl(kt[1],v.toString()));}
+}
+
+String[] keyAndType():
+{ Token t = null; String k ="";}
+{
+    t=<KEY>
+    { k=t.image; }
+    t=<TYPE>
+    { return new String[] {k,t.image}; }
+}
+
+SKIP:
+{
+    " "
+|   "\t"
+|   <EQ: "=">: TYPESTATE
+|   <SEMICOLON: ";">: VALUESTATE
+}
+
+TOKEN :
+{
+  < KEY: <LETTER> (<PART_LETTER>)* >
+|
+  < #LETTER:
+      [  
+         "$",
+         "A"-"Z",
+         "_",
+         "a"-"z"
+      ]
+  >
+|
+  < #PART_LETTER:
+      [  
+         "$",
+         "0"-"9",
+         "A"-"Z",
+         "_",
+         "a"-"z",
+         "."
+      ]
+  >
+}
+
+<TYPESTATE>
+SKIP:
+{
+    " "
+|   "\t"
+}
+
+<TYPESTATE>
+TOKEN:
+{
+   <TYPE: ["a"-"z","A"-"Z"] (["a"-"z","A"-"Z","."])* >: DEFAULT
+}
+
+<VALUESTATE>
+TOKEN:
+{
+    <VALUE: ( ~["\\","\n","\r"])+ >
+|       <CONTINUATION: "\\" ("\n"|"\r"|"\r\n")>
+}
+
+<VALUESTATE>
+SKIP:
+{
+    <EOL: "\n"|"\r"|"\r\n">: DEFAULT
+}

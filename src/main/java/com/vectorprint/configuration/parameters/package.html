@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title></title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   </head>
+   <body>
+      <div>interfaces and classes to support parameterizing objects.
+         <ul>
+            <li>implement Parameterizable, or</li>
+            <li>extend ParameterizableImpl</li>
+            <ul>
+               <li>annotate your class with the parameter definitions you need</li>
+               <li>use the default annotation processor to initialize the parameters</li>
+               <li>read values for the parameters from somewhere (see ObjectParser) and call setup on your object, use the ParameterHelper</li>
+            </ul>
+            <ul>
+               <li>programmatically initialize parameters for your class</li>
+               <li>read values for the parameters from somewhere (see ObjectParser) and call setup on your object, use the ParameterHelper</li>
+            </ul>
+         </ul>
+      </div>
+   </body>
+</html>
