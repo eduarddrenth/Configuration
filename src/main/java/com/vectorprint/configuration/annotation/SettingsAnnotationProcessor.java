@@ -28,5 +28,6 @@ import com.vectorprint.configuration.EnhancedMap;
 public interface SettingsAnnotationProcessor {
    
    void initSettings(Object o, EnhancedMap settings);
+   void initSettings(Object o);
 
 }

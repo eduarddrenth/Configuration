@@ -750,6 +750,7 @@ public class PropertyTest {
       assertEquals(new URL("http://uppie"), f.getU());
       assertEquals(Float.valueOf("50"), f.getF()); //  not 10 because setter sets it to 50
       assertArrayEquals(ArrayHelper.wrap(f.getFf()), ArrayHelper.wrap(new float[] {10,20}));
-      assertEquals(f.getSettings(), vp);
+      // the settings annotation wraps in an ObservableProperties
+      assertEquals(f.getSettings(), new ObservableProperties(vp));
   }
 }

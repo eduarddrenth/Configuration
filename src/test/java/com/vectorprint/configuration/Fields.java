@@ -16,8 +16,10 @@
 
 package com.vectorprint.configuration;
 
+import com.vectorprint.configuration.annotation.Feature;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.Settings;
+import com.vectorprint.configuration.decoration.ObservableProperties;
 import java.net.URL;
 import java.util.Map;
 
@@ -39,7 +41,11 @@ public class Fields {
    private Float F;
    @Setting(key = "ff")
    private float[] ff;
-   @Settings
+   @Settings(
+       features = {
+          @Feature(clazz = ObservableProperties.class)
+       }
+   )
    @Setting(key = "settings")
    private EnhancedMap settings;
 

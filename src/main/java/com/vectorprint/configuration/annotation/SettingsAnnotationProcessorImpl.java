@@ -17,9 +17,17 @@ package com.vectorprint.configuration.annotation;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.VectorPrintProperties;
+import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.decoration.HelpSupportedProperties;
+import com.vectorprint.configuration.decoration.ParsingProperties;
 import java.beans.Statement;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,20 +38,28 @@ import java.util.logging.Logger;
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
 
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
-   
+
    /**
     * This implementation will try to call a setter for a field first when applying a value from settings, when this
     * fails the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }.
-    * This implementation will traverse all fields (including non public ones) in the class of the Object argument, including those in superclasses.
+    * This implementation will traverse all fields (including non public ones) in the class of the Object argument,
+    * including those in superclasses.
+    *
     * @param o
-    * @param settings 
+    * @param settings
     */
    @Override
    public void initSettings(Object o, EnhancedMap settings) {
       initSettings(o.getClass(), o, settings);
    }
 
-   private void initSettings(Class c, Object o, EnhancedMap settings) {
+   @Override
+   public void initSettings(Object o) {
+      initSettings(o, new VectorPrintProperties());
+   }
+
+   private void initSettings(Class c, Object o, EnhancedMap eh) {
+      EnhancedMap settings = eh;
       Field[] declaredFields = c.getDeclaredFields();
       for (Field f : declaredFields) {
          f.setAccessible(true);
@@ -56,6 +72,35 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             }
             if (!type.isAssignableFrom(EnhancedMap.class)) {
                throw new VectorPrintRuntimeException(String.format("%s is not an EnhancedMap, cannot assign settings", type.getName()));
+            }
+            Settings set = (Settings) se;
+            try {
+               for (Feature feat : set.features()) {
+                  Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
+                  String extraSource = feat.extraSource();
+                  if (HelpSupportedProperties.class.isAssignableFrom(dec) || ParsingProperties.class.isAssignableFrom(dec)) {
+                     Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class, URL.class);
+                     URL u = new URL(extraSource);
+                     settings = constructor.newInstance(settings, u);
+                  } else {
+                     Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class);
+                     settings = constructor.newInstance(settings);
+                  }
+               }
+            } catch (NoSuchMethodException ex) {
+               throw new VectorPrintRuntimeException(ex);
+            } catch (SecurityException ex) {
+               throw new VectorPrintRuntimeException(ex);
+            } catch (MalformedURLException ex) {
+               throw new VectorPrintRuntimeException(ex);
+            } catch (InstantiationException ex) {
+               throw new VectorPrintRuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+               throw new VectorPrintRuntimeException(ex);
+            } catch (IllegalArgumentException ex) {
+               throw new VectorPrintRuntimeException(ex);
+            } catch (InvocationTargetException ex) {
+               throw new VectorPrintRuntimeException(ex);
             }
             try {
                if (!executeSetter(f, o, settings)) {
@@ -103,17 +148,17 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             }
          }
       }
-      if (c.getSuperclass()!=null) {
+      if (c.getSuperclass() != null) {
          initSettings(c.getSuperclass(), o, settings);
       }
    }
-   
+
    private boolean executeSetter(Field f, Object o, Object value) {
       try {
          if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(String.format("trying to call %s with %s", "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), value));
          }
-         new Statement(o, "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), new Object[] { value }).execute();
+         new Statement(o, "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), new Object[]{value}).execute();
          return true;
       } catch (Exception ex) {
          LOGGER.log(Level.WARNING, null, ex);
