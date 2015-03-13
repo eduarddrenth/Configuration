@@ -15,23 +15,31 @@
  */
 package com.vectorprint.configuration.annotation;
 
+import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.parameters.ParameterImpl;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.net.URL;
 
 /**
- * @see SettingsAnnotationProcessor
+ * a feature to use in {@link Settings}
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Documented
 @Inherited
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Settings {
-   
-   Feature[] features() default {};
+public @interface Feature {
+   public Class<? extends AbstractPropertiesDecorator> clazz();
+   /**
+    * decorators may need an extra source for their functionality, this will be turned into a URL by the default
+    * {@link SettingsAnnotationProcessor}
+    * @return 
+    */
+   public String extraSource() default "";
    
 }
