@@ -77,7 +77,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             try {
                for (Feature feat : set.features()) {
                   Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
-                  String extraSource = feat.extraSource();
+                  String extraSource = feat.url();
                   if (HelpSupportedProperties.class.isAssignableFrom(dec) || ParsingProperties.class.isAssignableFrom(dec)) {
                      Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class, URL.class);
                      URL u = new URL(extraSource);

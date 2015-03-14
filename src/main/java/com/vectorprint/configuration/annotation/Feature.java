@@ -16,14 +16,14 @@
 package com.vectorprint.configuration.annotation;
 
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
-import com.vectorprint.configuration.parameters.ParameterImpl;
+import com.vectorprint.configuration.decoration.HelpSupportedProperties;
+import com.vectorprint.configuration.decoration.ParsingProperties;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.net.URL;
 
 /**
  * a feature to use in {@link Settings}
@@ -36,10 +36,12 @@ import java.net.URL;
 public @interface Feature {
    public Class<? extends AbstractPropertiesDecorator> clazz();
    /**
-    * decorators may need an extra source for their functionality, this will be turned into a URL by the default
+    * decorators may need an extra source for their functionality, a URL to retrieve help info for example by the default
     * {@link SettingsAnnotationProcessor}
+    * @see ParsingProperties
+    * @see HelpSupportedProperties
     * @return 
     */
-   public String extraSource() default "";
+   public String url() default "";
    
 }
