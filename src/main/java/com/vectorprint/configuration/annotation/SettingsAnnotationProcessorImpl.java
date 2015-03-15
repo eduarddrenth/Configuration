@@ -19,7 +19,10 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.VectorPrintProperties;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
+import com.vectorprint.configuration.decoration.ObservableProperties;
+import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import java.beans.Statement;
 import java.lang.annotation.Annotation;
@@ -75,6 +78,15 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             }
             Settings set = (Settings) se;
             try {
+               if (set.cache()) {
+                  settings = new CachingProperties(settings);
+               }
+               if (set.observable()) {
+                  settings = new ObservableProperties(settings);
+                  if (set.objectIsObserver() && o instanceof Observer) {
+                     ((ObservableProperties)settings).addObserver((Observer) o);
+                  }
+               }
                for (Feature feat : set.features()) {
                   Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
                   String extraSource = feat.url();

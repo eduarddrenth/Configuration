@@ -41,8 +41,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 //~--- JDK imports ------------------------------------------------------------
 /**
@@ -126,66 +124,66 @@ public class MultipleValueParser {
     * @return
     * @throws ParseException
     */
-   public final <T> List<T> parseValues(String values, ValueParser<T> parser, boolean trim) throws ParseException {
+   public final <T> List<T> parseValues(String values, ValueParser<T> parser) throws ParseException {
       List<String> ll = parse(values);
       List<T> l = new ArrayList<T>(ll.size());
       for (String s : ll) {
-         l.add(parser.parseString((trim)?s.trim():s));
+         l.add(parser.parseString((s)));
       }
 
       return l;
    }
 
-   public List<Float> parseFloatValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, FLOAT_PARSER, trim);
+   public List<Float> parseFloatValues(String values) throws ParseException {
+      return parseValues(values, FLOAT_PARSER);
    }
 
-   public List<Date> parseDateValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, DATE_PARSER,trim);
+   public List<Date> parseDateValues(String values) throws ParseException {
+      return parseValues(values, DATE_PARSER);
    }
 
-   public List<Long> parseLongValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, LONG_PARSER, trim);
+   public List<Long> parseLongValues(String values) throws ParseException {
+      return parseValues(values, LONG_PARSER);
    }
 
-   public List<Character> parseCharValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, CHAR_PARSER, trim);
+   public List<Character> parseCharValues(String values) throws ParseException {
+      return parseValues(values, CHAR_PARSER);
    }
 
-   public List<Short> parseShortValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, SHORT_PARSER, trim);
+   public List<Short> parseShortValues(String values) throws ParseException {
+      return parseValues(values, SHORT_PARSER);
    }
 
-   public List<Byte> parseByteValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, BYTE_PARSER, trim);
+   public List<Byte> parseByteValues(String values) throws ParseException {
+      return parseValues(values, BYTE_PARSER);
    }
 
-   public List<Double> parseDoubleValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, DOUBLE_PARSER, trim);
+   public List<Double> parseDoubleValues(String values) throws ParseException {
+      return parseValues(values, DOUBLE_PARSER);
    }
 
-   public List<Integer> parseIntValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, INT_PARSER, trim);
+   public List<Integer> parseIntValues(String values) throws ParseException {
+      return parseValues(values, INT_PARSER);
    }
 
-   public List<String> parseStringValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, STRING_PARSER, trim);
+   public List<String> parseStringValues(String values) throws ParseException {
+      return parseValues(values, STRING_PARSER);
    }
 
-   public List<URL> parseURLValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, URL_PARSER, trim);
+   public List<URL> parseURLValues(String values) throws ParseException {
+      return parseValues(values, URL_PARSER);
    }
 
-   public List<Class> parseClassValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, CLASS_PARSER, trim);
+   public List<Class> parseClassValues(String values) throws ParseException {
+      return parseValues(values, CLASS_PARSER);
    }
 
-   public List<Color> parseColorValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, COLOR_PARSER, trim);
+   public List<Color> parseColorValues(String values) throws ParseException {
+      return parseValues(values, COLOR_PARSER);
    }
 
-   public List<Boolean> parseBooleanValues(String values, boolean trim) throws ParseException {
-      return parseValues(values, BOOLEAN_PARSER, trim);
+   public List<Boolean> parseBooleanValues(String values) throws ParseException {
+      return parseValues(values, BOOLEAN_PARSER);
    }
 
    public static class FloatParser implements ValueParser<Float> {

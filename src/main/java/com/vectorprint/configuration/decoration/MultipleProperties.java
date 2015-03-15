@@ -27,7 +27,6 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
-import com.vectorprint.configuration.observing.PrepareKeyValue;
 import java.awt.Color;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
@@ -318,13 +317,6 @@ public class MultipleProperties extends AbstractPropertiesDecorator {
    @Override
    public void addFromArguments(String[] args) {
       putAll((Map<String, String>) ArgumentParser.parseArgs(args));
-   }
-
-   @Override
-   public void addObserver(PrepareKeyValue<String, String> observer) {
-      for (EnhancedMap em : allProperties) {
-         em.addObserver(observer);
-      }
    }
 
    private MultipleProperties() {

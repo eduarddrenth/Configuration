@@ -15,6 +15,9 @@
  */
 package com.vectorprint.configuration.annotation;
 
+import com.vectorprint.configuration.decoration.CachingProperties;
+import com.vectorprint.configuration.decoration.ObservableProperties;
+import com.vectorprint.configuration.decoration.Observer;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -31,7 +34,26 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Settings {
-   
+   /**
+    * by default settings will be {@link CachingProperties cached}.
+    * @return 
+    */
+   boolean cache() default true;
+   /**
+    * by default settings will not be {@link ObservableProperties observable}.
+    * @return 
+    */
+   boolean observable() default false;
+   /**
+    * by default the object that owns the settings field will be added as {@link Observer} to the
+    * {@link ObservableProperties} when {@link #observable() } is true.
+    * @return 
+    */
+   boolean objectIsObserver() default true;
+   /**
+    * You can add your own features to settings, these will be applied at the end of the decoration stack.
+    * @return 
+    */
    Feature[] features() default {};
    
 }

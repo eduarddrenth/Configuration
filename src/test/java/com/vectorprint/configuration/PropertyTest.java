@@ -42,6 +42,7 @@ import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
+import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.observing.HandleEmptyValues;
 import com.vectorprint.configuration.observing.PrepareKeyValue;
@@ -374,7 +375,7 @@ public class PropertyTest {
       observers.add(emtiesOK);
 
       try {
-         new ParsingProperties(new VectorPrintProperties(observers),"src/test/resources/config" + File.separator + "styling.properties");
+         new PreparingProperties(new ParsingProperties(new VectorPrintProperties(),"src/test/resources/config" + File.separator + "styling.properties"),observers);
       } catch (VectorPrintRuntimeException ex) {
          fail("no excption expected: " + ex.getMessage());
       }
@@ -384,14 +385,14 @@ public class PropertyTest {
       observers.add(emtiesNOTOK);
 
       try {
-         new ParsingProperties(new VectorPrintProperties(observers),"src/test/resources/config" + File.separator + "styling.properties");
+         new ParsingProperties(new PreparingProperties(new VectorPrintProperties(),observers),"src/test/resources/config" + File.separator + "styling.properties");
          fail("excption expected for empty value ");
       } catch (VectorPrintRuntimeException ex) {
       }
 
       emtiesNOTOK.addKeyToSkip("empty").addKeyToSkip("klantlogo");
       try {
-         new ParsingProperties(new VectorPrintProperties(observers),"src/test/resources/config" + File.separator + "styling.properties");
+         new PreparingProperties(new ParsingProperties(new VectorPrintProperties(),"src/test/resources/config" + File.separator + "styling.properties"),observers);
       } catch (VectorPrintRuntimeException ex) {
          fail("no excption expected: " + ex.getMessage());
       }
@@ -422,7 +423,7 @@ public class PropertyTest {
 
    @Test
    public void testTrim() throws IOException, ParseException {
-      VectorPrintProperties vp = new VectorPrintProperties();
+      PreparingProperties vp = new PreparingProperties(new VectorPrintProperties());
       vp.addObserver(new TrimKeyValue());
       vp.addFromArguments(new String[]{"-t ", "-d ", "-n ", "-m ", " m "});
       assertTrue(vp.containsKey("t"));
@@ -750,7 +751,7 @@ public class PropertyTest {
       assertEquals(new URL("http://uppie"), f.getU());
       assertEquals(Float.valueOf("50"), f.getF()); //  not 10 because setter sets it to 50
       assertArrayEquals(ArrayHelper.wrap(f.getFf()), ArrayHelper.wrap(new float[] {10,20}));
-      // the settings annotation wraps in an ObservableProperties
-      assertEquals(f.getSettings(), new ObservableProperties(vp));
+      // the settings annotation wraps in an ObservableProperties and CachingProperties
+      assertEquals(f.getSettings(), new ObservableProperties(new CachingProperties(vp)));
   }
 }

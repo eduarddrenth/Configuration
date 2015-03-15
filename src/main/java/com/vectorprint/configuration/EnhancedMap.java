@@ -111,8 +111,6 @@ public interface EnhancedMap extends Map<String, String>, Cloneable, Serializabl
 
    public void addFromArguments(String[] args);
 
-   public void addObserver(PrepareKeyValue<String, String> observer);
-
    public EnhancedMap clone();
 
    /**

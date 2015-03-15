@@ -46,7 +46,7 @@ public class DoubleArrayParameter extends ParameterImpl<Double[]>{
    @Override
    public Double[] convert(String value) throws VectorPrintRuntimeException {
       try {
-         return ArrayHelper.toArray(MultipleValueParser.getParamInstance().parseDoubleValues(value, false));
+         return ArrayHelper.toArray(MultipleValueParser.getParamInstance().parseDoubleValues(value));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }

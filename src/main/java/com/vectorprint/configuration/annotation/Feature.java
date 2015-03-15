@@ -15,8 +15,11 @@
  */
 package com.vectorprint.configuration.annotation;
 
+import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
+import com.vectorprint.configuration.decoration.ObservableProperties;
+import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -34,10 +37,15 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Feature {
+   /**
+    * A feature is an implementation of the decorator pattern for adding features to properties. This
+    * requires a constructor with {@link EnhancedMap} as argument.
+    * @return 
+    */
    public Class<? extends AbstractPropertiesDecorator> clazz();
    /**
-    * decorators may need an extra source for their functionality, a URL to retrieve help info for example by the default
-    * {@link SettingsAnnotationProcessor}
+    * decorators may need an extra source for their functionality, a URL to retrieve help info for example.
+    * setting this argument requires a constructor with {@link EnhancedMap} and {@link 
     * @see ParsingProperties
     * @see HelpSupportedProperties
     * @return 

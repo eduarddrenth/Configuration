@@ -27,7 +27,6 @@ package com.vectorprint.configuration.observing;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * {@link EnhancedMap}s can be Observables enabling the manipulation of key value pairs before they are added.

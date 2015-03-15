@@ -24,9 +24,9 @@ package com.vectorprint.configuration.decoration;
  * #L%
  */
 import com.vectorprint.VectorPrintRuntimeException;
+import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
-import com.vectorprint.configuration.observing.PrepareKeyValue;
 import java.awt.Color;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
@@ -147,12 +147,10 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    @Override
    public void addFromArguments(String[] args) {
-      getEmbeddedProperties().addFromArguments(args);
-   }
-
-   @Override
-   public void addObserver(PrepareKeyValue<String, String> observer) {
-      getEmbeddedProperties().addObserver(observer);
+         Map<String, String> props = ArgumentParser.parseArgs(args);
+         if (props != null) {
+            putAll(props);
+         }
    }
 
    @Override

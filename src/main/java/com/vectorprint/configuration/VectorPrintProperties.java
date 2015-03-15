@@ -20,13 +20,9 @@ package com.vectorprint.configuration;
  * #L%
  */
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.observing.KeyValueObservable;
-import com.vectorprint.configuration.observing.PrepareKeyValue;
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.Settings;
-import com.vectorprint.configuration.observing.KeyValue;
-import com.vectorprint.configuration.observing.TrimKeyValue;
 import com.vectorprint.configuration.parameters.MultipleValueParser;
 import com.vectorprint.configuration.parameters.ParameterHelper;
 import com.vectorprint.configuration.parser.ParseException;
@@ -51,7 +47,7 @@ import javax.annotation.PreDestroy;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class VectorPrintProperties extends HashMap<String, String>
-    implements EnhancedMap, KeyValueObservable<String, String> {
+    implements EnhancedMap {
 
    private static final long serialVersionUID = 1;
    /**
@@ -71,23 +67,8 @@ public class VectorPrintProperties extends HashMap<String, String>
       ps.println("");
    }
    private String id;
-   private boolean allowArguments = true;
    private final Map<String, PropertyHelp> help = new HashMap<String, PropertyHelp>(50);
    private final Set<String> propsFromArgs = new HashSet<String>(10);
-
-   /**
-    * Constructor to use {@link PrepareKeyValue observers} of key value pairs. Calls {@link HashMap#HashMap() }.
-    *
-    * @param observers objects responsible for preparing key value pairs being added, may be null
-    */
-   public VectorPrintProperties(List<PrepareKeyValue<String, String>> observers) {
-      super();
-      if (observers != null) {
-         for (PrepareKeyValue<String, String> pv : observers) {
-            addObserver(pv);
-         }
-      }
-   }
 
    /**
     * Calls {@link HashMap#HashMap() }
@@ -139,14 +120,10 @@ public class VectorPrintProperties extends HashMap<String, String>
     */
    @Override
    public void addFromArguments(String[] args) {
-      if (allowArguments) {
-         Map<String, String> props = ArgumentParser.parseArgs(args);
-         if (props != null) {
-            propsFromArgs.addAll(props.keySet());
-            putAll(props);
-         }
-      } else {
-         throw new VectorPrintRuntimeException("adding properties from arguments is not allowed");
+      Map<String, String> props = ArgumentParser.parseArgs(args);
+      if (props != null) {
+         propsFromArgs.addAll(props.keySet());
+         putAll(props);
       }
    }
 
@@ -340,7 +317,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.toArray(mvp.parseStringValues(getProperty(key), doTrim));
+         return ArrayHelper.toArray(mvp.parseStringValues(getProperty(key)));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -353,7 +330,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.toArray(mvp.parseURLValues(getProperty(key), doTrim));
+         return ArrayHelper.toArray(mvp.parseURLValues(getProperty(key)));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -365,7 +342,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -377,7 +354,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseCharValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseCharValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -389,7 +366,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseShortValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseShortValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -401,7 +378,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseByteValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseByteValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -413,7 +390,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -425,7 +402,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseIntValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseIntValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -437,13 +414,11 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
-
-   private boolean doTrim = false;
 
    @Override
    public Color[] getColorProperties(String key, Color[] defaultValue) {
@@ -451,7 +426,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.toArray(mvp.parseColorValues(getProperty(key), doTrim));
+         return ArrayHelper.toArray(mvp.parseColorValues(getProperty(key)));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -478,19 +453,10 @@ public class VectorPrintProperties extends HashMap<String, String>
       if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
          return false;
       }
-      if (this.allowArguments != other.allowArguments) {
-         return false;
-      }
       if (this.help != other.help && (this.help == null || !this.help.equals(other.help))) {
          return false;
       }
       if (this.propsFromArgs != other.propsFromArgs && (this.propsFromArgs == null || !this.propsFromArgs.equals(other.propsFromArgs))) {
-         return false;
-      }
-      if (this.doTrim != other.doTrim) {
-         return false;
-      }
-      if (this.observers != other.observers && (this.observers == null || !this.observers.equals(other.observers))) {
          return false;
       }
       if (this.unused != other.unused && (this.unused == null || !this.unused.equals(other.unused))) {
@@ -558,41 +524,16 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseLongValues(getProperty(key), doTrim)));
+         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseLongValues(getProperty(key))));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
 
    @Override
-   public void addObserver(PrepareKeyValue<String, String> observer) {
-      observers.add(observer);
-      if (observer instanceof TrimKeyValue) {
-         doTrim = true;
-      }
-   }
-
-   @Override
-   public <PKV extends PrepareKeyValue<String, String>> PKV removeObserver(PKV observer) {
-      return (observers.remove(observer)) ? observer : null;
-   }
-
-   @Override
-   public void prepareKeyValue(KeyValue<String, String> kv) {
-      for (PrepareKeyValue<String, String> pkv : observers) {
-         if (pkv.shouldPrepare(kv)) {
-            pkv.prepare(kv);
-         }
-      }
-   }
-   private final List<PrepareKeyValue<String, String>> observers = new LinkedList<PrepareKeyValue<String, String>>();
-
-   @Override
    public final String put(String key, String value) {
-      KeyValue<String, String> prepared = new KeyValue<String, String>(key, value);
-      prepareKeyValue(prepared);
-      unused.add(prepared.getKey());
-      return super.put(prepared.getKey(), prepared.getValue());
+      unused.add(key);
+      return super.put(key, value);
    }
 
    @Override
@@ -613,11 +554,8 @@ public class VectorPrintProperties extends HashMap<String, String>
 
    private void init(VectorPrintProperties vp) {
       vp.help.putAll(help);
-      vp.observers.addAll(observers);
       vp.propsFromArgs.addAll(propsFromArgs);
       vp.unused.addAll(unused);
-      vp.allowArguments=allowArguments;
-      vp.doTrim=doTrim;
       vp.id=id;
       vp.notPresent.addAll(notPresent);
    }
@@ -697,47 +635,47 @@ public class VectorPrintProperties extends HashMap<String, String>
                throw new VectorPrintRuntimeException(ex);
             }
          } else if (String[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseStringValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseStringValues(getProperty(key)));
          } else if (URL[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseURLValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseURLValues(getProperty(key)));
          } else if (Float[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key)));
          } else if (float[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key))));
          } else if (Double[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key)));
          } else if (double[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key))));
          } else if (Short[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseShortValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseShortValues(getProperty(key)));
          } else if (short[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseShortValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseShortValues(getProperty(key))));
          } else if (Character[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseCharValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseCharValues(getProperty(key)));
          } else if (char[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseCharValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseCharValues(getProperty(key))));
          } else if (Byte[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseByteValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseByteValues(getProperty(key)));
          } else if (byte[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseByteValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseByteValues(getProperty(key))));
          } else if (Integer[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key)));
          } else if (int[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key))));
          } else if (Long[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseLongValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseLongValues(getProperty(key)));
          } else if (long[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseLongValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseLongValues(getProperty(key))));
          } else if (Boolean[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key)));
          } else if (boolean[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key), doTrim)));
+            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key))));
          } else if (Color[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseColorValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseColorValues(getProperty(key)));
          } else if (Date[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseDateValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseDateValues(getProperty(key)));
          } else if (Class[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseClassValues(getProperty(key), doTrim));
+            o = ArrayHelper.toArray(mvp.parseClassValues(getProperty(key)));
          } else {
             throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
          }
@@ -745,15 +683,6 @@ public class VectorPrintProperties extends HashMap<String, String>
          throw new VectorPrintRuntimeException(parseException);
       }
       return (T) o;
-   }
-
-   public boolean isAllowArguments() {
-      return allowArguments;
-   }
-
-   public VectorPrintProperties setAllowArguments(boolean allowArguments) {
-      this.allowArguments = allowArguments;
-      return this;
    }
 
    private void readObject(java.io.ObjectInputStream s)
@@ -780,7 +709,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.toArray(mvp.parseDateValues(getProperty(key), doTrim));
+         return ArrayHelper.toArray(mvp.parseDateValues(getProperty(key)));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
@@ -844,7 +773,7 @@ public class VectorPrintProperties extends HashMap<String, String>
          return defaultValue;
       }
       try {
-         return ArrayHelper.toArray(mvp.parseClassValues(getProperty(key), doTrim));
+         return ArrayHelper.toArray(mvp.parseClassValues(getProperty(key)));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }

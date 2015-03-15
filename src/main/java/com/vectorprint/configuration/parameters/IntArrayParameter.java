@@ -46,7 +46,7 @@ public class IntArrayParameter extends ParameterImpl<Integer[]>{
    @Override
    public Integer[] convert(String value) throws VectorPrintRuntimeException {
       try {
-         return ArrayHelper.toArray(MultipleValueParser.getParamInstance().parseIntValues(value,false));
+         return ArrayHelper.toArray(MultipleValueParser.getParamInstance().parseIntValues(value));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }

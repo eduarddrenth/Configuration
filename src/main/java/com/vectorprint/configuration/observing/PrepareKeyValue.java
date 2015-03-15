@@ -24,7 +24,6 @@ package com.vectorprint.configuration.observing;
  * #L%
  */
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * An object to prepare key value pairs
