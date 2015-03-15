@@ -30,16 +30,10 @@ import java.util.Set;
  */
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
 
-   private EnhancedMap properties;
    private Set<Observer> observers = new HashSet<Observer>(1);
 
    public ObservableProperties(EnhancedMap properties) {
-      this.properties = properties;
-   }
-
-   @Override
-   protected EnhancedMap getEmbeddedProperties() throws VectorPrintRuntimeException {
-      return properties;
+      super(properties);
    }
 
    @Override
@@ -114,7 +108,9 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
 
    @Override
    public EnhancedMap clone() {
-      return new ObservableProperties(properties.clone());
+      ObservableProperties observableProperties = new ObservableProperties(getEmbeddedProperties().clone());
+      observableProperties.observers.addAll(this.observers);
+      return observableProperties;
    }
 
 }

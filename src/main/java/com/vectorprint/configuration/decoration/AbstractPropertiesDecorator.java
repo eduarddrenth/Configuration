@@ -44,6 +44,12 @@ import java.util.Set;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public abstract class AbstractPropertiesDecorator implements EnhancedMap {
+   
+   private EnhancedMap settings;
+
+   public AbstractPropertiesDecorator(EnhancedMap settings) {
+      this.settings = settings;
+   }
 
    @Override
    public boolean getBooleanProperty(String key, Boolean defaultValue) {
@@ -218,8 +224,10 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       throw new VectorPrintRuntimeException("clone should be implemented by: " + getClass().getName());
    }
 
-   protected abstract EnhancedMap getEmbeddedProperties() throws VectorPrintRuntimeException;
-
+   protected final EnhancedMap getEmbeddedProperties() {
+      return settings;
+   }
+   
    @Override
    public String getId() {
       return getEmbeddedProperties().getId();

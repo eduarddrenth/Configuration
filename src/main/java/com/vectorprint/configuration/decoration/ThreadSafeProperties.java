@@ -26,11 +26,13 @@ package com.vectorprint.configuration.decoration;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * A Threadsafe {@link EnhancedMap} restricting access to properties to a thread or child threads. When threads are
- * reused (pooled) unwanted access to thread variables may occur. Child threads will receive a {@link EnhancedMap#clone()
- * } of the embedded properties.
+ * reused (pooled) unwanted access to thread variables may occur.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
@@ -40,6 +42,7 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator {
    private transient ThreadLocal< EnhancedMap> propsFromThread;
 
    public ThreadSafeProperties(EnhancedMap properties) {
+      super(properties);
       if (properties == null) {
          throw new IllegalArgumentException("properties may not be null");
       }
@@ -56,21 +59,89 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   protected EnhancedMap getEmbeddedProperties() {
-      EnhancedMap e = propsFromThread.get();
-      if (e == null) {
-         throw new VectorPrintRuntimeException("No access to properties in this Thread: " + Thread.currentThread().getName());
-      }
-      return e;
+   public String put(String key, String value) {
+      checkThread("put");
+      return super.put(key, value);
    }
 
    @Override
-   public EnhancedMap clone() {
-      EnhancedMap em = propsFromThread.get();
-      if (em == null) {
-         throw new VectorPrintRuntimeException("clone not possible from this thread: " + Thread.currentThread().getName());
+   public String get(Object key) {
+      checkThread("get");
+      return super.get(key);
+   }
+
+   @Override
+   public void clear() {
+      checkThread("clear");
+      super.clear();
+   }
+   
+   private void checkThread(String method) {
+      if (propsFromThread.get() == null) {
+         throw new VectorPrintRuntimeException(method + " not possible from this thread: " + Thread.currentThread().getName());
       }
-      return new ThreadSafeProperties(em.clone());
+   }
+
+   @Override
+   public String remove(Object key) {
+      checkThread("remove");
+      return super.remove(key);
+   }
+   
+   
+
+   @Override
+   public EnhancedMap clone() {
+      checkThread("clone");
+      return new ThreadSafeProperties(propsFromThread.get().clone());
+   }
+
+   @Override
+   public Set<Entry<String, String>> entrySet() {
+      checkThread("entrySet");
+      return super.entrySet();
+   }
+
+   @Override
+   public Collection values() {
+      checkThread("values");
+      return super.values();
+   }
+
+   @Override
+   public Set<String> keySet() {
+      checkThread("keySet");
+      return super.keySet();
+   }
+
+   @Override
+   public boolean containsValue(Object value) {
+      checkThread("containsValue");
+      return super.containsValue(value);
+   }
+
+   @Override
+   public boolean containsKey(Object key) {
+      checkThread("containsKey");
+      return super.containsKey(key);
+   }
+
+   @Override
+   public void addFromArguments(String[] args) {
+      checkThread("addFromArguments");
+      super.addFromArguments(args);
+   }
+
+   @Override
+   public void listProperties(PrintStream ps) {
+      checkThread("listProperties");
+      super.listProperties(ps);
+   }
+
+   @Override
+   public String getProperty(String key) {
+      checkThread("getProperty");
+      return super.getProperty(key);
    }
 
    private void writeObject(java.io.ObjectOutputStream s)

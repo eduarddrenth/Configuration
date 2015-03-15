@@ -32,6 +32,7 @@ import com.vectorprint.configuration.parser.MultiValueParser;
 import com.vectorprint.configuration.parser.ParseException;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -226,6 +227,10 @@ public class MultipleValueParser {
       }
    }
 
+   /**
+    * tries to construct a URL from a String. When a MalformedURLException is thrown and a File
+    * exists the URL is created via new File.
+    */
    public static class URLParser implements ValueParser<URL> {
 
       @Override
@@ -233,6 +238,14 @@ public class MultipleValueParser {
          try {
             return new URL(val);
          } catch (MalformedURLException ex) {
+            File file = new File(val);
+            if (file.exists()) {
+               try {
+                  return file.toURI().toURL();
+               } catch (MalformedURLException ex1) {
+                  throw new VectorPrintRuntimeException(ex);
+               }
+            }
             throw new VectorPrintRuntimeException(ex);
          }
       }
@@ -241,9 +254,10 @@ public class MultipleValueParser {
 
    /**
     * uses static cache
+    *
     * @param key
     * @return
-    * @throws ClassNotFoundException 
+    * @throws ClassNotFoundException
     */
    public static Class classFromKey(String key) throws ClassNotFoundException {
       if (cache.containsKey(key)) {
@@ -269,7 +283,7 @@ public class MultipleValueParser {
             throw new VectorPrintRuntimeException(ex);
          }
       }
-      
+
    }
 
    public static class IntParser implements ValueParser<Integer> {

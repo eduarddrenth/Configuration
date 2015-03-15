@@ -52,6 +52,7 @@ public class MultipleProperties extends AbstractPropertiesDecorator {
    private final Collection<EnhancedMap> allProperties = new HashSet<EnhancedMap>(6);
 
    public MultipleProperties(EnhancedMap properties) {
+      super(properties);
       allProperties.add(properties);
    }
 
@@ -319,12 +320,9 @@ public class MultipleProperties extends AbstractPropertiesDecorator {
       putAll((Map<String, String>) ArgumentParser.parseArgs(args));
    }
 
-   private MultipleProperties() {
-   }
-
    @Override
    public EnhancedMap clone() {
-      MultipleProperties mp = new MultipleProperties();
+      MultipleProperties mp = new MultipleProperties(getEmbeddedProperties());
       for (EnhancedMap em : allProperties) {
          mp.allProperties.add(em.clone());
       }
@@ -497,16 +495,6 @@ public class MultipleProperties extends AbstractPropertiesDecorator {
          id.append(em.getId()).append(',');
       }
       return id.substring(0, id.length());
-   }
-
-   /**
-    * not supported
-    *
-    * @return
-    */
-   @Override
-   protected EnhancedMap getEmbeddedProperties() {
-      throw new VectorPrintRuntimeException("This class cannot support this method because it embeds multiple EnhancedMaps.");
    }
 
    @Override

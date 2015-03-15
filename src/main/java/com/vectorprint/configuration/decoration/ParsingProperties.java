@@ -18,6 +18,7 @@ package com.vectorprint.configuration.decoration;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import static com.vectorprint.configuration.VectorPrintProperties.EOL;
+import com.vectorprint.configuration.parameters.MultipleValueParser;
 import com.vectorprint.configuration.parser.ParseException;
 import com.vectorprint.configuration.parser.PropertiesParser;
 import java.io.BufferedOutputStream;
@@ -43,13 +44,12 @@ import java.util.Map;
 public class ParsingProperties extends AbstractPropertiesDecorator {
 
 
-   private EnhancedMap properties;
    private URL propertyUrl;
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
 
    private ParsingProperties(EnhancedMap properties) throws IOException, ParseException {
-      this.properties = properties;
+      super(properties);
    }
 
    /**
@@ -60,7 +60,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws ParseException 
     */
    public ParsingProperties(EnhancedMap properties, Reader in) throws IOException, ParseException {
-      this.properties = properties;
+      super(properties);
       loadFromReader(in);
    }
 
@@ -72,22 +72,22 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws ParseException 
     */
    public ParsingProperties(EnhancedMap properties, URL in) throws IOException, ParseException {
-      this.properties = properties;
+      super(properties);
       this.propertyUrl = in;
       setId(in.toString());
       loadFromUrl();
    }
 
    /**
-    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL) } assuming the
-    * argument is a file.
+    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL) } with {@link
+    * MultipleValueParser#URL_PARSER#parse(java.lang.String) }.
     * @param properties
-    * @param inFile
+    * @param url
     * @throws IOException
     * @throws ParseException 
     */
-   public ParsingProperties(EnhancedMap properties, String inFile) throws IOException, ParseException {
-      this(properties, new File(inFile).toURI().toURL());
+   public ParsingProperties(EnhancedMap properties, String url) throws IOException, ParseException {
+      this(properties, MultipleValueParser.URL_PARSER.parseString(url));
    }
 
    /**
@@ -127,11 +127,6 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     */
    protected void loadFromUrl() throws IOException, ParseException {
       loadFromReader(new InputStreamReader(propertyUrl.openStream()));
-   }
-
-   @Override
-   protected EnhancedMap getEmbeddedProperties() throws VectorPrintRuntimeException {
-      return properties;
    }
 
    /**
@@ -218,7 +213,11 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    @Override
    public EnhancedMap clone() {
       try {
-         return new ParsingProperties(properties.clone());
+         ParsingProperties parsingProperties = new ParsingProperties(getEmbeddedProperties().clone());
+         parsingProperties.commentBeforeKeys.putAll(commentBeforeKeys);
+         parsingProperties.propertyUrl=propertyUrl;
+         parsingProperties.trailingComment.addAll(trailingComment);
+         return parsingProperties;
       } catch (IOException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (ParseException ex) {

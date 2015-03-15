@@ -36,7 +36,6 @@ import java.util.Map;
  */
 public class FindableProperties extends AbstractPropertiesDecorator {
 
-   private final EnhancedMap properties;
    private static final Map<String, EnhancedMap> findableProperties = new HashMap<String, EnhancedMap>(6);
 
    /**
@@ -45,18 +44,13 @@ public class FindableProperties extends AbstractPropertiesDecorator {
     * @throws VectorPrintException when the reference exists
     */
    public FindableProperties(EnhancedMap properties) throws VectorPrintException {
+      super(properties);
       if (findableProperties.containsKey(properties.getId())) {
          throw new VectorPrintException("Already known: " + properties.getId());
       } else if (properties.getId() == null) {
          throw new VectorPrintException("Id is null");
       }
-      this.properties = properties;
       findableProperties.put(properties.getId(), properties);
-   }
-
-   @Override
-   protected EnhancedMap getEmbeddedProperties() {
-      return properties;
    }
 
    /**
@@ -87,7 +81,7 @@ public class FindableProperties extends AbstractPropertiesDecorator {
    public EnhancedMap clone() {
       try {
          clearStaticReferences();
-         return new FindableProperties(properties.clone());
+         return new FindableProperties(getEmbeddedProperties().clone());
       } catch (VectorPrintException ex) {
          throw new VectorPrintRuntimeException(ex);
       }

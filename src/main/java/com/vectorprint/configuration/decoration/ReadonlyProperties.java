@@ -35,15 +35,9 @@ import java.util.Map;
  */
 public class ReadonlyProperties extends AbstractPropertiesDecorator {
 
-        private final EnhancedMap properties;
 
         public ReadonlyProperties(EnhancedMap properties) {
-                this.properties = properties;
-        }
-
-        @Override
-        protected EnhancedMap getEmbeddedProperties() {
-                return properties;
+                super(properties);
         }
 
         @Override
@@ -68,7 +62,7 @@ public class ReadonlyProperties extends AbstractPropertiesDecorator {
 
         @Override
         public EnhancedMap clone() {
-                return new ReadonlyProperties(properties.clone());
+                return new ReadonlyProperties(getEmbeddedProperties().clone());
         }
 
 }

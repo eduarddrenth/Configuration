@@ -39,20 +39,14 @@ import java.util.Map;
  */
 public class CachingProperties extends AbstractPropertiesDecorator {
 
-   private final EnhancedMap properties;
 
    public CachingProperties(EnhancedMap properties) {
-      this.properties = properties;
-   }
-
-   @Override
-   protected EnhancedMap getEmbeddedProperties() {
-      return properties;
+      super(properties);
    }
 
    @Override
    public EnhancedMap clone() {
-      return new CachingProperties(properties.clone());
+      return new CachingProperties(getEmbeddedProperties().clone());
    }
 
    private Map<String, Object> cache = new HashMap<String, Object>();

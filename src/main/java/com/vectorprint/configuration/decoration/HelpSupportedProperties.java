@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.vectorprint.configuration.decoration;
 
 /*
@@ -24,7 +23,6 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
@@ -46,49 +44,37 @@ import java.util.logging.Logger;
  */
 public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
-		  private EnhancedMap properties;
-		  
-		  private static final Logger log = Logger.getLogger(HelpSupportedProperties.class.getName());
-		  
-		  public HelpSupportedProperties(EnhancedMap properties, URL help) {
-					 this.properties = properties;
-					 initHelp(help);
-		  }
+   private static final Logger log = Logger.getLogger(HelpSupportedProperties.class.getName());
+   private final URL help;
 
-		  
-		  @Override
-		  protected EnhancedMap getEmbeddedProperties() {
-					 return properties;
-		  }
+   public HelpSupportedProperties(EnhancedMap properties, URL help) {
+      super(properties);
+      initHelp(help);
+      this.help = help;
+   }
 
-        protected void initHelp(URL url) {
-                try {
-                        Map<String, PropertyHelp> h = new HashMap<String, PropertyHelp>(150);
+   protected void initHelp(URL url) {
+      try {
+         Map<String, PropertyHelp> h = new HashMap<String, PropertyHelp>(150);
 
-                        new HelpParser(url.openStream()).parse(h);
+         new HelpParser(url.openStream()).parse(h);
 
-                        properties.setHelp(h);
-                } catch (TokenMgrError iOException) {
-								properties.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
-                        log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
-                } catch (ParseException iOException) {
-								properties.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
-                        log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
-                } catch (IOException iOException) {
-								properties.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
-                        log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
-                }
-        }
-		  
-		  private HelpSupportedProperties(EnhancedMap em) {
-					 properties = em;
-		  }
+         getEmbeddedProperties().setHelp(h);
+      } catch (TokenMgrError iOException) {
+         getEmbeddedProperties().getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
+         log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
+      } catch (ParseException iOException) {
+         getEmbeddedProperties().getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
+         log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
+      } catch (IOException iOException) {
+         getEmbeddedProperties().getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
+         log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
+      }
+   }
 
-		  @Override
-		  public EnhancedMap clone() {
-					 return new HelpSupportedProperties(properties.clone());
-		  }
-		  
-		  
+   @Override
+   public EnhancedMap clone() {
+      return new HelpSupportedProperties(getEmbeddedProperties().clone(),help);
+   }
 
 }
