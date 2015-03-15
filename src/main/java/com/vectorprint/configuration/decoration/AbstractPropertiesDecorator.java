@@ -48,6 +48,9 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    private EnhancedMap settings;
 
    public AbstractPropertiesDecorator(EnhancedMap settings) {
+      if (settings==null) {
+         throw new VectorPrintRuntimeException("settings may not be null");
+      }
       this.settings = settings;
    }
 
