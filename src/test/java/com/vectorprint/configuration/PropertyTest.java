@@ -495,7 +495,7 @@ public class PropertyTest {
 
    @Test
    public void testDecorators() throws IOException, VectorPrintException, ParseException {
-      EnhancedMap mtp = new FindableProperties(new ThreadSafeProperties(new HelpSupportedProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+      EnhancedMap mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
       Collection<Class<? extends AbstractPropertiesDecorator>> decorators
           = ((AbstractPropertiesDecorator) mtp).listDecorators();
@@ -576,7 +576,7 @@ public class PropertyTest {
    @Test
    public void testSerializable() throws IOException, VectorPrintException, ParseException, InterruptedException, ClassNotFoundException {
       FindableProperties.clearStaticReferences();
-      EnhancedMap mtp = new FindableProperties(new ThreadSafeProperties(new HelpSupportedProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+      EnhancedMap mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
 
       ByteArrayOutputStream bo = new ByteArrayOutputStream();
@@ -741,6 +741,6 @@ public class PropertyTest {
       assertEquals(Float.valueOf("50"), f.getF()); //  not 10 because setter sets it to 50
       assertArrayEquals(ArrayHelper.wrap(f.getFf()), ArrayHelper.wrap(new float[]{10, 20}));
       // the settings annotation wraps in an ObservableProperties and CachingProperties
-      assertEquals(f.getSettings(), new ObservableProperties(new CachingProperties(vp)));
+      assertEquals(f.getSettings(), new ReadonlyProperties(new ObservableProperties(new CachingProperties(vp))));
    }
 }

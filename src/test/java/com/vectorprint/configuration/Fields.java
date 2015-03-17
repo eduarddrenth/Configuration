@@ -19,14 +19,18 @@ package com.vectorprint.configuration;
 import com.vectorprint.configuration.annotation.Feature;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.Settings;
+import com.vectorprint.configuration.decoration.Changes;
+import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.ObservableProperties;
+import com.vectorprint.configuration.decoration.Observer;
+import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import java.net.URL;
 
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class Fields {
+public class Fields implements Observer {
    
    @Setting(key = "b")
    private boolean b;
@@ -41,7 +45,10 @@ public class Fields {
    @Setting(key = "ff")
    private float[] ff;
    @Settings(
-       observable = true
+       observable = true,
+       features = {
+          @Feature(clazz = ReadonlyProperties.class)
+       }
    )
    @Setting(key = "settings")
    private EnhancedMap settings;
@@ -73,6 +80,11 @@ public class Fields {
 
    public void setF(Float F) {
       this.F = 50f;
+   }
+
+   @Override
+   public void update(Observable object, Changes changes) {
+      throw new UnsupportedOperationException("Not supported yet.");
    }
    
 }

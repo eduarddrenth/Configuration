@@ -47,9 +47,15 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    
    private EnhancedMap settings;
 
+   /**
+    * 
+    * @param settings may not be null an may not implement {@link DoNotWrap}
+    */
    public AbstractPropertiesDecorator(EnhancedMap settings) {
       if (settings==null) {
          throw new VectorPrintRuntimeException("settings may not be null");
+      } if (settings instanceof DoNotWrap) {
+         throw new VectorPrintRuntimeException(String.format("settings may not be wrapped: %s",settings));
       }
       this.settings = settings;
    }
@@ -229,6 +235,25 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    protected final EnhancedMap getEmbeddedProperties() {
       return settings;
+   }
+
+   /**
+    * return the first EnhancedMap in the stack of decorators that is an implementation of the class argument.
+    * @param clazz
+    * @return 
+    */
+   public final <E extends EnhancedMap> E getEmbeddedProperties(Class<E> clazz) {
+      EnhancedMap inner = settings;
+      while (inner != null) {
+         if (clazz.isAssignableFrom(inner.getClass())) {
+            return (E) inner;
+         } else if (inner instanceof AbstractPropertiesDecorator) {
+            inner = ((AbstractPropertiesDecorator)inner).getEmbeddedProperties();
+         } else {
+            inner = null;
+         }
+      }
+      return null;
    }
    
    @Override

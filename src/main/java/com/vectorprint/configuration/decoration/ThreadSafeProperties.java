@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class ThreadSafeProperties extends AbstractPropertiesDecorator {
+public class ThreadSafeProperties extends AbstractPropertiesDecorator implements DoNotWrap {
 
    private static final long serialVersionUID = 1;
    private transient ThreadLocal< EnhancedMap> propsFromThread;

@@ -49,7 +49,7 @@ public @interface Settings {
     * {@link ObservableProperties} when {@link #observable() } is true.
     * @return 
     */
-   boolean objectIsObserver() default true;
+   boolean objectShouldObserve() default true;
    /**
     * You can add your own features to settings, these will be applied at the end of the decoration stack.
     * @return 

@@ -46,8 +46,10 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
     * This implementation will try to call a setter for a field first when applying a value from settings, when this
     * fails the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }.
     * This implementation will traverse all fields (including non public ones) in the class of the Object argument,
-    * including those in superclasses.
+    * including those in superclasses. 
     *
+    * @see Settings
+    * @see Setting
     * @param o
     * @param settings
     */
@@ -78,13 +80,16 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             }
             Settings set = (Settings) se;
             try {
-               if (set.cache()) {
-                  settings = new CachingProperties(settings);
-               }
                if (set.observable()) {
-                  settings = new ObservableProperties(settings);
-                  if (set.objectIsObserver() && o instanceof Observer) {
-                     ((ObservableProperties)settings).addObserver((Observer) o);
+                  settings = addToObservable(o, settings, set.objectShouldObserve());
+               }
+               if (set.cache()) {
+                  boolean containsCache = false;
+                  if (eh instanceof AbstractPropertiesDecorator) {
+                     containsCache = ((AbstractPropertiesDecorator) eh).getEmbeddedProperties(CachingProperties.class) != null;
+                  }
+                  if (!containsCache) {
+                     settings = new CachingProperties(settings);
                   }
                }
                for (Feature feat : set.features()) {
@@ -176,6 +181,26 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          LOGGER.log(Level.WARNING, null, ex);
       }
       return false;
+   }
+
+   private EnhancedMap addToObservable(Object o, EnhancedMap settings, boolean shouldObserve) {
+      EnhancedMap eh = settings;
+      ObservableProperties op = null;
+      if (eh instanceof AbstractPropertiesDecorator) {
+         op = ((AbstractPropertiesDecorator) eh).getEmbeddedProperties(ObservableProperties.class);
+         if (op == null) {
+            op = new ObservableProperties(eh);
+            eh = op;
+         }
+      }
+      if (shouldObserve) {
+         if (o instanceof Observer) {
+            op.addObserver((Observer) o);
+         } else {
+            throw new VectorPrintRuntimeException(String.format("Object is not an observer: %s", o));
+         }
+      }
+      return eh;
    }
 
 }
