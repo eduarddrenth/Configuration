@@ -22,6 +22,7 @@ import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
+import com.vectorprint.configuration.decoration.ObservableVisitor;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import java.beans.Statement;
@@ -46,7 +47,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
     * This implementation will try to call a setter for a field first when applying a value from settings, when this
     * fails the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }.
     * This implementation will traverse all fields (including non public ones) in the class of the Object argument,
-    * including those in superclasses. 
+    * including those in superclasses.
     *
     * @see Settings
     * @see Setting
@@ -84,11 +85,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                   settings = addToObservable(o, settings, set.objectShouldObserve());
                }
                if (set.cache()) {
-                  boolean containsCache = false;
-                  if (eh instanceof AbstractPropertiesDecorator) {
-                     containsCache = ((AbstractPropertiesDecorator) eh).getEmbeddedProperties(CachingProperties.class) != null;
-                  }
-                  if (!containsCache) {
+                  if (!hasProps(settings, CachingProperties.class)) {
                      settings = new CachingProperties(settings);
                   }
                }
@@ -96,12 +93,16 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                   Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
                   String extraSource = feat.url();
                   if (HelpSupportedProperties.class.isAssignableFrom(dec) || ParsingProperties.class.isAssignableFrom(dec)) {
-                     Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class, URL.class);
-                     URL u = new URL(extraSource);
-                     settings = constructor.newInstance(settings, u);
+                     if (!hasProps(settings, dec)) {
+                        Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class, URL.class);
+                        URL u = new URL(extraSource);
+                        settings = constructor.newInstance(settings, u);
+                     }
                   } else {
-                     Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class);
-                     settings = constructor.newInstance(settings);
+                     if (!hasProps(settings, dec)) {
+                        Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class);
+                        settings = constructor.newInstance(settings);
+                     }
                   }
                }
             } catch (NoSuchMethodException ex) {
@@ -183,21 +184,22 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
       return false;
    }
 
+   private boolean hasProps(EnhancedMap settings, Class<? extends AbstractPropertiesDecorator> clazz) {
+      return settings instanceof AbstractPropertiesDecorator && ((AbstractPropertiesDecorator) settings).hasProperties(clazz);
+   }
+
    private EnhancedMap addToObservable(Object o, EnhancedMap settings, boolean shouldObserve) {
       EnhancedMap eh = settings;
-      ObservableProperties op = null;
-      if (eh instanceof AbstractPropertiesDecorator) {
-         op = ((AbstractPropertiesDecorator) eh).getEmbeddedProperties(ObservableProperties.class);
-         if (op == null) {
-            op = new ObservableProperties(eh);
-            eh = op;
-         }
+      if (!hasProps(settings, ObservableProperties.class)) {
+         eh = new ObservableProperties(eh);
       }
-      if (shouldObserve) {
-         if (o instanceof Observer) {
-            op.addObserver((Observer) o);
-         } else {
-            throw new VectorPrintRuntimeException(String.format("Object is not an observer: %s", o));
+      if (eh instanceof AbstractPropertiesDecorator) {
+         if (shouldObserve) {
+            if (o instanceof Observer) {
+               ((AbstractPropertiesDecorator) eh).accept(ObservableVisitor.observableVisitor, o);
+            } else {
+               throw new VectorPrintRuntimeException(String.format("Object is not an observer: %s", o));
+            }
          }
       }
       return eh;

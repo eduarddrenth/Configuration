@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Enables being notified about property changes
@@ -31,6 +32,8 @@ import java.util.Set;
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
 
    private Set<Observer> observers = new HashSet<Observer>(1);
+   
+   private static final Logger LOGGER = Logger.getLogger(ObservableProperties.class.getName());
 
    public ObservableProperties(EnhancedMap properties) {
       super(properties);
@@ -39,7 +42,7 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    @Override
    public void addObserver(Observer o) {
       if (!observers.add(o)) {
-         throw new VectorPrintRuntimeException(String.format("could not add observer %s", o));
+         LOGGER.warning(String.format("observer %s already present", o));
       }
    }
 

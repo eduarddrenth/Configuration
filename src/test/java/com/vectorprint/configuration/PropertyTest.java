@@ -741,6 +741,6 @@ public class PropertyTest {
       assertEquals(Float.valueOf("50"), f.getF()); //  not 10 because setter sets it to 50
       assertArrayEquals(ArrayHelper.wrap(f.getFf()), ArrayHelper.wrap(new float[]{10, 20}));
       // the settings annotation wraps in an ObservableProperties and CachingProperties
-      assertEquals(f.getSettings(), new ReadonlyProperties(new ObservableProperties(new CachingProperties(vp))));
+      assertEquals(f.getSettings(), new ReadonlyProperties(new CachingProperties(new ObservableProperties(vp))));
    }
 }

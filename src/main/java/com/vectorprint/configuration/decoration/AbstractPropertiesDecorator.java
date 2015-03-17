@@ -236,24 +236,45 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    protected final EnhancedMap getEmbeddedProperties() {
       return settings;
    }
+   
 
    /**
-    * return the first EnhancedMap in the stack of decorators that is an implementation of the class argument.
+    * returns true if an EnhancedMap is present in the stack of decorators that is an implementation of the class argument.
     * @param clazz
     * @return 
     */
-   public final <E extends EnhancedMap> E getEmbeddedProperties(Class<E> clazz) {
-      EnhancedMap inner = settings;
+   public final boolean hasProperties(Class<? extends EnhancedMap> clazz) {
+      EnhancedMap inner = this;
       while (inner != null) {
          if (clazz.isAssignableFrom(inner.getClass())) {
-            return (E) inner;
+            return true;
+         } else if (inner instanceof AbstractPropertiesDecorator) {
+            inner = ((AbstractPropertiesDecorator)inner).settings;
+         } else {
+            inner = null;
+         }
+      }
+      return false;
+   }
+   
+   /**
+    * traverse the stack of settings decorators until {@link DecoratorVisitor#getClazz() } is
+    * reached and call {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap, java.lang.Object) }
+    * @param dv
+    * @param o 
+    */
+   public final void accept(DecoratorVisitor dv, Object o) {
+      EnhancedMap inner = this;
+      while (inner != null) {
+         if (dv.getClazz().isAssignableFrom(inner.getClass())) {
+            dv.visit(inner, o);
+            break;
          } else if (inner instanceof AbstractPropertiesDecorator) {
             inner = ((AbstractPropertiesDecorator)inner).getEmbeddedProperties();
          } else {
             inner = null;
          }
       }
-      return null;
    }
    
    @Override
