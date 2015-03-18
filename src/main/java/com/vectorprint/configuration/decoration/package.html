@@ -5,6 +5,10 @@
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    </head>
    <body>
-      <div>classes that extend properties with features such as thread safety, findability, multiplicity</div>
+      <div>classes that extend properties with features such as thread safety, readonly, observability, help support, parsing.
+         You can stack features for settings using subclasses of AbstractPropertiesDecorator, or, more easy by using the Settings annotation
+         on a field for your settings. Beware that order is important, for example if you wrap ObservableProperties in ReadonlyProperties,
+         notification will never be called.
+      </div>
    </body>
 </html>

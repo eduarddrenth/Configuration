@@ -35,6 +35,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Settings {
    /**
+    * by default settings will be {@link CachingProperties read / write}.
+    * @return 
+    */
+   boolean readonly() default false;
+   /**
     * by default settings will be {@link CachingProperties cached}.
     * @return 
     */
@@ -50,6 +55,12 @@ public @interface Settings {
     * @return 
     */
    boolean objectShouldObserve() default true;
+   
+   /**
+    * when urls are defined properties will be loaded from it
+    * @return 
+    */
+   String[] urls() default {};
    /**
     * You can add your own features to settings, these will be applied at the end of the decoration stack.
     * @return 

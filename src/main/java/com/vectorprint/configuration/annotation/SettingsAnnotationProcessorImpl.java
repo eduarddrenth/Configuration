@@ -22,15 +22,17 @@ import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.ObservableVisitor;
+import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
+import com.vectorprint.configuration.decoration.ReadonlyProperties;
+import com.vectorprint.configuration.parser.ParseException;
 import java.beans.Statement;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,6 +86,12 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                if (set.observable()) {
                   settings = addToObservable(o, settings, set.objectShouldObserve());
                }
+               if (set.urls().length>0) {
+                  settings = new ParsingProperties(settings, set.urls());
+               }
+               if (set.readonly()) {
+                  settings = new ReadonlyProperties(settings);
+               }
                if (set.cache()) {
                   if (!hasProps(settings, CachingProperties.class)) {
                      settings = new CachingProperties(settings);
@@ -105,11 +113,13 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      }
                   }
                }
+            } catch (IOException ex) {
+               throw new VectorPrintRuntimeException(ex);
+            } catch (ParseException ex) {
+               throw new VectorPrintRuntimeException(ex);
             } catch (NoSuchMethodException ex) {
                throw new VectorPrintRuntimeException(ex);
             } catch (SecurityException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (MalformedURLException ex) {
                throw new VectorPrintRuntimeException(ex);
             } catch (InstantiationException ex) {
                throw new VectorPrintRuntimeException(ex);

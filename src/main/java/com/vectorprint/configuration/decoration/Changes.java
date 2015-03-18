@@ -57,4 +57,11 @@ public class Changes {
       return Arrays.asList(keys);
    }
 
+   @Override
+   public String toString() {
+      return "Changes{" + "added=" + added + ", changed=" + changed + ", deleted=" + deleted + '}';
+   }
+   
+   
+
 }

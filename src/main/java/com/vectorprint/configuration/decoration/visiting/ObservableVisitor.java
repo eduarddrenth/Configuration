@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package com.vectorprint.configuration.decoration;
+package com.vectorprint.configuration.decoration.visiting;
 
-import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.decoration.ObservableProperties;
+import com.vectorprint.configuration.decoration.Observer;
 
 /**
- * You can define a visitor 
- * @see AbstractPropertiesDecorator#visit(com.vectorprint.configuration.decoration.DecoratorVisitor, java.lang.Object) 
+ * 
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface DecoratorVisitor<E extends EnhancedMap> {
+public class ObservableVisitor implements DecoratorVisitor<ObservableProperties>{
    
-   Class<E> getClazz();
+   private ObservableVisitor() {}
    
-   /**
-    * Execute functionality on the arguments
-    * @see Settings
-    * @see ObservableProperties#addObserver(com.vectorprint.configuration.decoration.Observer) 
-    * @param e
-    * @param o 
-    */
-   void visit(E e, Object o);
+   public static final ObservableVisitor observableVisitor = new ObservableVisitor();
+
+   @Override
+   public void visit(ObservableProperties e, Object o) {
+      if (o instanceof Observer) {
+         e.addObserver((Observer) o);
+      }
+   }
+
+   @Override
+   public Class<ObservableProperties> getClazz() {
+      return ObservableProperties.class;
+   }
 
 }

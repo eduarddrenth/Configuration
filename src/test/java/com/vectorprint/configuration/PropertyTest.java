@@ -25,7 +25,6 @@ package com.vectorprint.configuration;
  */
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.ClassHelper;
-import com.vectorprint.configuration.decoration.MultipleProperties;
 import com.vectorprint.testing.ThreadTester;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.VectorPrintRuntimeException;
@@ -151,10 +150,9 @@ public class PropertyTest {
 
    @Test
    public void testGetArrayProps() throws IOException, ParseException {
-      MultipleProperties mtp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties"));
-      mtp.addProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "run.properties"));
+      ParsingProperties mtp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "run.properties");
       assertEquals(true, mtp.getColorProperties("markcolors", null).length > 0);
       assertEquals(true, mtp.getDoubleProperties("marks", null).length > 0);
       assertEquals(true, mtp.getFloatProperties("marks", null).length > 0);
@@ -177,8 +175,8 @@ public class PropertyTest {
 
    @Test
    public void testGetProps() throws IOException, ParseException {
-      MultipleProperties mtp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties"));
+      ParsingProperties mtp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+          + File.separator + "chart.properties");
       assertEquals(true, mtp.getDoubleProperty("alpha", null) == 200);
       assertEquals(true, mtp.getFloatProperty("alpha", null) == 200);
       assertEquals(true, mtp.getIntegerProperty("alpha", null) == 200);
@@ -210,10 +208,9 @@ public class PropertyTest {
    @Test
    public void testChangeProperty() throws IOException, ParseException {
 
-      MultipleProperties mtp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties"));
-      mtp.addProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "run.properties"));
+      ParsingProperties mtp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "run.properties");
 
       String marks = mtp.get("marks");
       assertNotNull(marks);
@@ -280,10 +277,9 @@ public class PropertyTest {
 
    @Test
    public void testRemoveProperty() throws IOException, ParseException {
-      MultipleProperties mtp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties"));
-      mtp.addProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "run.properties"));
+      ParsingProperties mtp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "run.properties");
 
       String marks = mtp.get("marks");
       assertNotNull(marks);
@@ -313,10 +309,9 @@ public class PropertyTest {
 
    @Test
    public void testCombineProps() throws IOException, AssertionError, RuntimeException, InterruptedException, ParseException {
-      MultipleProperties mp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties"));
-      mp.addProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "run.properties"));
+      ParsingProperties mp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "run.properties");
       final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
       assertNotNull(mtp.getProperty("stoponerror"));
       assertNotNull(mtp.getProperty("marks"));
@@ -335,10 +330,9 @@ public class PropertyTest {
 
    @Test
    public void testIndependenceThreads() throws IOException, AssertionError, RuntimeException, InterruptedException, ParseException {
-      MultipleProperties mp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties"));
-      mp.addProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "run.properties"));
+      ParsingProperties mp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "run.properties");
       final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
       assertFalse(mtp.containsKey("bla"));
       mtp.put("bla", "bla");
@@ -388,7 +382,8 @@ public class PropertyTest {
 
    @Test
    public void testArguments() throws IOException, ParseException {
-      EnhancedMap vp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config" + File.separator + "styling.properties"));
+      ParsingProperties vp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+          + File.separator + "styling.properties");
       vp.addFromArguments(new String[]{"-t", "-d", "-n", "-m", "m"});
       assertTrue(vp.containsKey("t"));
       assertTrue(vp.containsKey("d"));
@@ -706,7 +701,7 @@ public class PropertyTest {
    public void testParmeterizable() throws IOException, ParseException {
       Parameterizable p = new P();
       p.addParameter(new StringParameter("s", "h").setValue("v"));
-      EnhancedMap vp = new MultipleProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config" + File.separator + "styling.properties"));
+      EnhancedMap vp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config" + File.separator + "styling.properties");
       vp.put("-ParameterizableImpl.s", "w");
       p.setup(null, vp);
       assertEquals("v", p.getValue("s", String.class));
@@ -741,6 +736,10 @@ public class PropertyTest {
       assertEquals(Float.valueOf("50"), f.getF()); //  not 10 because setter sets it to 50
       assertArrayEquals(ArrayHelper.wrap(f.getFf()), ArrayHelper.wrap(new float[]{10, 20}));
       // the settings annotation wraps in an ObservableProperties and CachingProperties
-      assertEquals(f.getSettings(), new ReadonlyProperties(new CachingProperties(new ObservableProperties(vp))));
+      AbstractPropertiesDecorator settings = (AbstractPropertiesDecorator) f.getSettings();
+      assertTrue(settings.hasProperties(ObservableProperties.class));
+      assertTrue(settings.hasProperties(ReadonlyProperties.class));
+      assertTrue(settings.hasProperties(CachingProperties.class));
+      assertTrue(settings.hasProperties(ParsingProperties.class));
    }
 }

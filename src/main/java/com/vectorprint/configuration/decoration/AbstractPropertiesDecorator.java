@@ -23,6 +23,7 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
+import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
@@ -56,6 +57,8 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
          throw new VectorPrintRuntimeException("settings may not be null");
       } if (settings instanceof DoNotWrap) {
          throw new VectorPrintRuntimeException(String.format("settings may not be wrapped: %s",settings));
+      } else if (hasProperties(settings.getClass())) {
+         throw new VectorPrintRuntimeException(String.format("settings already in the stack: %s",settings));
       }
       this.settings = settings;
    }
