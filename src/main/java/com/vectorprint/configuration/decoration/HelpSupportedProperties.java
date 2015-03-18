@@ -59,15 +59,15 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
          new HelpParser(url.openStream()).parse(h);
 
-         getEmbeddedProperties().setHelp(h);
+         super.setHelp(h);
       } catch (TokenMgrError iOException) {
-         getEmbeddedProperties().getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
+         super.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
          log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
       } catch (ParseException iOException) {
-         getEmbeddedProperties().getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
+         super.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
          log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
       } catch (IOException iOException) {
-         getEmbeddedProperties().getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
+         super.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
          log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
       }
    }

@@ -65,102 +65,102 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    @Override
    public boolean getBooleanProperty(String key, Boolean defaultValue) {
-      return getEmbeddedProperties().getBooleanProperty(key, defaultValue);
+      return settings.getBooleanProperty(key, defaultValue);
    }
 
    @Override
    public Color getColorProperty(String key, Color defaultValue) {
-      return getEmbeddedProperties().getColorProperty(key, defaultValue);
+      return settings.getColorProperty(key, defaultValue);
    }
 
    @Override
    public double getDoubleProperty(String key, Double defaultValue) {
-      return getEmbeddedProperties().getDoubleProperty(key, defaultValue);
+      return settings.getDoubleProperty(key, defaultValue);
    }
 
    @Override
    public float getFloatProperty(String key, Float defaultValue) {
-      return getEmbeddedProperties().getFloatProperty(key, defaultValue);
+      return settings.getFloatProperty(key, defaultValue);
    }
 
    @Override
    public int getIntegerProperty(String key, Integer defaultValue) {
-      return getEmbeddedProperties().getIntegerProperty(key, defaultValue);
+      return settings.getIntegerProperty(key, defaultValue);
    }
 
    @Override
    public long getLongProperty(String key, Long defaultValue) {
-      return getEmbeddedProperties().getLongProperty(key, defaultValue);
+      return settings.getLongProperty(key, defaultValue);
    }
 
    @Override
    public String getProperty(String key) {
-      return getEmbeddedProperties().getProperty(key);
+      return settings.getProperty(key);
    }
 
    @Override
    public String getProperty(String key, String defaultValue) {
-      return getEmbeddedProperties().getProperty(key, defaultValue);
+      return settings.getProperty(key, defaultValue);
    }
 
    @Override
    public String[] getStringProperties(String key, String[] defaultValue) {
-      return getEmbeddedProperties().getStringProperties(key, defaultValue);
+      return settings.getStringProperties(key, defaultValue);
    }
 
    @Override
    public float[] getFloatProperties(String key, float[] defaultValue) {
-      return getEmbeddedProperties().getFloatProperties(key, defaultValue);
+      return settings.getFloatProperties(key, defaultValue);
    }
 
    @Override
    public double[] getDoubleProperties(String key, double[] defaultValue) {
-      return getEmbeddedProperties().getDoubleProperties(key, defaultValue);
+      return settings.getDoubleProperties(key, defaultValue);
    }
 
    @Override
    public int[] getIntegerProperties(String key, int[] defaultValue) {
-      return getEmbeddedProperties().getIntegerProperties(key, defaultValue);
+      return settings.getIntegerProperties(key, defaultValue);
    }
 
    @Override
    public long[] getLongProperties(String key, long[] defaultValue) {
-      return getEmbeddedProperties().getLongProperties(key, defaultValue);
+      return settings.getLongProperties(key, defaultValue);
    }
 
    @Override
    public boolean[] getBooleanProperties(String key, boolean[] defaultValue) {
-      return getEmbeddedProperties().getBooleanProperties(key, defaultValue);
+      return settings.getBooleanProperties(key, defaultValue);
    }
 
    @Override
    public Color[] getColorProperties(String key, Color[] defaultValue) {
-      return getEmbeddedProperties().getColorProperties(key, defaultValue);
+      return settings.getColorProperties(key, defaultValue);
    }
 
    @Override
    public PropertyHelp getHelp(String key) {
-      return getEmbeddedProperties().getHelp(key);
+      return settings.getHelp(key);
    }
 
    @Override
    public Map<String, PropertyHelp> getHelp() {
-      return getEmbeddedProperties().getHelp();
+      return settings.getHelp();
    }
 
    @Override
    public String printHelp() {
-      return getEmbeddedProperties().printHelp();
+      return settings.printHelp();
    }
 
    @Override
    public void listProperties(PrintStream ps) {
-      getEmbeddedProperties().listProperties(ps);
+      settings.listProperties(ps);
    }
 
    @Override
    public void setHelp(Map<String, PropertyHelp> h) {
-      getEmbeddedProperties().setHelp(h);
+      settings.setHelp(h);
    }
 
    @Override
@@ -173,62 +173,62 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    @Override
    public int size() {
-      return getEmbeddedProperties().size();
+      return settings.size();
    }
 
    @Override
    public boolean isEmpty() {
-      return getEmbeddedProperties().isEmpty();
+      return settings.isEmpty();
    }
 
    @Override
    public boolean containsKey(Object key) {
-      return getEmbeddedProperties().containsKey(key);
+      return settings.containsKey(key);
    }
 
    @Override
    public boolean containsValue(Object value) {
-      return getEmbeddedProperties().containsValue(value);
+      return settings.containsValue(value);
    }
 
    @Override
    public String get(Object key) {
-      return getEmbeddedProperties().get(key);
+      return settings.get(key);
    }
 
    @Override
    public String put(String key, String value) {
-      return getEmbeddedProperties().put(key, value);
+      return settings.put(key, value);
    }
 
    @Override
    public String remove(Object key) {
-      return getEmbeddedProperties().remove(key);
+      return settings.remove(key);
    }
 
    @Override
    public void putAll(Map<? extends String, ? extends String> m) {
-      getEmbeddedProperties().putAll(m);
+      settings.putAll(m);
    }
 
    @Override
    public void clear() {
-      getEmbeddedProperties().clear();
+      settings.clear();
    }
 
    @Override
    public Set<String> keySet() {
-      return getEmbeddedProperties().keySet();
+      return settings.keySet();
    }
 
    @Override
    public Collection values() {
-      return getEmbeddedProperties().values();
+      return settings.values();
    }
 
    @Override
    public Set<Entry<String, String>> entrySet() {
-      return getEmbeddedProperties().entrySet();
+      return settings.entrySet();
    }
 
    @Override
@@ -236,6 +236,10 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       throw new VectorPrintRuntimeException("clone should be implemented by: " + getClass().getName());
    }
 
+   /**
+    * only needed for cloning and serialization
+    * @return 
+    */
    protected final EnhancedMap getEmbeddedProperties() {
       return settings;
    }
@@ -273,7 +277,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
             dv.visit(inner, o);
             break;
          } else if (inner instanceof AbstractPropertiesDecorator) {
-            inner = ((AbstractPropertiesDecorator)inner).getEmbeddedProperties();
+            inner = ((AbstractPropertiesDecorator)inner).settings;
          } else {
             inner = null;
          }
@@ -282,121 +286,97 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    
    @Override
    public String getId() {
-      return getEmbeddedProperties().getId();
+      return settings.getId();
    }
 
 
    @Override
    public URL getURLProperty(String key, URL defaultValue) throws MalformedURLException {
-      return getEmbeddedProperties().getURLProperty(key, defaultValue);
+      return settings.getURLProperty(key, defaultValue);
    }
 
    
 
    @Override
    public URL[] getURLProperties(String key, URL[] defaultValue) throws MalformedURLException {
-      return getEmbeddedProperties().getURLProperties(key, defaultValue);
-   }
-
-   /**
-    * Provides a a recursive listing of all decorators for application properties.
-    *
-    * @return a recursive listing of all decorators for application properties
-    */
-   public Collection<Class<? extends AbstractPropertiesDecorator>> listDecorators() {
-      Collection<Class<? extends AbstractPropertiesDecorator>> decorators
-          = new ArrayList<Class<? extends AbstractPropertiesDecorator>>(5);
-      decorators.add(getClass());
-      return decorators(decorators, getEmbeddedProperties());
-   }
-
-   private Collection<Class<? extends AbstractPropertiesDecorator>> decorators(Collection<Class<? extends AbstractPropertiesDecorator>> decorators, EnhancedMap nested) {
-      if (nested instanceof AbstractPropertiesDecorator) {
-         decorators.add(((AbstractPropertiesDecorator) nested).getClass());
-         try {
-            return decorators(decorators, ((AbstractPropertiesDecorator) nested).getEmbeddedProperties());
-         } catch (VectorPrintRuntimeException e) {
-            return decorators;
-         }
-      }
-      return decorators;
+      return settings.getURLProperties(key, defaultValue);
    }
 
    @Override
    public <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
-      return getEmbeddedProperties().getGenericProperty(key, defaultValue, clazz);
+      return settings.getGenericProperty(key, defaultValue, clazz);
    }
 
    @Override
    public short getShortProperty(String key, Short defaultValue) {
-      return getEmbeddedProperties().getShortProperty(key, defaultValue);
+      return settings.getShortProperty(key, defaultValue);
    }
 
    @Override
    public char getCharProperty(String key, Character defaultValue) {
-      return getEmbeddedProperties().getCharProperty(key, defaultValue);
+      return settings.getCharProperty(key, defaultValue);
    }
 
    @Override
    public byte getByteProperty(String key, Byte defaultValue) {
-      return getEmbeddedProperties().getByteProperty(key, defaultValue);
+      return settings.getByteProperty(key, defaultValue);
    }
 
    @Override
    public short[] getShortProperties(String key, short[] defaultValue) {
-      return getEmbeddedProperties().getShortProperties(key, defaultValue);
+      return settings.getShortProperties(key, defaultValue);
    }
 
    @Override
    public char[] getCharProperties(String key, char[] defaultValue) {
-      return getEmbeddedProperties().getCharProperties(key, defaultValue);
+      return settings.getCharProperties(key, defaultValue);
 
    }
 
    @Override
    public byte[] getByteProperties(String key, byte[] defaultValue) {
-      return getEmbeddedProperties().getByteProperties(key, defaultValue);
+      return settings.getByteProperties(key, defaultValue);
 
    }
 
    @Override
    public Date getDateProperty(String key, Date defaultValue) {
-      return getEmbeddedProperties().getDateProperty(key, defaultValue);
+      return settings.getDateProperty(key, defaultValue);
    }
 
    @Override
    public Date[] getDateProperties(String key, Date[] defaultValue) {
-      return getEmbeddedProperties().getDateProperties(key, defaultValue);
+      return settings.getDateProperties(key, defaultValue);
    }
 
    @Override
    public Collection<String> getUnusedKeys() {
-      return getEmbeddedProperties().getUnusedKeys();
+      return settings.getUnusedKeys();
    }
 
    @Override
    public Collection<String> getKeysNotPresent() {
-      return getEmbeddedProperties().getKeysNotPresent();
+      return settings.getKeysNotPresent();
    }
 
    @Override
    public Class getClassProperty(String key, Class defaultValue) throws ClassNotFoundException {
-      return getEmbeddedProperties().getClassProperty(key, defaultValue);
+      return settings.getClassProperty(key, defaultValue);
    }
 
    @Override
    public Class[] getClassProperties(String key, Class[] defaultValue) throws ClassNotFoundException {
-      return getEmbeddedProperties().getClassProperties(key, defaultValue);
+      return settings.getClassProperties(key, defaultValue);
    }
 
    @Override
    public boolean isFromArguments(String key) {
-      return getEmbeddedProperties().isFromArguments(key);
+      return settings.isFromArguments(key);
    }
 
    @Override
    public void setId(String id) {
-      getEmbeddedProperties().setId(id);
+      settings.setId(id);
    }
 
    /**
@@ -413,7 +393,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
          return false;
       }
       AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) obj;
-      if (!apd.getEmbeddedProperties().equals(getEmbeddedProperties())) {
+      if (!apd.settings.equals(settings)) {
          return false;
       }
       return true;

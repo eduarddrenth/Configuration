@@ -58,7 +58,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
 
    private <T> T fromCache(String key, T defaultValue, Class<T> clazz) {
       if (!cache.containsKey(key)) {
-         cache.put(key, getEmbeddedProperties().getGenericProperty(key, defaultValue, clazz));
+         cache.put(key, super.getGenericProperty(key, defaultValue, clazz));
       } else if (null != cache.get(key)) {
          Class c = cache.get(key).getClass();
          if (clazz.isPrimitive()) {
@@ -120,13 +120,13 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    @Override
    public String remove(Object key) {
       cache.remove(key);
-      return getEmbeddedProperties().remove(key);
+      return super.remove(key);
    }
 
    @Override
    public String put(String key, String value) {
       cache.remove(key);
-      return getEmbeddedProperties().put(key, value);
+      return super.put(key, value);
    }
 
    @Override

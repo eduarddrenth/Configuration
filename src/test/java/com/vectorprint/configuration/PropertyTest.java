@@ -490,13 +490,11 @@ public class PropertyTest {
 
    @Test
    public void testDecorators() throws IOException, VectorPrintException, ParseException {
-      EnhancedMap mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+      AbstractPropertiesDecorator mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
-      Collection<Class<? extends AbstractPropertiesDecorator>> decorators
-          = ((AbstractPropertiesDecorator) mtp).listDecorators();
-      assertTrue(decorators.contains(FindableProperties.class));
-      assertTrue(decorators.contains(HelpSupportedProperties.class));
-      assertTrue(decorators.contains(ThreadSafeProperties.class));
+      assertTrue(mtp.hasProperties(FindableProperties.class));
+      assertTrue(mtp.hasProperties(HelpSupportedProperties.class));
+      assertTrue(mtp.hasProperties(ThreadSafeProperties.class));
 
    }
 
