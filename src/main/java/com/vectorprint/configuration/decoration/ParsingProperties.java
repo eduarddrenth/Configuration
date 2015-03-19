@@ -260,16 +260,10 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
 
    @Override
    public EnhancedMap clone() {
-      try {
-         ParsingProperties parsingProperties = new ParsingProperties(getEmbeddedProperties().clone());
-         parsingProperties.commentBeforeKeys.putAll(commentBeforeKeys);
-         parsingProperties.propertyUrls=propertyUrls;
-         parsingProperties.trailingComment.addAll(trailingComment);
-         return parsingProperties;
-      } catch (IOException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      ParsingProperties parsingProperties = (ParsingProperties) super.clone();
+      parsingProperties.commentBeforeKeys.putAll(commentBeforeKeys);
+      parsingProperties.propertyUrls = propertyUrls;
+      parsingProperties.trailingComment.addAll(trailingComment);
+      return parsingProperties;
    }
 }

@@ -24,7 +24,6 @@ package com.vectorprint.configuration.decoration;
  * #L%
  */
 import com.vectorprint.VectorPrintException;
-import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,8 +64,9 @@ public class FindableProperties extends AbstractPropertiesDecorator {
 
    /**
     * return the first properties whose id contains the argument id
+    *
     * @param id
-    * @return 
+    * @return
     */
    public static EnhancedMap findContains(String id) {
       for (EnhancedMap em : findableProperties.values()) {
@@ -79,12 +79,8 @@ public class FindableProperties extends AbstractPropertiesDecorator {
 
    @Override
    public EnhancedMap clone() {
-      try {
-         clearStaticReferences();
-         return new FindableProperties(getEmbeddedProperties().clone());
-      } catch (VectorPrintException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      clearStaticReferences();
+      return super.clone();
    }
 
    /**

@@ -46,7 +46,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
 
    @Override
    public EnhancedMap clone() {
-      return new CachingProperties(getEmbeddedProperties().clone());
+      return super.clone();
    }
 
    private Map<String, Object> cache = new HashMap<String, Object>();

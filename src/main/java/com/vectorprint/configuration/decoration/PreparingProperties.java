@@ -76,7 +76,7 @@ public class PreparingProperties extends AbstractPropertiesDecorator implements 
 
    @Override
    public EnhancedMap clone() {
-      PreparingProperties preparingProperties = new PreparingProperties(getEmbeddedProperties().clone());
+      PreparingProperties preparingProperties = (PreparingProperties) super.clone();
       preparingProperties.observers.addAll(observers);
       return preparingProperties;
    }

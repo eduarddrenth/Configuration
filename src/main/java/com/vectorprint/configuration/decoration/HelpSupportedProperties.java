@@ -23,7 +23,6 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.PropertyHelpImpl;
@@ -45,7 +44,7 @@ import java.util.logging.Logger;
 public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
    private static final Logger log = Logger.getLogger(HelpSupportedProperties.class.getName());
-   private final URL help;
+   private URL help;
 
    public HelpSupportedProperties(EnhancedMap properties, URL help) {
       super(properties);
@@ -74,7 +73,9 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
    @Override
    public EnhancedMap clone() {
-      return new HelpSupportedProperties(getEmbeddedProperties().clone(),help);
+      HelpSupportedProperties h = (HelpSupportedProperties) super.clone();
+      h.help = help;
+      return h;
    }
 
 }

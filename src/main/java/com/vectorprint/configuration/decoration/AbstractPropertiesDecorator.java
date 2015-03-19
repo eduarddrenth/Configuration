@@ -30,10 +30,10 @@ import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import java.awt.Color;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -234,17 +234,14 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    @Override
    public EnhancedMap clone() {
-      throw new VectorPrintRuntimeException("clone should be implemented by: " + getClass().getName());
+      try {
+         AbstractPropertiesDecorator clone = (AbstractPropertiesDecorator) super.clone();
+         clone.settings = settings.clone();
+         return clone;
+      } catch (CloneNotSupportedException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      }
    }
-
-   /**
-    * only needed for cloning and serialization
-    * @return 
-    */
-   protected final EnhancedMap getEmbeddedProperties() {
-      return settings;
-   }
-   
 
    /**
     * returns true if an EnhancedMap is present in the stack of decorators that is an implementation of the class argument.
@@ -400,5 +397,13 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       return true;
    }
 
+   /**
+    * for serialization, writes the embedded settings to the stream, call this in subclasses
+    * after you have doen your own serialization
+    * @param s 
+    */
+   protected void writeEmbeddedSettings(java.io.ObjectOutputStream s) throws IOException {
+      s.writeObject(settings);
+   }
    
 }

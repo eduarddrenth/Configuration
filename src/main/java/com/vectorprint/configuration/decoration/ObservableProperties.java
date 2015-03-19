@@ -15,7 +15,6 @@
  */
 package com.vectorprint.configuration.decoration;
 
-import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -111,7 +110,7 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
 
    @Override
    public EnhancedMap clone() {
-      ObservableProperties observableProperties = new ObservableProperties(getEmbeddedProperties().clone());
+      ObservableProperties observableProperties = (ObservableProperties) super.clone();
       observableProperties.observers.addAll(this.observers);
       return observableProperties;
    }
