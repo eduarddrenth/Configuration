@@ -21,37 +21,32 @@ import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.parser.ParseException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParsingVisitor implements DecoratorVisitor<ParsingProperties>{
-   
-   public static final Logger logger = Logger.getLogger(ParsingVisitor.class.getName());
+      
+   private final URL url;
+
+   public ParsingVisitor(URL url) {
+      this.url = url;
+   }
 
    @Override
-   public Class<ParsingProperties> getClazz() {
+   public Class<ParsingProperties> getClazzToVisit() {
       return ParsingProperties.class;
    }
 
    /**
-    * when the object is a String or URL calls {@link ParsingProperties#addFromURL(java.lang.String) } or
-    * {@link ParsingProperties#addFromURL(java.net.URL) }.
-    * @param e
-    * @param o 
+    * Call {@link ParsingProperties#addFromURL(java.net.URL) }.
+    * @param e 
     */
    @Override
-   public void visit(ParsingProperties e, Object o) {
+   public void visit(ParsingProperties e) {
       try {
-         if (o instanceof URL) {
-            e.addFromURL((URL) o);
-         } else if (o instanceof String) {
-            e.addFromURL((String) o);
-         } else {
-            logger.warning(String.format("will not add properties from %s", o));
-         }
+         e.addFromURL(url);
       } catch (IOException iOException) {
          throw new VectorPrintRuntimeException(iOException);
       } catch (ParseException parseException) {

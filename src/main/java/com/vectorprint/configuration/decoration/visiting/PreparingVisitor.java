@@ -16,34 +16,33 @@
 
 package com.vectorprint.configuration.decoration.visiting;
 
-import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.observing.PrepareKeyValue;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class PreparingVisitor implements DecoratorVisitor<PreparingProperties>{
-   
-   public static final Logger logger = Logger.getLogger(PreparingVisitor.class.getName());
+
+   private final PrepareKeyValue pkv;
+
+   public PreparingVisitor(PrepareKeyValue pkv) {
+      this.pkv = pkv;
+   }
 
    @Override
-   public Class<PreparingProperties> getClazz() {
+   public Class<PreparingProperties> getClazzToVisit() {
       return PreparingProperties.class;
    }
 
    /**
-    * when the object is a {@link PrepareKeyValue} calls {@link PreparingProperties#addObserver(com.vectorprint.configuration.observing.PrepareKeyValue) }.
-    * @param e
-    * @param o 
+    * Call {@link PreparingProperties#addObserver(com.vectorprint.configuration.observing.PrepareKeyValue) }.
+    * @param e 
     */
    @Override
-   public void visit(PreparingProperties e, Object o) {
-      if (o instanceof PrepareKeyValue) {
-         e.addObserver((PrepareKeyValue<String, String>) o);
-      }
+   public void visit(PreparingProperties e) {
+         e.addObserver(pkv);
    }
 
 }

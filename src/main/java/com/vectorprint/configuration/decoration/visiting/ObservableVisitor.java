@@ -25,19 +25,19 @@ import com.vectorprint.configuration.decoration.Observer;
  */
 public class ObservableVisitor implements DecoratorVisitor<ObservableProperties>{
    
-   private ObservableVisitor() {}
-   
-   public static final ObservableVisitor observableVisitor = new ObservableVisitor();
+   private final Observer observer;
 
+   public ObservableVisitor(Observer observer) {
+      this.observer = observer;
+   }
+   
    @Override
-   public void visit(ObservableProperties e, Object o) {
-      if (o instanceof Observer) {
-         e.addObserver((Observer) o);
-      }
+   public void visit(ObservableProperties e) {
+         e.addObserver(observer);
    }
 
    @Override
-   public Class<ObservableProperties> getClazz() {
+   public Class<ObservableProperties> getClazzToVisit() {
       return ObservableProperties.class;
    }
 

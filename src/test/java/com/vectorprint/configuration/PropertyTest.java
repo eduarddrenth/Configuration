@@ -42,6 +42,7 @@ import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.ThreadSafeProperties;
+import com.vectorprint.configuration.decoration.visiting.ParsingVisitor;
 import com.vectorprint.configuration.observing.HandleEmptyValues;
 import com.vectorprint.configuration.observing.PrepareKeyValue;
 import com.vectorprint.configuration.observing.TrimKeyValue;
@@ -713,11 +714,11 @@ public class PropertyTest {
    @Test
    public void testSettingAnnotations() throws IOException, ParseException {
       Fields f = new Fields();
-      EnhancedMap vp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+      AbstractPropertiesDecorator vp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
           + File.separator + "chart.properties");
       vp.put("b", "true");
       vp.put("B", "true");
-      vp.put("u", "http://uppie");
+      vp.put("u", "file:src/test/resources/config/run.properties");
       vp.put("f", "10"); // setter will be called
       vp.put("ff", "10;20");
       vp.put("", "true");
@@ -730,7 +731,7 @@ public class PropertyTest {
       sap.initSettings(f, vp);
       assertEquals(Boolean.TRUE, f.isB());
       assertEquals(Boolean.TRUE, f.getB());
-      assertEquals(new URL("http://uppie"), f.getU());
+      assertEquals(new URL("file:src/test/resources/config/run.properties"), f.getU());
       assertEquals(Float.valueOf("50"), f.getF()); //  not 10 because setter sets it to 50
       assertArrayEquals(ArrayHelper.wrap(f.getFf()), ArrayHelper.wrap(new float[]{10, 20}));
       // the settings annotation wraps in an ObservableProperties and CachingProperties
@@ -739,5 +740,8 @@ public class PropertyTest {
       assertTrue(settings.hasProperties(ReadonlyProperties.class));
       assertTrue(settings.hasProperties(CachingProperties.class));
       assertTrue(settings.hasProperties(ParsingProperties.class));
+      
+      vp.accept(new ParsingVisitor(f.getU()));
+      assertTrue(vp.containsKey("dataclass"));
    }
 }

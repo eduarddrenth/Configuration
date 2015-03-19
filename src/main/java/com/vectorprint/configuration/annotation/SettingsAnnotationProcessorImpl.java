@@ -22,10 +22,11 @@ import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
+import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
+import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.parser.ParseException;
 import java.beans.Statement;
 import java.io.IOException;
@@ -38,7 +39,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+    * This implementation will try to call a setter for a field first when injecting a value from settings, when this
+    * fails the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }.
+    * This implementation will traverse all fields (including non public ones) in the class of the Object argument,
+    * including those in superclasses. When the object is a {@link DecoratorVisitor} and settings are a subclass of
+    * {@link AbstractPropertiesDecorator}, call {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor, java.lang.Object) }
+    *
+    * @see Settings
+    * @see Setting
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
@@ -46,13 +54,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
 
    /**
-    * This implementation will try to call a setter for a field first when applying a value from settings, when this
-    * fails the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }.
-    * This implementation will traverse all fields (including non public ones) in the class of the Object argument,
-    * including those in superclasses.
-    *
-    * @see Settings
-    * @see Setting
+    * Look for annotation in the object, use settings argument to inject settings.
     * @param o
     * @param settings
     */
@@ -61,6 +63,11 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
       initSettings(o.getClass(), o, settings);
    }
 
+   /**
+    * Call {@link #initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } with 
+    * a new {@link VectorPrintProperties#VectorPrintProperties() }.
+    * @param o 
+    */
    @Override
    public void initSettings(Object o) {
       initSettings(o, new VectorPrintProperties());
@@ -84,7 +91,12 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             Settings set = (Settings) se;
             try {
                if (set.observable()) {
-                  settings = addToObservable(o, settings, set.objectShouldObserve());
+                  if (!hasProps(settings, ObservableProperties.class)) {
+                     settings = new ObservableProperties(settings);
+                  }
+                  if (o instanceof Observer) {
+                     ((AbstractPropertiesDecorator)settings).accept(new ObservableVisitor((Observer) o));
+                  }
                }
                if (set.urls().length>0) {
                   settings = new ParsingProperties(settings, set.urls());
@@ -112,6 +124,9 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                         settings = constructor.newInstance(settings);
                      }
                   }
+               }
+               if (o instanceof DecoratorVisitor && settings instanceof AbstractPropertiesDecorator) {
+                  ((AbstractPropertiesDecorator)settings).accept((DecoratorVisitor) o);
                }
             } catch (IOException ex) {
                throw new VectorPrintRuntimeException(ex);
@@ -196,23 +211,6 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private boolean hasProps(EnhancedMap settings, Class<? extends AbstractPropertiesDecorator> clazz) {
       return settings instanceof AbstractPropertiesDecorator && ((AbstractPropertiesDecorator) settings).hasProperties(clazz);
-   }
-
-   private EnhancedMap addToObservable(Object o, EnhancedMap settings, boolean shouldObserve) {
-      EnhancedMap eh = settings;
-      if (!hasProps(settings, ObservableProperties.class)) {
-         eh = new ObservableProperties(eh);
-      }
-      if (eh instanceof AbstractPropertiesDecorator) {
-         if (shouldObserve) {
-            if (o instanceof Observer) {
-               ((AbstractPropertiesDecorator) eh).accept(ObservableVisitor.observableVisitor, o);
-            } else {
-               throw new VectorPrintRuntimeException(String.format("Object is not an observer: %s", o));
-            }
-         }
-      }
-      return eh;
    }
 
 }

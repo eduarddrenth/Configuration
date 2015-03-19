@@ -18,6 +18,8 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
+import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
+import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -46,15 +48,13 @@ public @interface Settings {
    boolean cache() default true;
    /**
     * by default settings will not be {@link ObservableProperties observable}.
+    * If you want the object containing the settings to be added automatically as observer, implement
+    * {@link Observer}.
+    * @see SettingsAnnotationProcessorImpl
+    * @see ObservableVisitor
     * @return 
     */
    boolean observable() default false;
-   /**
-    * by default the object that owns the settings field will be added as {@link Observer} to the
-    * {@link ObservableProperties} when {@link #observable() } is true.
-    * @return 
-    */
-   boolean objectShouldObserve() default true;
    
    /**
     * when urls are defined properties will be loaded from it

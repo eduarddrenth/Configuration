@@ -21,10 +21,8 @@ import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.Settings;
 import com.vectorprint.configuration.decoration.Changes;
 import com.vectorprint.configuration.decoration.Observable;
-import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
-import java.io.File;
 import java.net.URL;
 
 /**
@@ -47,7 +45,7 @@ public class Fields implements Observer {
    private float[] ff;
    @Settings(
        observable = true,
-       urls = {"src/test/resources/config/run.properties","src/test/resources/config/chart.properties"},
+       urls = {"src/test/resources/config/chart.properties"},
        features = {
           @Feature(clazz = ReadonlyProperties.class)
        }

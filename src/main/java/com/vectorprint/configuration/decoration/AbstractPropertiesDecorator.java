@@ -28,6 +28,7 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import java.awt.Color;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
@@ -265,18 +266,18 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
    
    /**
-    * traverse the stack of settings decorators until {@link DecoratorVisitor#getClazz() } is
-    * reached and call {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap, java.lang.Object) }
+    * traverse the stack of settings decorators and visit all that are instances of {@link DecoratorVisitor#getClazzToVisit() }.
+    * {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap, java.lang.Object) } will be called
     * @param dv
-    * @param o 
+    * @see SettingsAnnotationProcessorImpl 
     */
-   public final void accept(DecoratorVisitor dv, Object o) {
+   public final void accept(DecoratorVisitor dv) {
       EnhancedMap inner = this;
       while (inner != null) {
-         if (dv.getClazz().isAssignableFrom(inner.getClass())) {
-            dv.visit(inner, o);
-            break;
-         } else if (inner instanceof AbstractPropertiesDecorator) {
+         if (dv.getClazzToVisit().isAssignableFrom(inner.getClass())) {
+            dv.visit(inner);
+         }
+         if (inner instanceof AbstractPropertiesDecorator) {
             inner = ((AbstractPropertiesDecorator)inner).settings;
          } else {
             inner = null;

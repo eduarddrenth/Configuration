@@ -19,27 +19,27 @@ package com.vectorprint.configuration.decoration.visiting;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.Settings;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 
 /**
  * You can define a visitor that allows you to access a certain type of {@link EnhancedMap} in the stack and
- * call its methods based on an object argument. This way you can for example add properties from a url or add observables
+ * call its methods. This way you can for example add properties from a url or add observables
  * after the stack of properties is defined.
- * @see AbstractPropertiesDecorator#visit(com.vectorprint.configuration.decoration.DecoratorVisitor, java.lang.Object) 
+ * @see AbstractPropertiesDecorator#visit(com.vectorprint.configuration.decoration.DecoratorVisitor) 
  * @see Settings
  * @see SettingsAnnotationProcessor
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface DecoratorVisitor<E extends EnhancedMap> {
    
-   Class<E> getClazz();
+   Class<E> getClazzToVisit();
    
    /**
-    * Execute functionality on the arguments
+    * Access settings, see {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) }.
+    * @param e
     * @see Settings
     * @see ObservableProperties#addObserver(com.vectorprint.configuration.decoration.Observer) 
-    * @param e
-    * @param o 
     */
-   void visit(E e, Object o);
+   void visit(E e);
 
 }
