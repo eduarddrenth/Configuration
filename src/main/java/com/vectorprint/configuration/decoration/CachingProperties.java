@@ -58,7 +58,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
 
    private <T> T fromCache(String key, T defaultValue, Class<T> clazz) {
       if (!cache.containsKey(key)) {
-         cache.put(key, super.getGenericProperty(key, defaultValue, clazz));
+         cache.put(key, super.getGenericProperty(defaultValue, clazz, key));
       } else if (null != cache.get(key)) {
          Class c = cache.get(key).getClass();
          if (clazz.isPrimitive()) {
@@ -110,11 +110,6 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    @Override
    public char getCharProperty(String key, Character defaultValue) {
       return fromCache(key, defaultValue, char.class);
-   }
-
-   @Override
-   public <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
-      return fromCache(key, defaultValue, clazz);
    }
 
    @Override

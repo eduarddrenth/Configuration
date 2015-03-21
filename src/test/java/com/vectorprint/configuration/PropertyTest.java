@@ -574,7 +574,7 @@ public class PropertyTest {
       }
 
       ch.put("prim", "1");
-      ch.getGenericProperty("prim", null, Integer.class);
+      ch.getGenericProperty( null, Integer.class,"prim");
       ch.getIntegerProperty("prim", null);
 
    }
@@ -612,7 +612,7 @@ public class PropertyTest {
 
       assertTrue(deserialized.containsKey("childThreadProp"));
 
-      deserialized.getGenericProperty("markcolors", null, Color[].class);
+      deserialized.getGenericProperty( null, Color[].class,"markcolors");
    }
 
    @Test

@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * A Configurable object should be initialized by a {@link SettingsProvider}.
  * Instead of implementing this interface to provide settings to your objects you could also make use of
- * {@link Setting} and {@link SettingsAnnotationProcessor}.
+ * {@link Setting}, {@link Settings} and {@link SettingsAnnotationProcessor}.
  *
  * @param <P> a Map holding settings for the Configurable Object
  * @see FindableProperties#find(java.lang.String)
@@ -62,5 +62,5 @@ public interface Configurable<P extends Map> {
          * @param clazz
          * @return 
          */
-        <TYPE> TYPE getSetting(Object key, TYPE defaultValue, Class<TYPE> clazz);
+        <TYPE> TYPE getSetting(TYPE defaultValue, Class<TYPE> clazz, Object... keys);
 }

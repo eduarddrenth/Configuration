@@ -579,7 +579,18 @@ public class VectorPrintProperties extends HashMap<String, String>
    public void setId(String id) {
       this.id = id;
    }
-
+   /**
+    * this implementation supports all primitives and their wrappers, Color, Date, URL, Class and arrays of those types.
+    * Calls {@link #getGenericProperty(java.lang.String, java.lang.Object, java.lang.Class) } if one of the keys is present
+    * in the settings.
+    *
+    * @param <T>
+    * @param keys
+    * @param defaultValue
+    * @param clazz
+    * @return value of the setting or the default value
+    * @throws VectorPrintRuntimeException when no value is found and defaultValue is null
+    */
    public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
       for (String key : keys) {
          if (containsKey(key)) {
@@ -591,17 +602,17 @@ public class VectorPrintProperties extends HashMap<String, String>
       }
       return defaultValue;
    }
+   
    /**
     * this implementation supports all primitives and their wrappers, Color, Date, URL, Class and arrays of those types.
-    *
     * @param <T>
     * @param key
     * @param defaultValue
     * @param clazz
-    * @return
+    * @return value of the setting or the default value
+    * @throws VectorPrintRuntimeException when no value is found and defaultValue is null
     */
-   @Override
-   public <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
+   protected <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
       Object o = null;
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
