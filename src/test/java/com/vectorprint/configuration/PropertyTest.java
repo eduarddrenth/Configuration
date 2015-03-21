@@ -197,6 +197,18 @@ public class PropertyTest {
          //expected
       }
    }
+   
+   @Test
+   public void testMultipleKeys() throws IOException, ParseException {
+      EnhancedMap eh = new VectorPrintProperties();
+      eh.put("k", "v");
+      assertEquals("v",eh.getGenericProperty(null, String.class, "a","b","k"));
+      try {
+         eh.getGenericProperty(null, String.class, "a", "b");
+      } catch (VectorPrintRuntimeException e) {
+         // expected
+      }
+   }
 
    @Test
    public void testHelp() throws IOException, ParseException {
@@ -729,6 +741,11 @@ public class PropertyTest {
       }
       vp.put("nodefault", "true");
       sap.initSettings(f, vp);
+      try {
+         f.getSettings().put("notallowed", "");
+      } catch (VectorPrintRuntimeException e) {
+         // expected, readonly
+      }
       assertEquals(Boolean.TRUE, f.isB());
       assertEquals(Boolean.TRUE, f.getB());
       assertEquals(new URL("file:src/test/resources/config/run.properties"), f.getU());

@@ -98,6 +98,8 @@ public interface EnhancedMap extends Map<String, String>, Cloneable, Serializabl
    Date[] getDateProperties(String key, Date[] defaultValue);
 
    <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz);
+   
+   <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys);
 
    PropertyHelp getHelp(String key);
 

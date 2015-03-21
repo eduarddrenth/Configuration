@@ -306,6 +306,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
+   public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
+      return settings.getGenericProperty(defaultValue, clazz, keys);
+   }
+
+   @Override
    public short getShortProperty(String key, Short defaultValue) {
       return settings.getShortProperty(key, defaultValue);
    }

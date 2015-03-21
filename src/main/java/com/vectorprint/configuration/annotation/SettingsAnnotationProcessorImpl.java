@@ -166,15 +166,13 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      LOGGER.fine(String.format("requiring a value for %s in settings", s.key()));
                   }
                   // don't catch exception, a setting is required
-                  v = settings.getGenericProperty(s.key(), null, type);
+                  v = settings.getGenericProperty( null, type, s.key());
                } else {
                   if (LOGGER.isLoggable(Level.FINE)) {
                      LOGGER.fine(String.format("looking for a value for %s in settings, ", s.key()));
                   }
                   // a setting is not required, only look for one if it is there
-                  if (settings.containsKey(s.key())) {
-                     v = settings.getGenericProperty(s.key(), null, type);
-                  }
+                  v = settings.getGenericProperty(cur, type, s.key());
                }
                if (v != null) {
                   if (LOGGER.isLoggable(Level.FINE)) {

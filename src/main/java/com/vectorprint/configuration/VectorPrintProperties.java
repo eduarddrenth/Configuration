@@ -580,6 +580,17 @@ public class VectorPrintProperties extends HashMap<String, String>
       this.id = id;
    }
 
+   public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
+      for (String key : keys) {
+         if (containsKey(key)) {
+            return getGenericProperty(key, defaultValue, clazz);
+         }
+      }
+      if (defaultValue == null) {
+            throw new VectorPrintRuntimeException(Arrays.asList(keys).toString() + " not found and default is null");
+      }
+      return defaultValue;
+   }
    /**
     * this implementation supports all primitives and their wrappers, Color, Date, URL, Class and arrays of those types.
     *
