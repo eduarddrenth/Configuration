@@ -31,17 +31,17 @@ import java.net.URL;
  */
 public class Fields implements Observer {
    
-   @Setting(key = "b")
+   @Setting(keys = "b")
    private boolean b;
-   @Setting(key = "B")
+   @Setting(keys = "B")
    private final Boolean B = true;
-   @Setting(key = "nodefault")
+   @Setting(keys = "nodefault")
    private Boolean NODEF;
-   @Setting(key = "u")
+   @Setting(keys = "u")
    private URL u;
-   @Setting(key = "f")
+   @Setting(keys = "f")
    private Float F;
-   @Setting(key = "ff")
+   @Setting(keys = "ff")
    private float[] ff;
    @Settings(
        observable = true,
@@ -50,7 +50,7 @@ public class Fields implements Observer {
           @Feature(clazz = ReadonlyProperties.class)
        }
    )
-   @Setting(key = "settings")
+   @Setting(keys = "settings")
    private EnhancedMap settings;
 
 
