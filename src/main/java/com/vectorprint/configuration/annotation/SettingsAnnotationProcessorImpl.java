@@ -39,14 +39,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
-    * This implementation will try to call a setter for a field first when injecting a value from settings, when this
-    * fails the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }.
-    * This implementation will traverse all fields (including non public ones) in the class of the Object argument,
-    * including those in superclasses. When the object is a {@link DecoratorVisitor} and settings are a subclass of
-    * {@link AbstractPropertiesDecorator}, call {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor, java.lang.Object) }
-    *
-    * @see Settings
-    * @see Setting
+ * This implementation will try to call a setter for a field first when injecting a value from settings, when this fails
+ * the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }. This
+ * implementation will traverse all fields (including non public ones) in the class of the Object argument, including
+ * those in superclasses. {@link Settings} may trigger
+ * {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap) wrapping},
+ * this instance will never wrap settings in the same decorator more than once. When settings are wrapped the outermost
+ * wrapper should be used, otherwise functionality implemented by a decorator may not execute. When the object is a
+ * {@link DecoratorVisitor} and settings are a subclass of {@link AbstractPropertiesDecorator}, call
+    * {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) }
+ *
+ * @see AbstractPropertiesDecorator#hasProperties(java.lang.Class)
+ * @see Settings
+ * @see Setting
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
@@ -55,25 +60,26 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    /**
     * Look for annotation in the object, use settings argument to inject settings.
+    *
     * @param o
     * @param settings
     */
    @Override
    public void initSettings(Object o, EnhancedMap settings) {
-      initSettings(o.getClass(), o, settings);
+      initSettings(o.getClass(), o, settings, true);
    }
 
    /**
-    * Call {@link #initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } with 
-    * a new {@link VectorPrintProperties#VectorPrintProperties() }.
-    * @param o 
+    * Create a new {@link VectorPrintProperties#VectorPrintProperties() } for the settings.
+    *
+    * @param o
     */
    @Override
    public void initSettings(Object o) {
-      initSettings(o, new VectorPrintProperties());
+      initSettings(o.getClass(), o, new VectorPrintProperties(), false);
    }
 
-   private void initSettings(Class c, Object o, EnhancedMap eh) {
+   private void initSettings(Class c, Object o, EnhancedMap eh, boolean notifyWrapping) {
       EnhancedMap settings = eh;
       Field[] declaredFields = c.getDeclaredFields();
       for (Field f : declaredFields) {
@@ -92,20 +98,32 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             try {
                if (set.observable()) {
                   if (!hasProps(settings, ObservableProperties.class)) {
+                     if (notifyWrapping) {
+                        LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ObservableProperties.class.getName()));
+                     }
                      settings = new ObservableProperties(settings);
                   }
                   if (o instanceof Observer) {
-                     ((AbstractPropertiesDecorator)settings).accept(new ObservableVisitor((Observer) o));
+                     ((AbstractPropertiesDecorator) settings).accept(new ObservableVisitor((Observer) o));
                   }
                }
-               if (set.urls().length>0) {
+               if (set.urls().length > 0) {
+                  if (notifyWrapping) {
+                     LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ParsingProperties.class.getName()));
+                  }
                   settings = new ParsingProperties(settings, set.urls());
                }
                if (set.readonly()) {
+                  if (notifyWrapping) {
+                     LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ReadonlyProperties.class.getName()));
+                  }
                   settings = new ReadonlyProperties(settings);
                }
                if (set.cache()) {
                   if (!hasProps(settings, CachingProperties.class)) {
+                     if (notifyWrapping) {
+                        LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), CachingProperties.class.getName()));
+                     }
                      settings = new CachingProperties(settings);
                   }
                }
@@ -116,17 +134,23 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      if (!hasProps(settings, dec)) {
                         Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class, URL.class);
                         URL u = new URL(extraSource);
+                        if (notifyWrapping) {
+                           LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
+                        }
                         settings = constructor.newInstance(settings, u);
                      }
                   } else {
                      if (!hasProps(settings, dec)) {
                         Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class);
+                        if (notifyWrapping) {
+                           LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
+                        }
                         settings = constructor.newInstance(settings);
                      }
                   }
                }
                if (o instanceof DecoratorVisitor && settings instanceof AbstractPropertiesDecorator) {
-                  ((AbstractPropertiesDecorator)settings).accept((DecoratorVisitor) o);
+                  ((AbstractPropertiesDecorator) settings).accept((DecoratorVisitor) o);
                }
             } catch (IOException ex) {
                throw new VectorPrintRuntimeException(ex);
@@ -166,7 +190,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      LOGGER.fine(String.format("requiring a value for %s in settings", s.keys()));
                   }
                   // don't catch exception, a setting is required
-                  v = settings.getGenericProperty( null, type, s.keys());
+                  v = settings.getGenericProperty(null, type, s.keys());
                } else {
                   if (LOGGER.isLoggable(Level.FINE)) {
                      LOGGER.fine(String.format("looking for a value for %s in settings, ", s.keys()));
@@ -190,7 +214,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          }
       }
       if (c.getSuperclass() != null) {
-         initSettings(c.getSuperclass(), o, settings);
+         initSettings(c.getSuperclass(), o, settings, notifyWrapping);
       }
    }
 
