@@ -16,11 +16,20 @@
 
 package com.vectorprint.configuration.decoration;
 
+import com.vectorprint.configuration.EnhancedMap;
+
 /**
- * PlaceHolder interface to indicate that a typpe of properties should not be wrapped.
- * @see AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
+ * By implementing this interface you can indicate if functionality in your settings is hidden when wrapping
+ * it in some other settings implementation.
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface DoNotWrap {
+public interface HiddenBy extends EnhancedMap {
+   
+   /**
+    * return true if the functionality of this object is hidden by the argument decorator.
+    * @param settings
+    * @return the boolean 
+    */
+   boolean hiddenBy(Class<? extends AbstractPropertiesDecorator> settings);
 
 }

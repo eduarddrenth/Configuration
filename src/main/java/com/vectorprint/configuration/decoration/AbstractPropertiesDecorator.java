@@ -28,6 +28,7 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
+import com.vectorprint.configuration.VectorPrintProperties;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import java.awt.Color;
 import java.io.IOException;
@@ -46,22 +47,33 @@ import java.util.Set;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public abstract class AbstractPropertiesDecorator implements EnhancedMap {
-   
+
    private EnhancedMap settings;
 
    /**
+    * Will call {@link VectorPrintProperties#addDecorator(java.lang.Class) } and 
+    * {@link VectorPrintProperties#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }.
     * 
-    * @param settings may not be null an may not implement {@link DoNotWrap}
+    * @param settings may not be null
+    * @throws VectorPrintRuntimeException when a decorator of this type is already there or when this decorator {@link HiddenBy hides}
+    * another decorator or when the argument is not an instance of {@link VectorPrintProperties} or {@link AbstractPropertiesDecorator}.
     */
    public AbstractPropertiesDecorator(EnhancedMap settings) {
-      if (settings==null) {
+      if (settings == null) {
          throw new VectorPrintRuntimeException("settings may not be null");
-      } if (settings instanceof DoNotWrap) {
-         throw new VectorPrintRuntimeException(String.format("settings may not be wrapped: %s",settings));
-      } else if (hasProperties(settings.getClass())) {
-         throw new VectorPrintRuntimeException(String.format("settings already in the stack: %s",settings));
+      }
+      if (hasProperties(settings.getClass())) {
+         throw new VectorPrintRuntimeException(String.format("settings already in the stack: %s", settings.getClass().getName()));
+      }
+      if (!(settings instanceof VectorPrintProperties || settings instanceof AbstractPropertiesDecorator)) {
+         throw new VectorPrintRuntimeException(String.format( "%s is not an instance of %s or %s", 
+             settings.getClass().getName(),
+             VectorPrintProperties.class.getName(),
+             AbstractPropertiesDecorator.class.getName()));
       }
       this.settings = settings;
+      accept(new Hiding(this));
+      accept(new WrapperOveriew(getVectorPrintProperties()));
    }
 
    @Override
@@ -166,10 +178,10 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    @Override
    public void addFromArguments(String[] args) {
-         Map<String, String> props = ArgumentParser.parseArgs(args);
-         if (props != null) {
-            putAll(props);
-         }
+      Map<String, String> props = ArgumentParser.parseArgs(args);
+      if (props != null) {
+         putAll(props);
+      }
    }
 
    @Override
@@ -244,9 +256,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    /**
-    * returns true if an EnhancedMap is present in the stack of decorators that is an implementation of the class argument.
+    * returns true if an EnhancedMap is present in the stack of decorators that is an implementation of the class
+    * argument.
+    *
     * @param clazz
-    * @return 
+    * @return
     */
    public final boolean hasProperties(Class<? extends EnhancedMap> clazz) {
       EnhancedMap inner = this;
@@ -254,19 +268,35 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
          if (clazz.isAssignableFrom(inner.getClass())) {
             return true;
          } else if (inner instanceof AbstractPropertiesDecorator) {
-            inner = ((AbstractPropertiesDecorator)inner).settings;
+            inner = ((AbstractPropertiesDecorator) inner).settings;
          } else {
             inner = null;
          }
       }
       return false;
    }
-   
+
+   private final VectorPrintProperties getVectorPrintProperties() {
+      EnhancedMap inner = settings;
+      while (inner != null) {
+         if (inner instanceof VectorPrintProperties) {
+            return (VectorPrintProperties) inner;
+         }
+         if (inner instanceof AbstractPropertiesDecorator) {
+            inner = ((AbstractPropertiesDecorator) inner).settings;
+         } else {
+            inner = null;
+         }
+      }
+      throw new VectorPrintRuntimeException(String.format("no %s found", VectorPrintProperties.class.getName()));
+   }
+
    /**
-    * traverse the stack of settings decorators and visit all that are instances of {@link DecoratorVisitor#getClazzToVisit() }.
-    * {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap, java.lang.Object) } will be called
+    * traverse the stack of settings decorators and visit all that are instances of {@link DecoratorVisitor#getClazzToVisit()
+    * }. {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap, java.lang.Object) } will be called
+    *
     * @param dv
-    * @see SettingsAnnotationProcessorImpl 
+    * @see SettingsAnnotationProcessorImpl
     */
    public final void accept(DecoratorVisitor dv) {
       EnhancedMap inner = this;
@@ -275,25 +305,22 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
             dv.visit(inner);
          }
          if (inner instanceof AbstractPropertiesDecorator) {
-            inner = ((AbstractPropertiesDecorator)inner).settings;
+            inner = ((AbstractPropertiesDecorator) inner).settings;
          } else {
             inner = null;
          }
       }
    }
-   
+
    @Override
    public String getId() {
       return settings.getId();
    }
 
-
    @Override
    public URL getURLProperty(String key, URL defaultValue) throws MalformedURLException {
       return settings.getURLProperty(key, defaultValue);
    }
-
-   
 
    @Override
    public URL[] getURLProperties(String key, URL[] defaultValue) throws MalformedURLException {
@@ -379,8 +406,9 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    /**
     * checks for equality of the embedded properties in the decorator
+    *
     * @param obj
-    * @return 
+    * @return
     */
    @Override
    public boolean equals(Object obj) {
@@ -398,12 +426,59 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    /**
-    * for serialization, writes the embedded settings to the stream, call this in subclasses
-    * after you have doen your own serialization
-    * @param s 
+    * for serialization, writes the embedded settings to the stream, call this in subclasses after you have doen your
+    * own serialization
+    *
+    * @param s
     */
    protected void writeEmbeddedSettings(java.io.ObjectOutputStream s) throws IOException {
       s.writeObject(settings);
    }
-   
+
+   private static class WrapperOveriew implements DecoratorVisitor<AbstractPropertiesDecorator> {
+
+      private final VectorPrintProperties vp;
+
+      public WrapperOveriew(VectorPrintProperties vp) {
+         this.vp = vp;
+      }
+
+      @Override
+      public Class<AbstractPropertiesDecorator> getClazzToVisit() {
+         return AbstractPropertiesDecorator.class;
+      }
+
+      @Override
+      public void visit(AbstractPropertiesDecorator e) {
+         if (!vp.getDecorators().contains(e.getClass())) {
+            vp.addDecorator(e.getClass());
+            vp.setOutermostWrapper(e);
+         }
+      }
+
+   }
+   private static class Hiding implements DecoratorVisitor<EnhancedMap> {
+
+      private final AbstractPropertiesDecorator settings;
+
+      public Hiding(AbstractPropertiesDecorator settings) {
+         this.settings = settings;
+      }
+
+      @Override
+      public Class<EnhancedMap> getClazzToVisit() {
+         return EnhancedMap.class;
+      }
+
+      @Override
+      public void visit(EnhancedMap e) {
+         if (e instanceof HiddenBy) {
+            if (((HiddenBy)e).hiddenBy(settings.getClass())) {
+               throw new VectorPrintRuntimeException(String.format("%s hides %s",
+                   settings.getClass().getName(),e.getClass().getName()));
+            }
+         }
+      }
+
+   }
 }

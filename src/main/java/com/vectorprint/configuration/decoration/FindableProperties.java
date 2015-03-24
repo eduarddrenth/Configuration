@@ -38,20 +38,25 @@ public class FindableProperties extends AbstractPropertiesDecorator {
    private static final Map<String, EnhancedMap> findableProperties = new HashMap<String, EnhancedMap>(6);
 
    /**
-    *
-    * @param properties
-    * @throws VectorPrintException when the reference exists
+    * 
+    * @param settings
+    * @throws VectorPrintException when {@link EnhancedMap#getId() } is already statically known
     */
-   public FindableProperties(EnhancedMap properties) throws VectorPrintException {
-      super(properties);
-      if (findableProperties.containsKey(properties.getId())) {
-         throw new VectorPrintException("Already known: " + properties.getId());
-      } else if (properties.getId() == null) {
-         throw new VectorPrintException("Id is null");
-      }
-      findableProperties.put(properties.getId(), properties);
+   public FindableProperties(EnhancedMap settings) throws VectorPrintException {
+      super(settings);
+      init(settings);
    }
 
+   private void init(EnhancedMap settings) throws VectorPrintException {
+      if (findableProperties.containsKey(settings.getId())) {
+         throw new VectorPrintException("Already known: " + settings.getId());
+      } else if (settings.getId() == null) {
+         throw new VectorPrintException("Id is null");
+      }
+      findableProperties.put(settings.getId(), settings);
+   }
+
+   
    /**
     * looks up a set of properties by exact id.
     *

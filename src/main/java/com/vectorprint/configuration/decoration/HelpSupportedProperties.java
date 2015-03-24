@@ -51,7 +51,11 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
       initHelp(help);
       this.help = help;
    }
-
+   
+   /**
+    * Uses {@link HelpParser}, calls {@link #setHelp(java.util.Map) }
+    * @param url 
+    */
    protected void initHelp(URL url) {
       try {
          Map<String, PropertyHelp> h = new HashMap<String, PropertyHelp>(150);

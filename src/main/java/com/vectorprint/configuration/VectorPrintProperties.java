@@ -23,6 +23,8 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.Settings;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.parameters.MultipleValueParser;
 import com.vectorprint.configuration.parameters.ParameterHelper;
 import com.vectorprint.configuration.parser.ParseException;
@@ -38,8 +40,9 @@ import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 
 /**
- * Enhances Java Map with typing, debugging info, overriding properties from the command line
- * arguments, working with default values in code.
+ * Enhances Java Map with typing, debugging info, overriding properties from the command line arguments, working with
+ * default values in code.
+ *
  * @see com.vectorprint.configuration.decoration
  * @see Settings
  * @see Setting
@@ -60,15 +63,19 @@ public class VectorPrintProperties extends HashMap<String, String>
 
    @Override
    public void listProperties(PrintStream ps) {
-      ps.println("settings from: " + getId()+ ":" + EOL);
+      ps.println("settings with id " + getId() + ":" + EOL);
       for (Map.Entry<String, String> entry : super.entrySet()) {
          ps.println(entry.getKey() + "=" + entry.getValue());
       }
       ps.println("");
+      ps.println("settings wrapped by " + decorators.toString());
    }
    private String id;
    private final Map<String, PropertyHelp> help = new HashMap<String, PropertyHelp>(50);
    private final Set<String> propsFromArgs = new HashSet<String>(10);
+   private final List<Class<? extends AbstractPropertiesDecorator>> decorators
+       = new ArrayList<Class<? extends AbstractPropertiesDecorator>>(3);
+   private AbstractPropertiesDecorator outermostWrapper;
 
    /**
     * Calls {@link HashMap#HashMap() }
@@ -87,13 +94,13 @@ public class VectorPrintProperties extends HashMap<String, String>
    }
 
    /**
-    * Calls {@link HashMap#HashMap(int)  }.
+    * Calls {@link HashMap#HashMap(int) }.
     *
     */
    public VectorPrintProperties(int initialCapacity) {
       super(initialCapacity);
    }
-   
+
    /**
     * Calls {@link HashMap#HashMap(java.util.Map) ) }.
     *
@@ -126,7 +133,6 @@ public class VectorPrintProperties extends HashMap<String, String>
          putAll(props);
       }
    }
-
 
    protected void debug(String key, Object val) {
       debug(key, val, true);
@@ -542,6 +548,7 @@ public class VectorPrintProperties extends HashMap<String, String>
       notPresent.clear();
       propsFromArgs.clear();
       help.clear();
+      decorators.clear();
       super.clear();
    }
 
@@ -556,8 +563,9 @@ public class VectorPrintProperties extends HashMap<String, String>
       vp.help.putAll(help);
       vp.propsFromArgs.addAll(propsFromArgs);
       vp.unused.addAll(unused);
-      vp.id=id;
+      vp.id = id;
       vp.notPresent.addAll(notPresent);
+      vp.decorators.addAll(decorators);
    }
 
    @Override
@@ -579,10 +587,11 @@ public class VectorPrintProperties extends HashMap<String, String>
    public void setId(String id) {
       this.id = id;
    }
+
    /**
     * this implementation supports all primitives and their wrappers, Color, Date, URL, Class and arrays of those types.
-    * Calls {@link #getGenericProperty(java.lang.String, java.lang.Object, java.lang.Class) } if one of the keys is present
-    * in the settings.
+    * Calls {@link #getGenericProperty(java.lang.String, java.lang.Object, java.lang.Class) } if one of the keys is
+    * present in the settings.
     *
     * @param <T>
     * @param keys
@@ -598,13 +607,14 @@ public class VectorPrintProperties extends HashMap<String, String>
          }
       }
       if (defaultValue == null) {
-            throw new VectorPrintRuntimeException(Arrays.asList(keys).toString() + " not found and default is null");
+         throw new VectorPrintRuntimeException(Arrays.asList(keys).toString() + " not found and default is null");
       }
       return defaultValue;
    }
-   
+
    /**
     * this implementation supports all primitives and their wrappers, Color, Date, URL, Class and arrays of those types.
+    *
     * @param <T>
     * @param key
     * @param defaultValue
@@ -801,4 +811,49 @@ public class VectorPrintProperties extends HashMap<String, String>
       }
    }
 
+   /**
+    * @see AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
+    * @return a list of decorators that wrap these settings
+    */
+   public List<Class<? extends AbstractPropertiesDecorator>> getDecorators() {
+      return decorators;
+   }
+
+   /**
+    * Called by {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
+    * }
+    * to build a list of wrappers for these settings. When wrapped your code should call methods on the outermost
+    * wrapper only, if you don't functionality of wrappers will not be called. The preferred way to achieve this is to
+    * use the {@link Settings} annotation in conjunction with a call to {@link SettingsAnnotationProcessor#initSettings(java.lang.Object)
+    * }.
+    *
+    * @param clazz
+    */
+   public void addDecorator(Class<? extends AbstractPropertiesDecorator> clazz) {
+      decorators.add(clazz);
+   }
+
+   /**
+    * Set by {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
+    * }, if it is not null use it instead of these settings.
+    *
+    * @see SettingsAnnotationProcessor
+    * @return
+    */
+   public AbstractPropertiesDecorator getOutermostWrapper() {
+      return outermostWrapper;
+   }
+
+   /**
+    * Called by {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
+    * }.
+    *
+    * @see SettingsAnnotationProcessor
+    * @param outermostWrapper
+    */
+   public void setOutermostWrapper(AbstractPropertiesDecorator outermostWrapper) {
+      this.outermostWrapper = outermostWrapper;
+      log.warning(String.format("NB! Settings wrapped by %s, you should use this instead of %s", outermostWrapper.getClass().getName(),
+          getClass().getName()));
+   }
 }

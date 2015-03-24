@@ -39,9 +39,8 @@ import java.util.Map;
  */
 public class CachingProperties extends AbstractPropertiesDecorator {
 
-
-   public CachingProperties(EnhancedMap properties) {
-      super(properties);
+   public CachingProperties(EnhancedMap settings) {
+      super(settings);
    }
 
    @Override

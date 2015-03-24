@@ -34,8 +34,8 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    
    private static final Logger LOGGER = Logger.getLogger(ObservableProperties.class.getName());
 
-   public ObservableProperties(EnhancedMap properties) {
-      super(properties);
+   public ObservableProperties(EnhancedMap settings) {
+      super(settings);
    }
 
    @Override

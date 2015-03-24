@@ -23,7 +23,6 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.util.Map;
@@ -35,34 +34,33 @@ import java.util.Map;
  */
 public class ReadonlyProperties extends AbstractPropertiesDecorator {
 
+   public ReadonlyProperties(EnhancedMap properties) {
+      super(properties);
+   }
 
-        public ReadonlyProperties(EnhancedMap properties) {
-                super(properties);
-        }
+   @Override
+   public String put(String key, String value) {
+      throw new VectorPrintRuntimeException("Properties are readonly");
+   }
 
-        @Override
-        public String put(String key, String value) {
-                throw new VectorPrintRuntimeException("Properties are readonly");
-        }
+   @Override
+   public String remove(Object key) {
+      throw new VectorPrintRuntimeException("Properties are readonly");
+   }
 
-        @Override
-        public String remove(Object key) {
-                throw new VectorPrintRuntimeException("Properties are readonly");
-        }
+   @Override
+   public void putAll(Map<? extends String, ? extends String> m) {
+      throw new VectorPrintRuntimeException("Properties are readonly");
+   }
 
-        @Override
-        public void putAll(Map<? extends String, ? extends String> m) {
-                throw new VectorPrintRuntimeException("Properties are readonly");
-        }
+   @Override
+   public void clear() {
+      throw new VectorPrintRuntimeException("Properties are readonly");
+   }
 
-        @Override
-        public void clear() {
-                throw new VectorPrintRuntimeException("Properties are readonly");
-        }
-
-        @Override
-        public EnhancedMap clone() {
-                return super.clone();
-        }
+   @Override
+   public EnhancedMap clone() {
+      return super.clone();
+   }
 
 }

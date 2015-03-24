@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class ThreadSafeProperties extends AbstractPropertiesDecorator implements DoNotWrap {
+public class ThreadSafeProperties extends AbstractPropertiesDecorator implements HiddenBy{
 
    private static final long serialVersionUID = 1;
    private transient ThreadLocal< EnhancedMap> propsFromThread;
@@ -147,5 +147,10 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
       s.defaultReadObject();
       propsFromThread = new InheritableThreadLocal<EnhancedMap>();
       propsFromThread.set((EnhancedMap) s.readObject());
+   }
+
+   @Override
+   public boolean hiddenBy(Class<? extends AbstractPropertiesDecorator> settings) {
+      return CachingProperties.class.isAssignableFrom(settings);
    }
 }

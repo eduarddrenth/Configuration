@@ -152,7 +152,7 @@ public class PropertyTest {
    @Test
    public void testGetArrayProps() throws IOException, ParseException {
       ParsingProperties mtp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
       assertEquals(true, mtp.getColorProperties("markcolors", null).length > 0);
       assertEquals(true, mtp.getDoubleProperties("marks", null).length > 0);
@@ -197,12 +197,12 @@ public class PropertyTest {
          //expected
       }
    }
-   
+
    @Test
    public void testMultipleKeys() throws IOException, ParseException {
       EnhancedMap eh = new VectorPrintProperties();
       eh.put("k", "v");
-      assertEquals("v",eh.getGenericProperty(null, String.class, "a","b","k"));
+      assertEquals("v", eh.getGenericProperty(null, String.class, "a", "b", "k"));
       try {
          eh.getGenericProperty(null, String.class, "a", "b");
       } catch (VectorPrintRuntimeException e) {
@@ -222,7 +222,7 @@ public class PropertyTest {
    public void testChangeProperty() throws IOException, ParseException {
 
       ParsingProperties mtp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
 
       String marks = mtp.get("marks");
@@ -291,7 +291,7 @@ public class PropertyTest {
    @Test
    public void testRemoveProperty() throws IOException, ParseException {
       ParsingProperties mtp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
 
       String marks = mtp.get("marks");
@@ -323,7 +323,7 @@ public class PropertyTest {
    @Test
    public void testCombineProps() throws IOException, AssertionError, RuntimeException, InterruptedException, ParseException {
       ParsingProperties mp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
       final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
       assertNotNull(mtp.getProperty("stoponerror"));
@@ -344,7 +344,7 @@ public class PropertyTest {
    @Test
    public void testIndependenceThreads() throws IOException, AssertionError, RuntimeException, InterruptedException, ParseException {
       ParsingProperties mp = new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
-          + File.separator + "chart.properties","src/test/resources/config"
+          + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
       final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
       assertFalse(mtp.containsKey("bla"));
@@ -503,12 +503,37 @@ public class PropertyTest {
 
    @Test
    public void testDecorators() throws IOException, VectorPrintException, ParseException {
-      AbstractPropertiesDecorator mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new VectorPrintProperties(), "src/test/resources/config"
+      VectorPrintProperties vp = new VectorPrintProperties();
+      AbstractPropertiesDecorator mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(vp, "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
       assertTrue(mtp.hasProperties(FindableProperties.class));
       assertTrue(mtp.hasProperties(HelpSupportedProperties.class));
       assertTrue(mtp.hasProperties(ThreadSafeProperties.class));
+      assertTrue(mtp.hasProperties(ParsingProperties.class));
+      assertTrue(mtp.hasProperties(VectorPrintProperties.class));
 
+      assertTrue(vp.getDecorators().get(2).equals(FindableProperties.class));
+      assertTrue(vp.getDecorators().get(1).equals(HelpSupportedProperties.class));
+      assertTrue(vp.getDecorators().get(3).equals(ThreadSafeProperties.class));
+      assertTrue(vp.getDecorators().get(0).equals(ParsingProperties.class));
+
+      assertTrue(vp.getOutermostWrapper() instanceof ThreadSafeProperties);
+      
+      try {
+         new ThreadSafeProperties(mtp);
+         fail("expected exception, decorating with a certain class only allowed once");
+      } catch (VectorPrintRuntimeException vectorPrintRuntimeException) {
+      }
+   }
+
+   @Test
+   public void testHiding() {
+      try {
+         AbstractPropertiesDecorator mtp = new CachingProperties(new ThreadSafeProperties(new VectorPrintProperties()));
+         fail("caching hides threadsafety");
+      } catch (VectorPrintRuntimeException e) {
+         System.out.println(e.getMessage());
+      }
    }
 
    @Test
@@ -574,7 +599,7 @@ public class PropertyTest {
       }
 
       ch.put("prim", "1");
-      ch.getGenericProperty( null, Integer.class,"prim");
+      ch.getGenericProperty(null, Integer.class, "prim");
       ch.getIntegerProperty("prim", null);
 
    }
@@ -612,7 +637,7 @@ public class PropertyTest {
 
       assertTrue(deserialized.containsKey("childThreadProp"));
 
-      deserialized.getGenericProperty( null, Color[].class,"markcolors");
+      deserialized.getGenericProperty(null, Color[].class, "markcolors");
    }
 
    @Test
@@ -757,7 +782,7 @@ public class PropertyTest {
       assertTrue(settings.hasProperties(ReadonlyProperties.class));
       assertTrue(settings.hasProperties(CachingProperties.class));
       assertTrue(settings.hasProperties(ParsingProperties.class));
-      
+
       vp.accept(new ParsingVisitor(f.getU()));
       assertTrue(vp.containsKey("dataclass"));
    }

@@ -59,7 +59,9 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
 
    /**
-    * Look for annotation in the object, use settings argument to inject settings.
+    * Look for annotation in the object, use settings argument to inject settings. NOTE that the settings argument may
+    * be wrapped, you should always use the {@link VectorPrintProperties#getOutermostWrapper() }
+    * in that case, and not call the settings argument directly after initialization is performed.
     *
     * @param o
     * @param settings
