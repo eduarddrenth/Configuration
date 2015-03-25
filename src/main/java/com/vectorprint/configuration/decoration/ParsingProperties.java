@@ -17,8 +17,8 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.VectorPrintProperties;
-import static com.vectorprint.configuration.VectorPrintProperties.EOL;
+import com.vectorprint.configuration.Settings;
+import static com.vectorprint.configuration.Settings.EOL;
 import com.vectorprint.configuration.parameters.MultipleValueParser;
 import com.vectorprint.configuration.parser.ParseException;
 import com.vectorprint.configuration.parser.PropertiesParser;

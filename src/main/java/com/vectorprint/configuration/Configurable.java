@@ -21,7 +21,7 @@ package com.vectorprint.configuration;
  */
 
 import com.vectorprint.configuration.annotation.Setting;
-import com.vectorprint.configuration.annotation.Settings;
+import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.decoration.FindableProperties;
 import java.util.Map;
@@ -29,11 +29,11 @@ import java.util.Map;
 /**
  * A Configurable object should be initialized by a {@link SettingsProvider}.
  * Instead of implementing this interface to provide settings to your objects you could also make use of
- * {@link Setting}, {@link Settings} and {@link SettingsAnnotationProcessor}.
+ * {@link Setting}, {@link SettingsField} and {@link SettingsAnnotationProcessor}.
  *
  * @param <P> a Map holding settings for the Configurable Object
  * @see FindableProperties#find(java.lang.String)
- * @see Settings
+ * @see SettingsField
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface Configurable<P extends Map> {

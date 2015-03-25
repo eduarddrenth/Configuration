@@ -17,7 +17,7 @@ package com.vectorprint.configuration.annotation;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.VectorPrintProperties;
+import com.vectorprint.configuration.Settings;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * This implementation will try to call a setter for a field first when injecting a value from settings, when this fails
  * the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }. This
  * implementation will traverse all fields (including non public ones) in the class of the Object argument, including
- * those in superclasses. {@link Settings} may trigger
+ * those in superclasses. {@link SettingsField} may trigger
  * {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap) wrapping},
  * this instance will never wrap settings in the same decorator more than once. When settings are wrapped the outermost
  * wrapper should be used, otherwise functionality implemented by a decorator may not execute. When the object is a
@@ -50,7 +50,7 @@ import java.util.logging.Logger;
     * {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) }
  *
  * @see AbstractPropertiesDecorator#hasProperties(java.lang.Class)
- * @see Settings
+ * @see SettingsField
  * @see Setting
  * @author Eduard Drenth at VectorPrint.nl
  */
@@ -60,7 +60,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    /**
     * Look for annotation in the object, use settings argument to inject settings. NOTE that the settings argument may
-    * be wrapped, you should always use the {@link VectorPrintProperties#getOutermostWrapper() }
+    * be wrapped, you should always use the {@link ApplicationSettings#getOutermostWrapper() }
     * in that case, and not call the settings argument directly after initialization is performed.
     *
     * @param o
@@ -72,13 +72,13 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    }
 
    /**
-    * Create a new {@link VectorPrintProperties#VectorPrintProperties() } for the settings.
+    * Create a new {@link ApplicationSettings#ApplicationSettings() } for the settings.
     *
     * @param o
     */
    @Override
    public void initSettings(Object o) {
-      initSettings(o.getClass(), o, new VectorPrintProperties(), false);
+      initSettings(o.getClass(), o, new Settings(), false);
    }
 
    private void initSettings(Class c, Object o, EnhancedMap eh, boolean notifyWrapping) {
@@ -88,7 +88,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          f.setAccessible(true);
          Class type = f.getType();
          Annotation a = f.getAnnotation(Setting.class);
-         Annotation se = f.getAnnotation(Settings.class);
+         Annotation se = f.getAnnotation(SettingsField.class);
          if (se != null) {
             if (a != null) {
                LOGGER.warning(String.format("Setting annotation is not processed because Settings is also present"));
@@ -96,7 +96,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             if (!type.isAssignableFrom(EnhancedMap.class)) {
                throw new VectorPrintRuntimeException(String.format("%s is not an EnhancedMap, cannot assign settings", type.getName()));
             }
-            Settings set = (Settings) se;
+            SettingsField set = (SettingsField) se;
             try {
                if (set.observable()) {
                   if (!hasProps(settings, ObservableProperties.class)) {

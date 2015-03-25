@@ -23,8 +23,7 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.configuration.observing.KeyValueObservable;
-import com.vectorprint.configuration.observing.PrepareKeyValue;
+import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import java.awt.Color;
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -35,10 +34,10 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * This interface describes map enhancements for typing support, multiple value support, key based help and preparing
- * keys and values before addition.
+ * This interface describes map enhancements for data type support, multiple value support, key based help.
  *
- * @see KeyValueObservable
+ * @see ApplicationSettings
+ * @see AbstractPropertiesDecorator
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface EnhancedMap extends Map<String, String>, Cloneable, Serializable {

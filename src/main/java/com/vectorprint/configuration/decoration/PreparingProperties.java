@@ -15,7 +15,6 @@
  */
 package com.vectorprint.configuration.decoration;
 
-import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.observing.KeyValue;
 import com.vectorprint.configuration.observing.KeyValueObservable;

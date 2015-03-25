@@ -18,7 +18,6 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
-import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -35,7 +34,7 @@ import java.lang.annotation.Target;
 @Inherited
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Settings {
+public @interface SettingsField {
    /**
     * by default settings will be {@link CachingProperties read / write}.
     * @return 

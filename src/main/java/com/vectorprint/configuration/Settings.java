@@ -22,7 +22,7 @@ package com.vectorprint.configuration;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.configuration.annotation.Setting;
-import com.vectorprint.configuration.annotation.Settings;
+import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.parameters.MultipleValueParser;
@@ -40,25 +40,21 @@ import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 
 /**
- * Enhances Java Map with typing, debugging info, overriding properties from the command line arguments, working with
- * default values in code.
+ * Enhances Java Map with support for data types, debugging info, overriding properties from command line arguments, working with
+ * default values in code. You cannot subclass this class, instead subclass {@link AbstractPropertiesDecorator} and wrap an instance of this class.
  *
  * @see com.vectorprint.configuration.decoration
- * @see Settings
+ * @see SettingsAnnotationProcessor
+ * @see SettingsField
  * @see Setting
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class VectorPrintProperties extends HashMap<String, String>
+public final class Settings extends HashMap<String, String>
     implements EnhancedMap {
 
    private static final long serialVersionUID = 1;
-   /**
-    * default name of the file containing help for settings
-    */
-   public static final String HELPFILE = "help.properties";
-   public static final String MISSINGHELP = "no help configured, provide help file " + HELPFILE + " using format <property>=<type>;<description>";
-   private static final Logger log = Logger.getLogger(VectorPrintProperties.class.getName());
+   private static final Logger log = Logger.getLogger(Settings.class.getName());
    public static final String EOL = System.getProperty("line.separator", "\n");
 
    @Override
@@ -81,7 +77,7 @@ public class VectorPrintProperties extends HashMap<String, String>
     * Calls {@link HashMap#HashMap() }
     *
     */
-   public VectorPrintProperties() {
+   public Settings() {
       super();
    }
 
@@ -89,7 +85,7 @@ public class VectorPrintProperties extends HashMap<String, String>
     * Calls {@link HashMap#HashMap(int, float) }.
     *
     */
-   public VectorPrintProperties(int initialCapacity, float loadFactor) {
+   public Settings(int initialCapacity, float loadFactor) {
       super(initialCapacity, loadFactor);
    }
 
@@ -97,7 +93,7 @@ public class VectorPrintProperties extends HashMap<String, String>
     * Calls {@link HashMap#HashMap(int) }.
     *
     */
-   public VectorPrintProperties(int initialCapacity) {
+   public Settings(int initialCapacity) {
       super(initialCapacity);
    }
 
@@ -105,7 +101,7 @@ public class VectorPrintProperties extends HashMap<String, String>
     * Calls {@link HashMap#HashMap(java.util.Map) ) }.
     *
     */
-   public VectorPrintProperties(Map<String, String> map) {
+   public Settings(Map<String, String> map) {
       super(map);
    }
 
@@ -114,7 +110,7 @@ public class VectorPrintProperties extends HashMap<String, String>
     *
     * @see ArgumentParser
     */
-   public VectorPrintProperties(String[] args) {
+   public Settings(String[] args) {
       super();
       addFromArguments(args);
    }
@@ -455,7 +451,7 @@ public class VectorPrintProperties extends HashMap<String, String>
       if (!super.equals(obj)) {
          return false;
       }
-      final VectorPrintProperties other = (VectorPrintProperties) obj;
+      final Settings other = (Settings) obj;
       if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
          return false;
       }
@@ -559,7 +555,7 @@ public class VectorPrintProperties extends HashMap<String, String>
       return super.remove(key);
    }
 
-   private void init(VectorPrintProperties vp) {
+   private void init(Settings vp) {
       vp.help.putAll(help);
       vp.propsFromArgs.addAll(propsFromArgs);
       vp.unused.addAll(unused);
@@ -569,8 +565,8 @@ public class VectorPrintProperties extends HashMap<String, String>
    }
 
    @Override
-   public VectorPrintProperties clone() {
-      VectorPrintProperties vp = (VectorPrintProperties) super.clone();
+   public Settings clone() {
+      Settings vp = (Settings) super.clone();
       init(vp);
       return vp;
    }
@@ -823,8 +819,8 @@ public class VectorPrintProperties extends HashMap<String, String>
     * Called by {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
     * }
     * to build a list of wrappers for these settings. When wrapped your code should call methods on the outermost
-    * wrapper only, if you don't functionality of wrappers will not be called. The preferred way to achieve this is to
-    * use the {@link Settings} annotation in conjunction with a call to {@link SettingsAnnotationProcessor#initSettings(java.lang.Object)
+    * wrapper only, if you don't, functionality of wrappers will not be called. The preferred way to achieve this is to
+    * use the {@link SettingsField} annotation in conjunction with a call to {@link SettingsAnnotationProcessor#initSettings(java.lang.Object)
     * }.
     *
     * @param clazz

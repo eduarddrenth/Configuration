@@ -26,7 +26,6 @@ package com.vectorprint.configuration.decoration;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.PropertyHelpImpl;
-import com.vectorprint.configuration.VectorPrintProperties;
 import com.vectorprint.configuration.parser.HelpParser;
 import com.vectorprint.configuration.parser.ParseException;
 import com.vectorprint.configuration.parser.TokenMgrError;
@@ -43,6 +42,11 @@ import java.util.logging.Logger;
  */
 public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
+   /**
+    * default name of the file containing help for settings
+    */
+   public static final String HELPFILE = "help.properties";
+   public static final String MISSINGHELP = "no help configured, provide help file " + HELPFILE + " using format <property>=<type>;<description>";
    private static final Logger log = Logger.getLogger(HelpSupportedProperties.class.getName());
    private URL help;
 
@@ -64,14 +68,14 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
          super.setHelp(h);
       } catch (TokenMgrError iOException) {
-         super.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
-         log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
+         super.getHelp().put("nohelp", new PropertyHelpImpl(MISSINGHELP));
+         log.log(Level.WARNING, MISSINGHELP, iOException);
       } catch (ParseException iOException) {
-         super.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
-         log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
+         super.getHelp().put("nohelp", new PropertyHelpImpl(MISSINGHELP));
+         log.log(Level.WARNING, MISSINGHELP, iOException);
       } catch (IOException iOException) {
-         super.getHelp().put("nohelp", new PropertyHelpImpl(VectorPrintProperties.MISSINGHELP));
-         log.log(Level.WARNING, VectorPrintProperties.MISSINGHELP, iOException);
+         super.getHelp().put("nohelp", new PropertyHelpImpl(MISSINGHELP));
+         log.log(Level.WARNING, MISSINGHELP, iOException);
       }
    }
 

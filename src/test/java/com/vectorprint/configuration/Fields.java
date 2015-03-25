@@ -18,7 +18,7 @@ package com.vectorprint.configuration;
 
 import com.vectorprint.configuration.annotation.Feature;
 import com.vectorprint.configuration.annotation.Setting;
-import com.vectorprint.configuration.annotation.Settings;
+import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.decoration.Changes;
 import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.Observer;
@@ -43,7 +43,7 @@ public class Fields implements Observer {
    private Float F;
    @Setting(keys = "ff")
    private float[] ff;
-   @Settings(
+   @SettingsField(
        observable = true,
        urls = {"src/test/resources/config/chart.properties"},
        features = {

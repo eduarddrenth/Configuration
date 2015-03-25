@@ -17,7 +17,7 @@
 package com.vectorprint.configuration.decoration.visiting;
 
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.annotation.Settings;
+import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 
@@ -26,7 +26,7 @@ import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
  * call its methods. This way you can for example add properties from a url or add observables
  * after the stack of properties is defined.
  * @see AbstractPropertiesDecorator#visit(com.vectorprint.configuration.decoration.DecoratorVisitor) 
- * @see Settings
+ * @see SettingsField
  * @see SettingsAnnotationProcessor
  * @author Eduard Drenth at VectorPrint.nl
  */
@@ -37,7 +37,7 @@ public interface DecoratorVisitor<E extends EnhancedMap> {
    /**
     * Access settings, see {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) }.
     * @param e
-    * @see Settings
+    * @see SettingsField
     * @see ObservableProperties#addObserver(com.vectorprint.configuration.decoration.Observer) 
     */
    void visit(E e);

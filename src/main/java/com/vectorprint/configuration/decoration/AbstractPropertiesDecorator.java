@@ -28,7 +28,7 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
-import com.vectorprint.configuration.VectorPrintProperties;
+import com.vectorprint.configuration.Settings;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import java.awt.Color;
 import java.io.IOException;
@@ -51,12 +51,12 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    private EnhancedMap settings;
 
    /**
-    * Will call {@link VectorPrintProperties#addDecorator(java.lang.Class) } and 
-    * {@link VectorPrintProperties#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }.
+    * Will call {@link ApplicationSettings#addDecorator(java.lang.Class) } and 
+    * {@link ApplicationSettings#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }.
     * 
     * @param settings may not be null
     * @throws VectorPrintRuntimeException when a decorator of this type is already there or when this decorator {@link HiddenBy hides}
-    * another decorator or when the argument is not an instance of {@link VectorPrintProperties} or {@link AbstractPropertiesDecorator}.
+    * another decorator or when the argument is not an instance of {@link Settings} or {@link AbstractPropertiesDecorator}.
     */
    public AbstractPropertiesDecorator(EnhancedMap settings) {
       if (settings == null) {
@@ -65,15 +65,15 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       if (hasProperties(settings.getClass())) {
          throw new VectorPrintRuntimeException(String.format("settings already in the stack: %s", settings.getClass().getName()));
       }
-      if (!(settings instanceof VectorPrintProperties || settings instanceof AbstractPropertiesDecorator)) {
-         throw new VectorPrintRuntimeException(String.format( "%s is not an instance of %s or %s", 
+      if (!(settings instanceof Settings || settings instanceof AbstractPropertiesDecorator)) {
+         throw new VectorPrintRuntimeException(String.format("%s is not an instance of %s or %s", 
              settings.getClass().getName(),
-             VectorPrintProperties.class.getName(),
+             Settings.class.getName(),
              AbstractPropertiesDecorator.class.getName()));
       }
       this.settings = settings;
       accept(new Hiding(this));
-      accept(new WrapperOveriew(getVectorPrintProperties()));
+      accept(new WrapperOveriew(getApplicationSettings()));
    }
 
    @Override
@@ -276,11 +276,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       return false;
    }
 
-   private final VectorPrintProperties getVectorPrintProperties() {
+   private final Settings getApplicationSettings() {
       EnhancedMap inner = settings;
       while (inner != null) {
-         if (inner instanceof VectorPrintProperties) {
-            return (VectorPrintProperties) inner;
+         if (inner instanceof Settings) {
+            return (Settings) inner;
          }
          if (inner instanceof AbstractPropertiesDecorator) {
             inner = ((AbstractPropertiesDecorator) inner).settings;
@@ -288,7 +288,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
             inner = null;
          }
       }
-      throw new VectorPrintRuntimeException(String.format("no %s found", VectorPrintProperties.class.getName()));
+      throw new VectorPrintRuntimeException(String.format("no %s found", Settings.class.getName()));
    }
 
    /**
@@ -437,9 +437,9 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    private static class WrapperOveriew implements DecoratorVisitor<AbstractPropertiesDecorator> {
 
-      private final VectorPrintProperties vp;
+      private final Settings vp;
 
-      public WrapperOveriew(VectorPrintProperties vp) {
+      public WrapperOveriew(Settings vp) {
          this.vp = vp;
       }
 

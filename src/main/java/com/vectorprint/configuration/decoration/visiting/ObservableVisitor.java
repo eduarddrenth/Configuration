@@ -16,11 +16,13 @@
 
 package com.vectorprint.configuration.decoration.visiting;
 
+import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
 
 /**
- * 
+ * Add an observable to the stack of decorators if it contains an {@link ObservableProperties}.
+ * @see AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) 
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ObservableVisitor implements DecoratorVisitor<ObservableProperties>{
