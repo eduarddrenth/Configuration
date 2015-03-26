@@ -3,14 +3,16 @@
 
    <groupId>com.vectorprint</groupId>
    <artifactId>Config</artifactId>
-   <version>1.0-SNAPSHOT</version>
+   <version>1.1-SNAPSHOT</version>
    <packaging>jar</packaging>
    <inceptionYear>2015</inceptionYear>
 
    <name>Config</name>
    <description>A library for settings and parameterization of objects. Key features are support for data types,
-      help for settings and parameters, annotations for ease of use. Other features for settings such as parsing
-      a settingsfile, being observable, readonliness, caching etc. are available.
+      help for settings and parameters, annotations for ease of use. Settings and parameters both are Clonable and Serializable.
+      More features for settings such as parsing
+      a settingsfile, being observable, readonliness, caching etc. are available. The library contains javacc generated
+      parsers for syntax support for properties, multi valued properties, parameterized objects and multi valued parameters.
    </description>
    <licenses>
       <license>

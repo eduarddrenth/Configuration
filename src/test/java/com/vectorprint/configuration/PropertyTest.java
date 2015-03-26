@@ -754,7 +754,7 @@ public class PropertyTest {
       AbstractPropertiesDecorator vp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
       vp.put("b", "true");
-      vp.put("B", "true");
+      vp.put("B", "false");
       vp.put("u", "file:src/test/resources/config/run.properties");
       vp.put("f", "10"); // setter will be called
       vp.put("ff", "10;20");
@@ -772,7 +772,7 @@ public class PropertyTest {
          // expected, readonly
       }
       assertEquals(Boolean.TRUE, f.isB());
-      assertEquals(Boolean.TRUE, f.getB());
+      assertEquals(Boolean.FALSE, f.getB());
       assertEquals(new URL("file:src/test/resources/config/run.properties"), f.getU());
       assertEquals(Float.valueOf("50"), f.getF()); //  not 10 because setter sets it to 50
       assertArrayEquals(ArrayHelper.wrap(f.getFf()), ArrayHelper.wrap(new float[]{10, 20}));
