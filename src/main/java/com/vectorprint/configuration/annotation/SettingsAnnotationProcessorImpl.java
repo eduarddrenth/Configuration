@@ -82,9 +82,10 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    }
 
    private void initSettings(Class c, Object o, EnhancedMap eh, boolean notifyWrapping) {
-      EnhancedMap settings = eh;
       Field[] declaredFields = c.getDeclaredFields();
       for (Field f : declaredFields) {
+         // when looping use the original settings argument, each settings annotation should use its own setup
+         EnhancedMap settings = eh;
          f.setAccessible(true);
          Class type = f.getType();
          Annotation a = f.getAnnotation(Setting.class);
@@ -216,7 +217,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          }
       }
       if (c.getSuperclass() != null) {
-         initSettings(c.getSuperclass(), o, settings, notifyWrapping);
+         // when recursing we use the original settings argument, each settings annotation should use its own setup
+         initSettings(c.getSuperclass(), o, eh, notifyWrapping);
       }
    }
 
