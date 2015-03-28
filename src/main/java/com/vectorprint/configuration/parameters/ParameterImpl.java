@@ -113,20 +113,9 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    @Override
    public String toString() {
-      return new StringBuilder("key: ")
-          .append(key)
-          .append(", default: ")
-          .append(def)
-          .append(", value: ")
-          .append(value)
-          .append(", text value: ")
-          .append(serializeValue(value))
-          .append(", class: ")
-          .append(ClassHelper.findParameterClass(0, this.getClass(), Parameter.class))
-          .append(", ")
-          .append(help)
-          .toString();
+      return "ParameterImpl{" + "key=" + key + ", value=" + value + ", def=" + def + ", help=" + help + ", declaringClass=" + declaringClass + '}';
    }
+
 
    /**
     * used by {@link #serializeValue() }, calls String.valueOf, give subclasses a chance to do something other than
