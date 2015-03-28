@@ -26,6 +26,8 @@ package com.vectorprint.configuration.parameters;
  */
 
 import com.vectorprint.VectorPrintRuntimeException;
+import com.vectorprint.configuration.parameters.annotation.Param;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
 
 /**
@@ -80,4 +82,13 @@ public interface Parameter<TYPE extends Serializable> extends Cloneable, Seriali
    TYPE getDefault();
 
    Parameter<TYPE> clone();
+   
+   /**
+    * You may want to know which class declared this Parameter
+    * @see Param
+    * @see ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable) 
+    * @see ParameterizableImpl#ParameterizableImpl() 
+    * @return 
+    */
+   Class<? extends Parameterizable> getDeclaringClass();
 }

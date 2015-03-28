@@ -25,6 +25,7 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintRuntimeException;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.parser.MultiValueParamParserConstants;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -42,6 +43,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private String key, help;
    private TYPE value;
    private TYPE def;
+   private Class<? extends Parameterizable> declaringClass;
 
    /**
     *
@@ -227,6 +229,20 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    @Override
    public void addObserver(Parameterizable o) {
       super.addObserver(o);
+   }
+
+   @Override
+   public Class<? extends Parameterizable> getDeclaringClass() {
+      return declaringClass;
+   }
+
+   /**
+    * Called from {@link ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable) 
+    * Call this if you don't use annotations and want to know the declaring class
+    * @param declaringClass 
+    */
+   public void setDeclaringClass(Class<? extends Parameterizable> declaringClass) {
+      this.declaringClass = declaringClass;
    }
 
 }

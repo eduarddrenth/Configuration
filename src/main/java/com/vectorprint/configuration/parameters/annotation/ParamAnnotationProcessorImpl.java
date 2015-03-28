@@ -41,7 +41,7 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor{
    private static final Logger log = Logger.getLogger(ParamAnnotationProcessorImpl.class.getName());
 
    /**
-    * looks for parameter annotations on each class in the hierarchy and adds a parameter to the parameterizable for each annotation found. Skips parameters already present on the parameterizable.
+    * looks for parameter annotations on each class in the hierarchy and adds a parameter to the parameterizable for each annotation found. Skips parameters already present on the parameterizable. Call {@link ParameterImpl#setDeclaringClass(java.lang.Class) } with the class that declared this parameter.
     * 
     * @param parameterizable
     * @throws NoSuchMethodException
@@ -84,6 +84,7 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor{
             if (def!=null) {
                pi.setDefault(pi.convert(def));
             }
+            pi.setDeclaringClass(c);
             parameterizable.addParameter(pi);
          }
       }
