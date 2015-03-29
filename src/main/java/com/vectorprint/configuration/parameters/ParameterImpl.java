@@ -46,7 +46,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private Class<? extends Parameterizable> declaringClass;
 
    /**
-    *
+    * @param declaringClass the class in which this parameter was declared
     * @param key the value of key
     * @param help the value of help
     */
@@ -226,7 +226,8 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    * Called from {@link ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable) 
+    * Called from {@link ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable)}.
+    * 
     * Call this if you don't use annotations and want to know the declaring class
     * @param declaringClass 
     */

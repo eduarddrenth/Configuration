@@ -737,7 +737,7 @@ public class PropertyTest {
    public void testParmeterizable() throws IOException, ParseException {
       Parameterizable p = new P();
       assertEquals(p.getClass(), p.getParameter("b", BooleanParameter.class).getDeclaringClass());
-      p.addParameter(new StringParameter("s", "h").setValue("v"));
+      p.addParameter(new StringParameter("s", "h").setValue("v"),P.class);
       EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
       vp.put("-ParameterizableImpl.s", "w");
       p.setup(null, vp);

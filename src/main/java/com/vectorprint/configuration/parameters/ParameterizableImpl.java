@@ -84,9 +84,12 @@ public class ParameterizableImpl implements Parameterizable {
     * @param parameter 
     */
    @Override
-   public void addParameter(Parameter parameter) {
+   public void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass) {
       parameters.put(parameter.getKey(), parameter);
       parameter.addObserver(this);
+      if (parameter instanceof ParameterImpl) {
+         ((ParameterImpl)parameter).setDeclaringClass(declaringClass);
+      }
    }
 
    @Override

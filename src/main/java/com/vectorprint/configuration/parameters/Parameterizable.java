@@ -81,10 +81,11 @@ public interface Parameterizable extends Cloneable, Observer {
    
    /**
     * addParameter a Parameter to this Parameterizable which value may be unknown at this time
+    * @param declaringClass the class in which the parameter was declared
     * @see #setup(java.util.Map) 
     * @param parameter 
     */
-   void addParameter(Parameter parameter);
+   void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass);
    
    Parameterizable clone();
    

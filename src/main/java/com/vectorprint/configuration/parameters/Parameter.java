@@ -87,7 +87,7 @@ public interface Parameter<TYPE extends Serializable> extends Cloneable, Seriali
     * You may want to know which class declared this Parameter
     * @see Param
     * @see ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable) 
-    * @see ParameterizableImpl#ParameterizableImpl() 
+    * @see Parameterizable#addParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Class) 
     * @return 
     */
    Class<? extends Parameterizable> getDeclaringClass();

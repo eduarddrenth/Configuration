@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.vectorprint.configuration.parameters;
 
 /*
@@ -24,7 +23,6 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import java.util.Arrays;
@@ -33,15 +31,23 @@ import java.util.Arrays;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class CharPasswordParameter extends ParameterImpl<char[]>{
+public class CharPasswordParameter extends ParameterImpl<char[]> {
+
    private boolean clearAfterGet = true;
 
+   /**
+    * Calls {@link #CharPasswordParameter(java.lang.String, java.lang.String, boolean) } with true;
+    *
+    * @param key
+    * @param help
+    */
    public CharPasswordParameter(String key, String help) {
       this(key, help, true);
    }
+
    public CharPasswordParameter(String key, String help, boolean clearAfterGet) {
       super(key, help);
-      this.clearAfterGet=clearAfterGet;
+      this.clearAfterGet = clearAfterGet;
    }
 
    @Override
@@ -58,13 +64,20 @@ public class CharPasswordParameter extends ParameterImpl<char[]>{
    public final char[] getDefault() {
       return null;
    }
-   
-   
 
+   public boolean isClearAfterGet() {
+      return clearAfterGet;
+   }
+
+   /**
+    * when {@link #clearAfterGet} is true, will clear the password.
+    *
+    * @return
+    */
    @Override
    public final char[] getValue() {
       char[] copy = super.getValue();
-      if (copy==null) {
+      if (copy == null) {
          return null;
       }
       if (clearAfterGet) {
@@ -74,6 +87,5 @@ public class CharPasswordParameter extends ParameterImpl<char[]>{
       }
       return copy;
    }
-   
 
 }

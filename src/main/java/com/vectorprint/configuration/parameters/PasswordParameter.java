@@ -36,9 +36,15 @@ import java.util.Arrays;
 public class PasswordParameter extends ParameterImpl<byte[]>{
    private boolean clearAfterGet = true;
 
+   /**
+    * Calls {@link #PasswordParameter(java.lang.String, java.lang.String, boolean) } with true
+    * @param key
+    * @param help 
+    */
    public PasswordParameter(String key, String help) {
       this(key, help, true);
    }
+
    public PasswordParameter(String key, String help, boolean clearAfterGet) {
       super(key, help);
       this.clearAfterGet=clearAfterGet;
@@ -49,6 +55,14 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
       return value.getBytes();
    }
 
+   public boolean isClearAfterGet() {
+      return clearAfterGet;
+   }
+
+   /**
+    * when {@link #isClearAfterGet() } is true clear the password array
+    * @return 
+    */
    @Override
    public byte[] getValue() {
       byte[] copy = super.getValue();

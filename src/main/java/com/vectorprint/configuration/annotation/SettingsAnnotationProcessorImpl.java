@@ -229,8 +229,13 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          }
          new Statement(o, "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), new Object[]{value}).execute();
          return true;
+      } catch (NoSuchMethodException ex) {
+         // no problem, we'll try to set the field value directly
+         LOGGER.log(Level.FINE, null, ex);
+      } catch (SecurityException ex) {
+         throw new VectorPrintRuntimeException(ex);
       } catch (Exception ex) {
-         LOGGER.log(Level.WARNING, null, ex);
+         throw new VectorPrintRuntimeException(ex);
       }
       return false;
    }

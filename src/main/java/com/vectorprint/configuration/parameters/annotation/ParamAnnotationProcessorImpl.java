@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.vectorprint.configuration.parameters.annotation;
 
 /*
@@ -24,7 +23,6 @@ package com.vectorprint.configuration.parameters.annotation;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import java.lang.annotation.Annotation;
@@ -37,22 +35,26 @@ import java.util.logging.Logger;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor{
+public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
+
    private static final Logger log = Logger.getLogger(ParamAnnotationProcessorImpl.class.getName());
 
    /**
-    * looks for parameter annotations on each class in the hierarchy and adds a parameter to the parameterizable for each annotation found. Skips parameters already present on the parameterizable. Call {@link ParameterImpl#setDeclaringClass(java.lang.Class) } with the class that declared this parameter.
-    * 
+    * looks for parameter annotations on each class in the hierarchy and adds a parameter to the parameterizable for
+    * each annotation found. Skips parameters already present on the parameterizable. Call {@link ParameterImpl#setDeclaringClass(java.lang.Class)
+    * } with the class that declared this parameter. This implementation assumes a two argument constructor like {@link ParameterImpl#ParameterImpl(java.lang.String, java.lang.String)
+    * }.
+    *
     * @param parameterizable
     * @throws NoSuchMethodException
     * @throws InstantiationException
     * @throws IllegalAccessException
-    * @throws InvocationTargetException 
+    * @throws InvocationTargetException
     */
    @Override
    public void initParameters(Parameterizable parameterizable) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
       Class c = parameterizable.getClass();
-      while(Parameterizable.class.isAssignableFrom(c)) {
+      while (Parameterizable.class.isAssignableFrom(c)) {
          if (log.isLoggable(Level.FINE)) {
             log.fine(String.format("looking for parameter annotations on %s", c.getName()));
          }
@@ -60,8 +62,8 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor{
          c = c.getSuperclass();
       }
    }
-   
-   private void process(Class<? extends Parameterizable> c, Parameterizable parameterizable)  throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+
+   private void process(Class<? extends Parameterizable> c, Parameterizable parameterizable) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
       Annotation annotation = c.getAnnotation(Parameters.class);
       if (annotation != null) {
          Parameters ps = (Parameters) annotation;
@@ -69,23 +71,22 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor{
             String key = p.key();
             if (parameterizable.getParameters().containsKey(key)) {
                if (log.isLoggable(Level.FINE)) {
-                  log.fine(String.format("skipping parameter %s, already present on %s: %s", key, parameterizable.getClass().getName(),parameterizable.getParameters().get(key)));
+                  log.fine(String.format("skipping parameter %s, already present on %s: %s", key, parameterizable.getClass().getName(), parameterizable.getParameters().get(key)));
                }
                continue;
             }
             String help = p.help();
-            String def = (Param.NULL.equals(p.defaultValue()))?null:p.defaultValue();
+            String def = (Param.NULL.equals(p.defaultValue())) ? null : p.defaultValue();
             Class<? extends ParameterImpl> pic = p.clazz();
             if (log.isLoggable(Level.FINE)) {
                log.fine(String.format("applying parameter %s with key %s and default %s on %s", pic.getName(), key, def, c.getName()));
             }
             Constructor con = pic.getConstructor(String.class, String.class);
             ParameterImpl pi = (ParameterImpl) con.newInstance(key, help);
-            if (def!=null) {
+            if (def != null) {
                pi.setDefault(pi.convert(def));
             }
-            pi.setDeclaringClass(c);
-            parameterizable.addParameter(pi);
+            parameterizable.addParameter(pi,c);
          }
       }
    }
