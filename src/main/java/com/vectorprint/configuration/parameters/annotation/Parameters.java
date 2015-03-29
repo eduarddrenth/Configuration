@@ -37,7 +37,6 @@ import java.lang.annotation.Target;
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Documented
-@Inherited
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Parameters {
