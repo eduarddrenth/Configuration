@@ -44,6 +44,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private TYPE value;
    private TYPE def;
    private Class<? extends Parameterizable> declaringClass;
+   private Class<? extends Serializable> valueClass;
 
    /**
     * @param declaringClass the class in which this parameter was declared
@@ -53,6 +54,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    public ParameterImpl(String key, String help) {
       this.key = key;
       this.help = help;
+      valueClass = (Class<? extends Serializable>) ClassHelper.findParameterClass(0, getClass(), ParameterImpl.class);
    }
 
    @Override
@@ -198,8 +200,13 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    public Parameter<TYPE> clone() {
       try {
          Constructor con = getClass().getConstructor(String.class, String.class);
-         ParameterImpl o = (ParameterImpl) con.newInstance(getKey(), getHelp());
-         return o.setDefault(getDefault()).setValue(setDefault(null).getValue());
+         ParameterImpl<TYPE> o = (ParameterImpl) con.newInstance(getKey(), getHelp());
+         o.valueClass = valueClass;
+         // we can only get the real value if we first set the default to null
+         o.setDefault(getDefault()).setValue(setDefault(null).getValue());
+         // restore the default
+         setDefault(o.getDefault());
+         return o;
       } catch (NoSuchMethodException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (SecurityException ex) {
@@ -233,6 +240,11 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
     */
    public void setDeclaringClass(Class<? extends Parameterizable> declaringClass) {
       this.declaringClass = declaringClass;
+   }
+
+   @Override
+   public Class<? extends Serializable> getValueClass() {
+      return valueClass;
    }
 
 }

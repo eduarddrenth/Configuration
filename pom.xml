@@ -3,7 +3,7 @@
 
    <groupId>com.vectorprint</groupId>
    <artifactId>Config</artifactId>
-   <version>1.5-SNAPSHOT</version>
+   <version>1.7-SNAPSHOT</version>
    <packaging>jar</packaging>
    <inceptionYear>2015</inceptionYear>
 
@@ -66,7 +66,7 @@
                <target>1.6</target>
             </configuration>
          </plugin>
-         <plugin>
+<!--         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.9</version>
@@ -81,7 +81,7 @@
                <additionalparam>-all -collapsible  -inferdep -inferrel -inferreltype composed -hide (java.*) -collpackages java.util.*</additionalparam>
                <useStandardDocletOptions>true</useStandardDocletOptions>
             </configuration>
-         </plugin>
+         </plugin>-->
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>javacc-maven-plugin</artifactId>

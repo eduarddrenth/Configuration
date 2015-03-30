@@ -130,11 +130,11 @@ public final class Settings extends HashMap<String, String>
       }
    }
 
-   protected void debug(String key, Object val) {
+   private void debug(String key, Object val) {
       debug(key, val, true);
    }
 
-   protected void debug(String key, Object val, boolean defaultVal) {
+   private void debug(String key, Object val, boolean defaultVal) {
       if (log.isLoggable(Level.FINE)) {
          StringBuilder s = new StringBuilder(String.valueOf(val));
          if (val != null && val.getClass().isArray()) {
@@ -243,7 +243,7 @@ public final class Settings extends HashMap<String, String>
     * @return true when the default value should be used
     * @throws VectorPrintRuntimeException when defaultVal should be used and is null
     */
-   protected boolean shouldUseDefault(String key, Object defaultVal) throws VectorPrintRuntimeException {
+   private boolean shouldUseDefault(String key, Object defaultVal) throws VectorPrintRuntimeException {
       if (!containsKey(key)) {
          if (defaultVal == null) {
             throw new VectorPrintRuntimeException(key + " not found and default is null");
@@ -618,7 +618,7 @@ public final class Settings extends HashMap<String, String>
     * @return value of the setting or the default value
     * @throws VectorPrintRuntimeException when no value is found and defaultValue is null
     */
-   protected <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
+   private <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
       Object o = null;
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;

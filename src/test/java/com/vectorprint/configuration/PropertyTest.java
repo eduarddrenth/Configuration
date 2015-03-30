@@ -50,6 +50,7 @@ import com.vectorprint.configuration.parameters.BooleanParameter;
 import com.vectorprint.configuration.parameters.CharPasswordParameter;
 import com.vectorprint.configuration.parameters.ColorParameter;
 import com.vectorprint.configuration.parameters.FloatArrayParameter;
+import com.vectorprint.configuration.parameters.FloatParameter;
 import com.vectorprint.configuration.parameters.IntArrayParameter;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.ParameterHelper;
@@ -677,6 +678,13 @@ public class PropertyTest {
                Constructor con = c.getConstructor(String.class, String.class);
                Parameter p = (Parameter) con.newInstance(c.getSimpleName(), "some help");
                Parameter cl = p.clone();
+               assertNotNull(cl.getValueClass());
+               if (p instanceof BooleanParameter || Number.class.isAssignableFrom(p.getValueClass())) {
+                  assertNotNull(p.getValue());
+                  assertNotNull(p.getDefault());
+                  assertNotNull(cl.getValue());
+                  assertNotNull(cl.getDefault());
+               }
                for (String init : testStrings) {
                   try {
                      p.setValue(p.convert(init));

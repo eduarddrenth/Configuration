@@ -37,6 +37,11 @@ import java.io.Serializable;
  * @param <TYPE> 
  */
 public interface Parameter<TYPE extends Serializable> extends Cloneable, Serializable, Observable {
+   /**
+    * 
+    * @return the class of the parameter value
+    */
+   Class<?extends Serializable> getValueClass();
    
    /**
     * the identifier for this parameter
