@@ -678,6 +678,7 @@ public class PropertyTest {
                Constructor con = c.getConstructor(String.class, String.class);
                Parameter p = (Parameter) con.newInstance(c.getSimpleName(), "some help");
                Parameter cl = p.clone();
+               assertEquals(p, cl);
                assertNotNull(cl.getValueClass());
                if (p instanceof BooleanParameter || Number.class.isAssignableFrom(p.getValueClass())) {
                   assertNotNull(p.getValue());
@@ -693,6 +694,7 @@ public class PropertyTest {
                         assertNotEquals(p.getValue(), cl.getValue());
                      }
                      if (p instanceof PasswordParameter || p instanceof CharPasswordParameter) {
+                        // password cleared by getValue
                         assertNull(p.getValue());
                         continue;
                      }

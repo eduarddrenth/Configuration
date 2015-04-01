@@ -28,10 +28,10 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.parser.MultiValueParamParserConstants;
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -199,25 +199,17 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    @Override
    public Parameter<TYPE> clone() {
       try {
-         Constructor con = getClass().getConstructor(String.class, String.class);
-         ParameterImpl<TYPE> o = (ParameterImpl) con.newInstance(getKey(), getHelp());
+         ParameterImpl<TYPE> o = (ParameterImpl<TYPE>) super.clone();
+         o.help=help;
+         o.key=key;
          o.valueClass = valueClass;
-         // we can only get the real value if we first set the default to null
-         o.setDefault(getDefault()).setValue(setDefault(null).getValue());
-         // restore the default
-         setDefault(o.getDefault());
-         return o;
-      } catch (NoSuchMethodException ex) {
-         throw new VectorPrintRuntimeException(ex);
+         o.declaringClass=declaringClass;
+         return o.setDefault(def).setValue(value);
       } catch (SecurityException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (IllegalArgumentException ex) {
          throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
+      } catch (CloneNotSupportedException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -245,6 +237,42 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    @Override
    public Class<? extends Serializable> getValueClass() {
       return valueClass;
+   }
+
+   @Override
+   public int hashCode() {
+      int hash = 5;
+      return hash;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      final ParameterImpl<?> other = (ParameterImpl<?>) obj;
+      if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)) {
+         return false;
+      }
+      if ((this.help == null) ? (other.help != null) : !this.help.equals(other.help)) {
+         return false;
+      }
+      if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+         return false;
+      }
+      if (this.def != other.def && (this.def == null || !this.def.equals(other.def))) {
+         return false;
+      }
+      if (this.declaringClass != other.declaringClass && (this.declaringClass == null || !this.declaringClass.equals(other.declaringClass))) {
+         return false;
+      }
+      if (this.valueClass != other.valueClass && (this.valueClass == null || !this.valueClass.equals(other.valueClass))) {
+         return false;
+      }
+      return true;
    }
 
 }

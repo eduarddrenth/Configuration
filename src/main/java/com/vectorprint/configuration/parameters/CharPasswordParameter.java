@@ -88,4 +88,17 @@ public class CharPasswordParameter extends ParameterImpl<char[]> {
       return copy;
    }
 
+   @Override
+   public Parameter<char[]> clone() {
+      CharPasswordParameter cp = (CharPasswordParameter) super.clone();
+      cp.clearAfterGet=clearAfterGet;
+      return cp;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      return super.equals(obj) && ((CharPasswordParameter)obj).clearAfterGet==clearAfterGet;
+   }
+   
+
 }

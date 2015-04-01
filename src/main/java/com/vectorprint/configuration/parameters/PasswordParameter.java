@@ -88,5 +88,15 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
    }
    
    
+   @Override
+   public Parameter<byte[]> clone() {
+      PasswordParameter cp = (PasswordParameter) super.clone();
+      cp.clearAfterGet=clearAfterGet;
+      return cp;
+   }
    
+   @Override
+   public boolean equals(Object obj) {
+      return super.equals(obj) && ((PasswordParameter)obj).clearAfterGet==clearAfterGet;
+   }
 }
