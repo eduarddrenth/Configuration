@@ -115,7 +115,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    @Override
    public String toString() {
-      return "ParameterImpl{" + "key=" + key + ", value=" + value + ", def=" + def + ", help=" + help + ", declaringClass=" + declaringClass + '}';
+      return getClass().getSimpleName()+"{" + "key=" + key + ", value=" + value + ", def=" + def + ", help=" + help + ", declaringClass=" + declaringClass + '}';
    }
 
 
