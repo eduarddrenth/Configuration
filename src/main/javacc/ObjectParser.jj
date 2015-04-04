@@ -54,7 +54,8 @@ PARSER_BEGIN(ObjectParser)
       * <pre>
       *
       * For Parameterizable objects parameter annotations will be processed and setup will be called.
-      * When settings is an instance of EnhancedMap {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)} will be called
+      * When settings is an instance of EnhancedMap {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)}
+      * will be called.
       */
     public class ObjectParser {
       public static final ParamAnnotationProcessor processor = new ParamAnnotationProcessorImpl();

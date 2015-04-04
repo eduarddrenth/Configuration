@@ -26,8 +26,8 @@ package com.vectorprint.configuration.parameters;
  */
 
 //~--- JDK imports ------------------------------------------------------------
+import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.parser.ObjectParser;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Observer;
@@ -71,7 +71,7 @@ public interface Parameterizable extends Cloneable, Observer {
     * when no key/value pair is present in the arguments of the Parameterizable or when the default is specified on the commandline.
     * 
     *
-    * @param args the arguments to this parameter, see {@link ObjectParser }
+    * @param args the arguments to this parameter, see {@link ArgumentParser}
     * @param settings settings for the application, possibly holding default values
     * @see EnhancedMap#isFromArguments(java.lang.String) 
     * @see ParameterHelper#setup(com.vectorprint.configuration.parameters.Parameterizable, java.util.Map, java.util.Map)
