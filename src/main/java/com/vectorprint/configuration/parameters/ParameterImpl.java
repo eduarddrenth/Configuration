@@ -26,12 +26,11 @@ package com.vectorprint.configuration.parameters;
 import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import com.vectorprint.configuration.parser.MultiValueParamParser;
 import com.vectorprint.configuration.parser.MultiValueParamParserConstants;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -47,7 +46,6 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private Class<? extends Serializable> valueClass;
 
    /**
-    * @param declaringClass the class in which this parameter was declared
     * @param key the value of key
     * @param help the value of help
     */
@@ -78,7 +76,6 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    /**
     *
     *
-    * @param value the value or the default
     * @return the TYPE
     */
    @Override
@@ -131,7 +128,8 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    * uses {@link #valueToString(java.lang.Object) } and {@link MultiValueParamParserConstants#PIPE} to append values in arrays
+    * uses {@link #valueToString(java.lang.Object) } and {@link MultiValueParamParserConstants#PIPE} to append values in arrays.
+    * @see MultipleValueParser
     * @param o
     * @param sb 
     */
@@ -173,7 +171,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
             append(o, sb);
          }
       }
-      return sb.toString();
+      return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
    }
 
    /**
@@ -186,8 +184,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if (value != null) {
          Class clazz = ClassHelper.findParameterClass(0, this.getClass(), Parameter.class);
          if (clazz.isArray()) {
-            String s = serializeArray(value, clazz);
-            return (s.length()>0) ? s.substring(0, s.length() -1) : s;
+            return serializeArray(value, clazz);
          } else {
             return valueToString(value);
          }

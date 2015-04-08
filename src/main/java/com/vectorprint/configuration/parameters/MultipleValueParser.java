@@ -27,6 +27,7 @@ package com.vectorprint.configuration.parameters;
 //~--- non-JDK imports --------------------------------------------------------
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.parser.JSONParser;
 import com.vectorprint.configuration.parser.MultiValueParamParser;
 import com.vectorprint.configuration.parser.MultiValueParser;
 import com.vectorprint.configuration.parser.ParseException;
@@ -74,8 +75,10 @@ public class MultipleValueParser {
    }
    private MultiValueParser parser;
    private MultiValueParamParser paramParser;
+   private JSONParser jsonParser;
    private static MultipleValueParser paramInstance;
    private static MultipleValueParser instance;
+   private static MultipleValueParser jsonInstance;
 
    /**
     *
@@ -100,12 +103,36 @@ public class MultipleValueParser {
       }
       return instance;
    }
+   
+   /**
+    *
+    * @return the instance that uses {@link JSONParser} for parsing multiple values
+    */
+   public static MultipleValueParser getJSONInstance() {
+      if (jsonInstance == null) {
+         jsonInstance = new MultipleValueParser();
+         jsonInstance.jsonParser = new JSONParser(new ByteArrayInputStream(new byte[0]));
+      }
+      return jsonInstance;
+   }
 
    private List<String> parse(String s) throws ParseException {
       if (paramParser == null) {
-         synchronized (parser) {
-            parser.ReInit(new StringReader(s));
-            return parser.parse();
+         if (parser == null) {
+            synchronized (jsonParser) {
+               jsonParser.ReInit(new StringReader(s));
+               List array = jsonParser.parseArray();
+               List<String> rv = new ArrayList<String>(array.size());
+               for (Object o : array) {
+                  rv.add(String.valueOf(o));
+               }
+               return rv;
+            }
+         } else {
+            synchronized (parser) {
+               parser.ReInit(new StringReader(s));
+               return parser.parse();
+            }
          }
       } else {
          synchronized (paramParser) {

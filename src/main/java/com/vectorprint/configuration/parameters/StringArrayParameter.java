@@ -25,10 +25,9 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
+import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.parser.MultiValueParamParser;
 import com.vectorprint.configuration.parser.ParseException;
-import java.io.StringReader;
 
 /**
  *
@@ -47,7 +46,7 @@ public class StringArrayParameter extends ParameterImpl<String[]>{
    @Override
    public String[] convert(String value) throws VectorPrintRuntimeException{
       try {
-         return new MultiValueParamParser(new StringReader(value)).parse().toArray(new String[0]);
+         return ArrayHelper.toArray(MultipleValueParser.getParamInstance().parseStringValues(value));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }

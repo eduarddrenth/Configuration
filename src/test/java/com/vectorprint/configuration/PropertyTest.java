@@ -52,6 +52,7 @@ import com.vectorprint.configuration.parameters.ColorParameter;
 import com.vectorprint.configuration.parameters.FloatArrayParameter;
 import com.vectorprint.configuration.parameters.FloatParameter;
 import com.vectorprint.configuration.parameters.IntArrayParameter;
+import com.vectorprint.configuration.parameters.MultipleValueParser;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.ParameterHelper;
 import com.vectorprint.configuration.parameters.ParameterImpl;
@@ -796,5 +797,18 @@ public class PropertyTest {
 
       vp.accept(new ParsingVisitor(f.getU()));
       assertTrue(vp.containsKey("dataclass"));
+   }
+   
+   @Test
+   public void testJSON() throws ParseException {
+      MultipleValueParser mvp = MultipleValueParser.getJSONInstance();
+      List<Boolean> parseBooleanValues = mvp.parseBooleanValues("[false,true]");
+      assertTrue(parseBooleanValues.get(1));
+      assertFalse(parseBooleanValues.get(0));
+      List<Float> parseFloatValues = mvp.parseFloatValues("[1,2]");
+      assertArrayEquals(new float[] {1,2}, ArrayHelper.unWrap(ArrayHelper.toArray(parseFloatValues)), 0);
+      List<String> parseStringValues = mvp.parseStringValues("['aap','noot']");
+      assertEquals("aap", parseStringValues.get(0));
+      assertEquals("noot", parseStringValues.get(1));
    }
 }
