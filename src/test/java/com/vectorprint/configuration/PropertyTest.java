@@ -48,20 +48,16 @@ import com.vectorprint.configuration.observing.PrepareKeyValue;
 import com.vectorprint.configuration.observing.TrimKeyValue;
 import com.vectorprint.configuration.parameters.BooleanParameter;
 import com.vectorprint.configuration.parameters.CharPasswordParameter;
-import com.vectorprint.configuration.parameters.ColorParameter;
 import com.vectorprint.configuration.parameters.FloatArrayParameter;
-import com.vectorprint.configuration.parameters.FloatParameter;
 import com.vectorprint.configuration.parameters.IntArrayParameter;
 import com.vectorprint.configuration.parameters.MultipleValueParser;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.ParameterHelper;
 import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
-import com.vectorprint.configuration.parameters.ParameterizableImpl;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parameters.StringParameter;
-import com.vectorprint.configuration.parameters.annotation.Param;
-import com.vectorprint.configuration.parameters.annotation.Parameters;
+import com.vectorprint.configuration.parser.ObjectParser;
 import com.vectorprint.configuration.parser.ParseException;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
@@ -70,6 +66,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -102,6 +99,7 @@ public class PropertyTest {
 
    @Before
    public void setup() {
+      ParameterImpl.setUseJsonParser(false);
    }
 
    @Test
@@ -728,21 +726,6 @@ public class PropertyTest {
       }
    }
 
-   @Parameters(
-       parameters = {
-          @Param(
-              clazz = BooleanParameter.class,
-              key = "b"
-          ),
-          @Param(
-              clazz = ColorParameter.class,
-              key = "c"
-          )
-       }
-   )
-   private class P extends ParameterizableImpl {
-
-   }
 
    @Test
    public void testParmeterizable() throws IOException, ParseException {
@@ -756,6 +739,19 @@ public class PropertyTest {
       vp.addFromArguments(new String[]{"-ParameterizableImpl.s", "w"});
       p.setup(null, vp);
       assertEquals("w", p.getValue("s", String.class));
+   }
+   
+   @Test
+   public void testObjectParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException {
+      String obj = "P(a=[1\\,2])";
+      Settings set = new Settings();
+      set.put("useJsonParser", "true");
+      ObjectParser op = new ObjectParser(new StringReader(obj));
+      P p = op.parse(P.class.getPackage().getName(), set, P.class);
+      int i = p.getValue("a", Integer[].class)[0];
+      int j = p.getValue("a", Integer[].class)[1];
+      assertEquals(i,1);
+      assertEquals(j,2);
    }
 
    private static final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
@@ -801,7 +797,7 @@ public class PropertyTest {
    
    @Test
    public void testJSON() throws ParseException {
-      MultipleValueParser mvp = MultipleValueParser.getJSONInstance();
+      MultipleValueParser mvp = MultipleValueParser.getArrayInstance(true);
       List<Boolean> parseBooleanValues = mvp.parseBooleanValues("[false,true]");
       assertTrue(parseBooleanValues.get(1));
       assertFalse(parseBooleanValues.get(0));

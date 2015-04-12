@@ -46,7 +46,7 @@ public class StringArrayParameter extends ParameterImpl<String[]>{
    @Override
    public String[] convert(String value) throws VectorPrintRuntimeException{
       try {
-         return ArrayHelper.toArray(MultipleValueParser.getParamInstance().parseStringValues(value));
+         return ArrayHelper.toArray(MultipleValueParser.getArrayInstance(isUseJsonParser()).parseStringValues(value));
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }

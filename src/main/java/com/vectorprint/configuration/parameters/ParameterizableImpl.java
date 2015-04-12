@@ -25,6 +25,8 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.annotation.Setting;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
@@ -41,6 +43,8 @@ import java.util.Observable;
 public class ParameterizableImpl implements Parameterizable {
 
    private static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
+   @Setting(keys = "useJsonParser")
+   private boolean useJsonParser = false;
 
    /**
     * will call {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }
@@ -177,6 +181,21 @@ public class ParameterizableImpl implements Parameterizable {
          Parameter p = (Parameter) o;
          cache.put(p.getKey(), p.getValue());
       }
+   }
+
+   public boolean isUseJsonParser() {
+      return useJsonParser;
+   }
+
+   /**
+    * Called when initializing settings
+    * @see SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) 
+    * Calls {@link ParameterImpl#setUseJsonParser(boolean) }
+    * @param useJsonParser 
+    */
+   public void setUseJsonParser(boolean useJsonParser) {
+      ParameterImpl.setUseJsonParser(useJsonParser);
+      this.useJsonParser = useJsonParser;
    }
 
 }

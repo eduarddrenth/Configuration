@@ -84,12 +84,22 @@ public class MultipleValueParser {
     *
     * @return the instance that uses {@link MultiValueParamParser} for parsing multiple values
     */
-   public static MultipleValueParser getParamInstance() {
+   private static MultipleValueParser getParamInstance() {
       if (paramInstance == null) {
          paramInstance = new MultipleValueParser();
          paramInstance.paramParser = new MultiValueParamParser(new ByteArrayInputStream(new byte[0]));
       }
       return paramInstance;
+   }
+
+   /**
+    * return either {@link JSONParser} or {@link MultiValueParamParser}
+    * @see ParameterizableImpl#setUseJsonParser(boolean) 
+    * @see ParameterImpl#isUseJsonParser() 
+    * @return the instance that uses {@link MultiValueParamParser} for parsing multiple values
+    */
+   public static MultipleValueParser getArrayInstance(boolean json) {
+      return json ? getJSONInstance() : getParamInstance();
    }
 
    /**
@@ -108,7 +118,7 @@ public class MultipleValueParser {
     *
     * @return the instance that uses {@link JSONParser} for parsing multiple values
     */
-   public static MultipleValueParser getJSONInstance() {
+   private static MultipleValueParser getJSONInstance() {
       if (jsonInstance == null) {
          jsonInstance = new MultipleValueParser();
          jsonInstance.jsonParser = new JSONParser(new ByteArrayInputStream(new byte[0]));
@@ -116,17 +126,12 @@ public class MultipleValueParser {
       return jsonInstance;
    }
 
-   private List<String> parse(String s) throws ParseException {
+   private List parse(String s) throws ParseException {
       if (paramParser == null) {
          if (parser == null) {
             synchronized (jsonParser) {
                jsonParser.ReInit(new StringReader(s));
-               List array = jsonParser.parseArray();
-               List<String> rv = new ArrayList<String>(array.size());
-               for (Object o : array) {
-                  rv.add(String.valueOf(o));
-               }
-               return rv;
+               return jsonParser.parseArray();
             }
          } else {
             synchronized (parser) {
@@ -153,10 +158,14 @@ public class MultipleValueParser {
     * @throws ParseException
     */
    public final <T> List<T> parseValues(String values, ValueParser<T> parser) throws ParseException {
-      List<String> ll = parse(values);
+      List ll = parse(values);
       List<T> l = new ArrayList<T>(ll.size());
-      for (String s : ll) {
-         l.add(parser.parseString((s)));
+      for (Object s : ll) {
+         if (jsonParser==null) {
+            l.add(parser.parseString(((String)s)));
+         } else {
+            l.add(parser.parseString(String.valueOf(s)));
+         }
       }
 
       return l;

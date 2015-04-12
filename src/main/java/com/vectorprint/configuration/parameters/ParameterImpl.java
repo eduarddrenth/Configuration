@@ -26,7 +26,6 @@ package com.vectorprint.configuration.parameters;
 import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-import com.vectorprint.configuration.parser.MultiValueParamParser;
 import com.vectorprint.configuration.parser.MultiValueParamParserConstants;
 import java.io.Serializable;
 import java.net.URL;
@@ -44,6 +43,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private TYPE def;
    private Class<? extends Parameterizable> declaringClass;
    private Class<? extends Serializable> valueClass;
+   private static boolean useJsonParser = false;
 
    /**
     * @param key the value of key
@@ -270,6 +270,23 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
          return false;
       }
       return true;
+   }
+
+   /**
+    * used in {@link #convert(java.lang.String) } when the value type is an array.
+    * @see MultipleValueParser#getArrayInstance(boolean) 
+    * @return 
+    */
+   public static boolean isUseJsonParser() {
+      return useJsonParser;
+   }
+
+   /**
+    * @see ParameterizableImpl#setUseJsonParser(boolean) 
+    * @param useJsonParser 
+    */
+   public static void setUseJsonParser(boolean useJsonParser) {
+      ParameterImpl.useJsonParser = useJsonParser;
    }
 
 }
