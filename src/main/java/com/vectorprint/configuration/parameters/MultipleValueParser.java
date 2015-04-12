@@ -32,13 +32,13 @@ import com.vectorprint.configuration.parser.MultiValueParamParser;
 import com.vectorprint.configuration.parser.MultiValueParser;
 import com.vectorprint.configuration.parser.ParseException;
 import java.awt.Color;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,9 +73,6 @@ public class MultipleValueParser {
 
    private MultipleValueParser() {
    }
-   private MultiValueParser parser;
-   private MultiValueParamParser paramParser;
-   private JSONParser jsonParser;
    private static MultipleValueParser paramInstance;
    private static MultipleValueParser instance;
    private static MultipleValueParser jsonInstance;
@@ -87,7 +84,6 @@ public class MultipleValueParser {
    private static MultipleValueParser getParamInstance() {
       if (paramInstance == null) {
          paramInstance = new MultipleValueParser();
-         paramInstance.paramParser = new MultiValueParamParser(new ByteArrayInputStream(new byte[0]));
       }
       return paramInstance;
    }
@@ -109,7 +105,6 @@ public class MultipleValueParser {
    public static MultipleValueParser getInstance() {
       if (instance == null) {
          instance = new MultipleValueParser();
-         instance.parser = new MultiValueParser(new ByteArrayInputStream(new byte[0]));
       }
       return instance;
    }
@@ -121,29 +116,19 @@ public class MultipleValueParser {
    private static MultipleValueParser getJSONInstance() {
       if (jsonInstance == null) {
          jsonInstance = new MultipleValueParser();
-         jsonInstance.jsonParser = new JSONParser(new ByteArrayInputStream(new byte[0]));
       }
       return jsonInstance;
    }
 
    private List parse(String s) throws ParseException {
-      if (paramParser == null) {
-         if (parser == null) {
-            synchronized (jsonParser) {
-               jsonParser.ReInit(new StringReader(s));
-               return jsonParser.parseArray();
-            }
-         } else {
-            synchronized (parser) {
-               parser.ReInit(new StringReader(s));
-               return parser.parse();
-            }
-         }
+      if (paramInstance!=null&&paramInstance.equals(this)) {
+         return new MultiValueParamParser(new StringReader(s)).parse();
+      } else if (instance!=null&&instance.equals(this)) {
+         return new MultiValueParser(new StringReader(s)).parse();
+      } else if (jsonInstance!=null&&jsonInstance.equals(this)) {
+         return (List) new JSONParser(new StringReader(s)).parse();
       } else {
-         synchronized (paramParser) {
-            paramParser.ReInit(new StringReader(s));
-            return paramParser.parse();
-         }
+         return Collections.EMPTY_LIST;
       }
    }
 
@@ -161,7 +146,7 @@ public class MultipleValueParser {
       List ll = parse(values);
       List<T> l = new ArrayList<T>(ll.size());
       for (Object s : ll) {
-         if (jsonParser==null) {
+         if (!MultipleValueParser.jsonInstance.equals(this)) {
             l.add(parser.parseString(((String)s)));
          } else {
             l.add(parser.parseString(String.valueOf(s)));
