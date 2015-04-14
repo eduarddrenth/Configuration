@@ -48,7 +48,7 @@ public class ParameterHelper {
     * @param key
     * @return the key to the default for a Parameterizable class
     */
-   public static String findDefaultKey(String key, Class clazz, Map<String, String> settings) {
+   public static String findDefaultKey(String key, Class clazz, EnhancedMap settings) {
       String simpleName = clazz.getSimpleName() + "." + key;
       while (!settings.containsKey(simpleName)) {
          clazz = clazz.getSuperclass();
@@ -74,14 +74,14 @@ public class ParameterHelper {
     * @param args the arguments with keys and values
     * @param settings
     */
-   public static void setup(Parameterizable p, Map<String, String> args, Map<String, String> settings) {
+   public static void setup(Parameterizable p, Map<String, String> args, EnhancedMap settings) {
       for (Parameter param : p.getParameters().values()) {
          String key = findDefaultKey(param.getKey(), p.getClass(), settings);
          if (log.isLoggable(Level.FINE)) {
             log.fine(String.format("found %s for key %s and class %s", key,param.getKey(),p.getClass().getName()));
          }
          // when a default is set from commandline, use it to override configuration
-         boolean override = key != null && settings instanceof EnhancedMap && ((EnhancedMap)settings).isFromArguments(key);
+         boolean override = key != null && settings.isFromArguments(key);
          if ((!args.containsKey(param.getKey()) && key != null) || override) {
             if (log.isLoggable(Level.FINE)) {
                if (override) {
@@ -90,7 +90,6 @@ public class ParameterHelper {
                   log.fine(String.format("using %s with value %s for missing %s",key,settings.get(key),param.getKey()));
                }
             }
-            args.put(param.getKey(), settings.get(key));
             param.setValue(param.convert(settings.get(key)));
          } else {
             if (args.get(param.getKey()) != null) {

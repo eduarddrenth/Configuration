@@ -20,14 +20,36 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 
 /**
- * Processes objects looking for fields annotated with {@link Setting} or {@link Settings}, when both are present only {@link Settings} is processed. When the field has no value a value from settings will be required, when none is
- * found you will get a {@link VectorPrintRuntimeException}
+ * Processes objects or classes looking for fields annotated with {@link Setting} or {@link Settings}, when both are present only {@link Settings} is processed.
+ * When the field has no value a value from settings will be required, when none is found you will get a {@link VectorPrintRuntimeException}.
  * @author Eduard Drenth at VectorPrint.nl
  * @see EnhancedMap#getGenericProperty(java.lang.String, java.lang.Object, java.lang.Class) 
+ * @see SettingsField
+ * @see Setting
  */
 public interface SettingsAnnotationProcessor {
    
+   /**
+    * initializes non static fields
+    * @param o
+    * @param settings 
+    */
    void initSettings(Object o, EnhancedMap settings);
+   /**
+    * initializes non static fields
+    * @param o 
+    */
    void initSettings(Object o);
+   /**
+    * initializes static fields
+    * @param c
+    * @param settings 
+    */
+   void initStaticSettings(Class c, EnhancedMap settings);
+   /**
+    * initializes static fields
+    * @param c 
+    */
+   void initStaticSettings(Class c);
 
 }

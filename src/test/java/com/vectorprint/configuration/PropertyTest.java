@@ -729,10 +729,11 @@ public class PropertyTest {
 
    @Test
    public void testParmeterizable() throws IOException, ParseException {
+      EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
+      P.setSettings(vp);
       Parameterizable p = new P();
       assertEquals(p.getClass(), p.getParameter("b", BooleanParameter.class).getDeclaringClass());
       p.addParameter(new StringParameter("s", "h").setValue("v"),P.class);
-      EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
       vp.put("-ParameterizableImpl.s", "w");
       p.setup(null, vp);
       assertEquals("v", p.getValue("s", String.class));
@@ -746,12 +747,14 @@ public class PropertyTest {
       String obj = "P(a=[1\\,2])";
       Settings set = new Settings();
       set.put("useJsonParser", "true");
+      set.put("staticBoolean", "true");
       ObjectParser op = new ObjectParser(new StringReader(obj));
       P p = op.parse(P.class.getPackage().getName(), set, P.class);
       int i = p.getValue("a", Integer[].class)[0];
       int j = p.getValue("a", Integer[].class)[1];
       assertEquals(i,1);
       assertEquals(j,2);
+      assertTrue(p.isFf());
    }
 
    private static final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();

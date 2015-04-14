@@ -55,7 +55,7 @@ PARSER_BEGIN(ObjectParser)
       *
       * For Parameterizable objects parameter annotations will be processed and setup will be called.
       * When settings is an instance of EnhancedMap {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)}
-      * will be called.
+      * and {@link SettingsAnnotationProcessor#initSettings(Class,EnhancedMap)} will be called.
       */
     public class ObjectParser {
       public static final ParamAnnotationProcessor processor = new ParamAnnotationProcessorImpl();
@@ -143,8 +143,12 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
 {
    t=<IDENTIFIER>
    {
-      Object st = (pkg!=null)? Class.forName(pkg + "." + t.image).newInstance() : Class.forName(t.image).newInstance();
+      Class c = (pkg!=null) ? Class.forName(pkg + "." + t.image) : Class.forName(t.image);
+      Object st = c.newInstance();
       if (settings instanceof EnhancedMap) {
+         // init static settings
+         sap.initStaticSettings(c,(EnhancedMap)settings);
+         // and object settings
          sap.initSettings(st,(EnhancedMap)settings);
       }
       if (st instanceof Configurable) {
@@ -172,7 +176,7 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
    )?
    {
       if (st instanceof Parameterizable) {
-         ((Parameterizable)st).setup(params,settings);
+         ((Parameterizable)st).setup(params,(EnhancedMap)settings);
       }
       return st;
    }

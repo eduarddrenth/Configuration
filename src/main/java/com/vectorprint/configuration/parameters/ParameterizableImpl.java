@@ -25,16 +25,18 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import com.vectorprint.configuration.parser.ObjectParser;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.logging.Logger;
 
 /**
  *
@@ -42,9 +44,11 @@ import java.util.Observable;
  */
 public class ParameterizableImpl implements Parameterizable {
 
-   private static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
-   @Setting(keys = "useJsonParser")
-   private boolean useJsonParser = false;
+   public static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
+   private static final Logger logger = Logger.getLogger(ParameterizableImpl.class.getName());
+   
+   @SettingsField
+   private static EnhancedMap settings;
 
    /**
     * will call {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }
@@ -121,30 +125,28 @@ public class ParameterizableImpl implements Parameterizable {
       parameters.get(key).setValue(value);
    }
 
-   /**
-    * initialize a styler from defaults or arguments. Defaults are searched in {@link EnhancedMap properties} using the
-    * concatenation of {@link Class#getSimpleName() }, a "." and the {@link #getParameterInfo() name of a setting} for
-    * the styler. Subclasses of {@link AbstractStyler} will be searched starting with the actual class, ending with the
-    * direct subclass of {@link AbstractStyler}.
-    *
-    * @param args
-    */
    @Override
-   public void setup(Map<String, String> args, Map<String, String> settings) {
+   public void setup(Map<String, String> args, EnhancedMap settings) {
       if (args == null) {
          args = new HashMap<String, String>(5);
       }
+      if (ParameterizableImpl.settings != null) {
+         for (Parameter parameter : parameters.values()) {
+            ObjectParser.sap.initStaticSettings(parameter.getClass(), ParameterizableImpl.settings);
+            ObjectParser.sap.initSettings(parameter, ParameterizableImpl.settings);
+         }
+      } else {
+         logger.warning("static settings not initialized");
+      }
       ParameterHelper.setup(this, args, settings);
    }
-
-   public static final ParamAnnotationProcessor processor = new ParamAnnotationProcessorImpl();
 
    @Override
    public Parameterizable clone() {
       try {
          Constructor con = getClass().getConstructor();
          ParameterizableImpl pi = (ParameterizableImpl) con.newInstance();
-         processor.initParameters(pi);
+         paramProcessor.initParameters(pi);
          for (Parameter p : pi.parameters.values()) {
             p.setValue(getParameters().get(p.getKey()).getValue());
          }
@@ -183,19 +185,13 @@ public class ParameterizableImpl implements Parameterizable {
       }
    }
 
-   public boolean isUseJsonParser() {
-      return useJsonParser;
-   }
-
    /**
-    * Called when initializing settings
-    * @see SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) 
-    * Calls {@link ParameterImpl#setUseJsonParser(boolean) }
-    * @param useJsonParser 
+    * Called by {@link ObjectParser}, settings will be used in {@link #setup(java.util.Map, java.util.Map) } to initialize settings
+    * for parameters.
+    * @param settings 
     */
-   public void setUseJsonParser(boolean useJsonParser) {
-      ParameterImpl.setUseJsonParser(useJsonParser);
-      this.useJsonParser = useJsonParser;
+   public static void setSettings(EnhancedMap settings) {
+      ParameterizableImpl.settings = settings;
    }
 
 }

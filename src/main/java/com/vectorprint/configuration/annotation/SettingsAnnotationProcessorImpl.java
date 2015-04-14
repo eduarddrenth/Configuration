@@ -34,6 +34,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,15 +83,23 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
       initSettings(o.getClass(), o, new Settings(), false);
    }
 
-   private void initSettings(Class c, Object o, EnhancedMap eh, boolean notifyWrapping) {
+   private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
       Field[] declaredFields = c.getDeclaredFields();
-      for (Field f : declaredFields) {
+      for (Field field : declaredFields) {
          // when looping use the original settings argument, each settings annotation should use its own setup
+         boolean isStatic = Modifier.isStatic(field.getModifiers());
+         if (isStatic && obj != null) {
+            LOGGER.warning(String.format("not processing static field %s", field.getName()));
+            continue;
+         } else if (!isStatic && obj == null) {
+            LOGGER.warning(String.format("not processing instance field %s", field.getName()));
+            continue;
+         }
          EnhancedMap settings = eh;
-         f.setAccessible(true);
-         Class type = f.getType();
-         Annotation a = f.getAnnotation(Setting.class);
-         Annotation se = f.getAnnotation(SettingsField.class);
+         field.setAccessible(true);
+         Class type = field.getType();
+         Annotation a = field.getAnnotation(Setting.class);
+         Annotation se = field.getAnnotation(SettingsField.class);
          if (se != null) {
             if (a != null) {
                LOGGER.warning(String.format("Setting annotation is not processed because Settings is also present"));
@@ -106,8 +116,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      }
                      settings = new ObservableProperties(settings);
                   }
-                  if (o instanceof Observer) {
-                     ((AbstractPropertiesDecorator) settings).accept(new ObservableVisitor((Observer) o));
+                  if (!isStatic && obj instanceof Observer) {
+                     ((AbstractPropertiesDecorator) settings).accept(new ObservableVisitor((Observer) obj));
                   }
                }
                if (set.urls().length > 0) {
@@ -152,8 +162,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      }
                   }
                }
-               if (o instanceof DecoratorVisitor && settings instanceof AbstractPropertiesDecorator) {
-                  ((AbstractPropertiesDecorator) settings).accept((DecoratorVisitor) o);
+               if (!isStatic && obj instanceof DecoratorVisitor && settings instanceof AbstractPropertiesDecorator) {
+                  ((AbstractPropertiesDecorator) settings).accept((DecoratorVisitor) obj);
                }
             } catch (IOException ex) {
                throw new VectorPrintRuntimeException(ex);
@@ -173,8 +183,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                throw new VectorPrintRuntimeException(ex);
             }
             try {
-               if (!executeSetter(f, o, settings)) {
-                  f.set(o, settings);
+               if (!executeSetter(field, obj, settings, isStatic)) {
+                  field.set(obj, settings);
                }
                return;
             } catch (IllegalArgumentException ex) {
@@ -186,7 +196,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          if (a != null) {
             Setting s = (Setting) a;
             try {
-               Object cur = f.get(o);
+               Object cur = field.get(isStatic?null:obj);
                Object v = null;
                if (cur == null) {
                   if (LOGGER.isLoggable(Level.FINE)) {
@@ -205,8 +215,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                   if (LOGGER.isLoggable(Level.FINE)) {
                      LOGGER.fine(String.format("found %s for %s in settings, ", v, s.keys()));
                   }
-                  if (!executeSetter(f, o, v)) {
-                     f.set(o, v);
+                  if (!executeSetter(field, obj, v, isStatic)) {
+                     field.set(obj, v);
                   }
                }
             } catch (IllegalArgumentException ex) {
@@ -218,16 +228,31 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
       }
       if (c.getSuperclass() != null) {
          // when recursing we use the original settings argument, each settings annotation should use its own setup
-         initSettings(c.getSuperclass(), o, eh, notifyWrapping);
+         initSettings(c.getSuperclass(), obj, eh, notifyWrapping);
       }
    }
 
-   private boolean executeSetter(Field f, Object o, Object value) {
+   private boolean executeSetter(Field f, Object o, Object value, boolean isStatic) {
       try {
          if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(String.format("trying to call %s with %s", "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), value));
          }
-         new Statement(o, "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), new Object[]{value}).execute();
+         if (!isStatic) {
+            new Statement(o, "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), new Object[]{value}).execute();
+         } else {
+            Method method = null;
+            for (Method m : f.getDeclaringClass().getMethods()) {
+               if (m.getName().equals("set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1))) {
+                  method = m;
+                  break;
+               }
+            }
+            if (method != null && Modifier.isStatic(method.getModifiers())) {
+               method.invoke(null, value);
+            } else {
+               return false;
+            }
+         }
          return true;
       } catch (NoSuchMethodException ex) {
          // no problem, we'll try to set the field value directly
@@ -242,6 +267,16 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private boolean hasProps(EnhancedMap settings, Class<? extends AbstractPropertiesDecorator> clazz) {
       return settings instanceof AbstractPropertiesDecorator && ((AbstractPropertiesDecorator) settings).hasProperties(clazz);
+   }
+
+   @Override
+   public void initStaticSettings(Class c, EnhancedMap settings) {
+      initSettings(c, null, settings, true);
+   }
+
+   @Override
+   public void initStaticSettings(Class c) {
+      initSettings(c, null, new Settings(), false);
    }
 
 }

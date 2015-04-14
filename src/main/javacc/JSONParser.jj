@@ -291,26 +291,26 @@ Boolean booleanValue(): {
 
 Number number(): {
 	Token t;
-}{ 
-	(
+}{
+   (
 		t = <NUMBER_DECIMAL>
-		{ 
-			if(nativeNumbers) {
-				return new Double(t.image);
-			} else {
-				return new BigDecimal(t.image); 
-			}
+      { 
+         if(nativeNumbers) {
+            return new Double(t.image);
+         } else {
+            return new BigDecimal(t.image); 
+         }
 		}
 	) | (
 		t = <NUMBER_INTEGER>
 		{ 
 			if(nativeNumbers) {
-				return new Long(t.image);
+				return new Long(substringBefore(t.image, '.'));
 			} else {
 				return new BigInteger(substringBefore(t.image, '.')); 
 			}
 		}
-	)
+   )
 }
 
 String string() : {

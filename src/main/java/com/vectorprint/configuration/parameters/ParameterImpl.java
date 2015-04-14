@@ -25,6 +25,7 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintRuntimeException;
+import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.parser.MultiValueParamParserConstants;
 import java.io.Serializable;
@@ -43,6 +44,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private TYPE def;
    private Class<? extends Parameterizable> declaringClass;
    private Class<? extends Serializable> valueClass;
+   @Setting(keys = "useJsonParser")
    private static boolean useJsonParser = false;
 
    /**
