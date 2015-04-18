@@ -38,6 +38,10 @@ import java.util.logging.Logger;
 public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
 
    private static final Logger log = Logger.getLogger(ParamAnnotationProcessorImpl.class.getName());
+   /**
+    * you can safely use this, also from different threads
+    */
+   public static final ParamAnnotationProcessor PAP = new ParamAnnotationProcessorImpl();
 
    /**
     * looks for parameter annotations on each class in the hierarchy and adds a parameter to the parameterizable for

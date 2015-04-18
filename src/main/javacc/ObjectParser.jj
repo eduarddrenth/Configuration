@@ -31,15 +31,9 @@ PARSER_BEGIN(ObjectParser)
    
     package com.vectorprint.configuration.parser;
 
-    import com.vectorprint.configuration.Configurable;
-    import com.vectorprint.configuration.EnhancedMap;
-    import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-    import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
-    import com.vectorprint.configuration.parameters.Parameterizable;
-    import com.vectorprint.configuration.parameters.ParameterizableImpl;
-    import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
-    import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+    import com.vectorprint.configuration.ObjectCreatingParser;
     import com.vectorprint.VectorPrintRuntimeException;
+    import java.io.StringReader;
 
     import java.util.Map;
     import java.util.HashMap;
@@ -53,31 +47,25 @@ PARSER_BEGIN(ObjectParser)
          Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
       * <pre>
       *
-      * For Parameterizable objects parameter annotations will be processed and setup will be called.
-      * When settings is an instance of EnhancedMap {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)}
-      * and {@link SettingsAnnotationProcessor#initSettings(Class,EnhancedMap)} will be called.
       */
-    public class ObjectParser {
-      public static final ParamAnnotationProcessor processor = new ParamAnnotationProcessorImpl();
-      public static final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
+    public class ObjectParser implements ObjectCreatingParser {
 
-      private void checkKey(Object st, String key) throws ParseException {
-         if (st instanceof Parameterizable && !((Parameterizable)st).getParameters().containsKey(key)) {
-            throw new ParseException(String.format("wrong paramter(s) for %s: %s; parameters allowed are: %s",
-                      st.getClass().getSimpleName(), key, ((Parameterizable)st).getParameters()));
-         }
+      private String pkg;
+
+      public ObjectParser(String pkg, StringReader input) {
+         this(input);
+         this.pkg = pkg;
       }
 
-      /**
-        * @param pkg the name of the package without trailing dot or null. When pkg is null a full className is expected for the object
-        */
-      public <S> S parse(String pkg, Map settings, Class<S> clazz)
-      throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, ParseException {
-         Object o = parseAsObject(pkg,settings);
-         if (clazz.isAssignableFrom(o.getClass())) {
-            return (S)o;
-         } else {
-            throw new ParseException(String.format("%s is not a %s", o.getClass().getName(), clazz.getName()));
+      public ObjectCreatingParser.ObjectParamHolder parse() {
+         try {
+            return parseAsObject(pkg);
+         } catch(Exception ex) {
+            if (ex instanceof RuntimeException) {
+               throw (RuntimeException)ex;
+            } else {
+               throw new RuntimeException(ex);
+            }
          }
       }
 
@@ -137,7 +125,7 @@ TOKEN:
 Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
       * @param pkg the name of the package without trailing dot or null. When pkg is null a full className is expected for the object
 */
-Object parseAsObject(String pkg, Map settings)
+ObjectCreatingParser.ObjectParamHolder parseAsObject(String pkg)
 throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException:
 { Token t = null; Map<String, String> params = new HashMap<String,String>(5); String[] kv = null; }
 {
@@ -145,40 +133,21 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
    {
       Class c = (pkg!=null) ? Class.forName(pkg + "." + t.image) : Class.forName(t.image);
       Object st = c.newInstance();
-      if (settings instanceof EnhancedMap) {
-         // init static settings
-         sap.initStaticSettings(c,(EnhancedMap)settings);
-         // and object settings
-         sap.initSettings(st,(EnhancedMap)settings);
-      }
-      if (st instanceof Configurable) {
-         ((Configurable)st).initSettings(settings);
-      }
-      if (st instanceof Parameterizable && !(st instanceof ParameterizableImpl)) {
-         try {
-            processor.initParameters((Parameterizable) st);
-         } catch (Exception ex) {
-            throw new VectorPrintRuntimeException(ex);
-         }
-      }
    }
    (
       (" ")* <LEFTPAREN> (" ")*
       (
-         kv=keyValue() {checkKey(st,kv[0]); params.put(kv[0],kv[1]);}
+         kv=keyValue() {params.put(kv[0],kv[1]);}
          (
             <KOMMA> (" ")*
             
-            kv=keyValue() {checkKey(st,kv[0]); params.put(kv[0],kv[1]);}
+            kv=keyValue() {params.put(kv[0],kv[1]);}
          )*
       )
       (" ")* <RIGHTPAREN> (" ")*
    )?
    {
-      if (st instanceof Parameterizable) {
-         ((Parameterizable)st).setup(params,(EnhancedMap)settings);
-      }
-      return st;
+      return new ObjectCreatingParser.ObjectParamHolder(st,params);
    }
 }
 

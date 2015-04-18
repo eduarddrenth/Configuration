@@ -57,6 +57,7 @@ import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parameters.StringParameter;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.parser.ObjectParser;
 import com.vectorprint.configuration.parser.ParseException;
 import java.awt.Color;
@@ -743,13 +744,18 @@ public class PropertyTest {
    }
    
    @Test
-   public void testObjectParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException {
+   public void testObjectParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "P(a=[1\\,2])";
       Settings set = new Settings();
       set.put("useJsonParser", "true");
       set.put("staticBoolean", "true");
       ObjectParser op = new ObjectParser(new StringReader(obj));
-      P p = op.parse(P.class.getPackage().getName(), set, P.class);
+      ObjectCreatingParser.ObjectParamHolder parse = op.parseAsObject(P.class.getPackage().getName());
+      P p = (P) parse.getO();
+      SettingsAnnotationProcessorImpl.SAP.initStaticSettings(P.class, set);
+      SettingsAnnotationProcessorImpl.SAP.initSettings(p, set);
+      ParamAnnotationProcessorImpl.PAP.initParameters(p);
+      p.setup(parse.getParams(), set);
       int i = p.getValue("a", Integer[].class)[0];
       int j = p.getValue("a", Integer[].class)[1];
       assertEquals(i,1);

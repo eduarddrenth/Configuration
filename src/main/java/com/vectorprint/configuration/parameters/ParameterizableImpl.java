@@ -26,6 +26,7 @@ package com.vectorprint.configuration.parameters;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
@@ -132,8 +133,8 @@ public class ParameterizableImpl implements Parameterizable {
       }
       if (ParameterizableImpl.settings != null) {
          for (Parameter parameter : parameters.values()) {
-            ObjectParser.sap.initStaticSettings(parameter.getClass(), ParameterizableImpl.settings);
-            ObjectParser.sap.initSettings(parameter, ParameterizableImpl.settings);
+            SettingsAnnotationProcessorImpl.SAP.initStaticSettings(parameter.getClass(), ParameterizableImpl.settings);
+            SettingsAnnotationProcessorImpl.SAP.initSettings(parameter, ParameterizableImpl.settings);
          }
       } else {
          logger.warning("static settings not initialized");

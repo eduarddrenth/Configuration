@@ -240,7 +240,6 @@ ArrayList<Object> list() : {
 	Object value;
 }{
 	<BRACKET_OPEN>
-	[
 		value = anything()
 		{ list.add(value); }
 		{ value = null; }
@@ -250,7 +249,6 @@ ArrayList<Object> list() : {
 			{ list.add(value); }
 			{ value = null; }
 		)*
-	]
 	<BRACKET_CLOSE>
 	{ 
 		list.trimToSize();

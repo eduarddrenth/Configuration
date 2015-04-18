@@ -59,6 +59,10 @@ import java.util.logging.Logger;
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
 
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
+   /**
+    * you can safely use this, also from different threads
+    */
+   public static final SettingsAnnotationProcessor SAP = new SettingsAnnotationProcessorImpl();
 
    /**
     * Look for annotation in the object, use settings argument to inject settings. NOTE that the settings argument may

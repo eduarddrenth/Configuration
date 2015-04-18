@@ -146,7 +146,7 @@ public class MultipleValueParser {
       List ll = parse(values);
       List<T> l = new ArrayList<T>(ll.size());
       for (Object s : ll) {
-         if (!MultipleValueParser.jsonInstance.equals(this)) {
+         if (!this.equals(MultipleValueParser.jsonInstance)) {
             l.add(parser.parseString(((String)s)));
          } else {
             l.add(parser.parseString(String.valueOf(s)));
