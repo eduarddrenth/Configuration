@@ -750,9 +750,10 @@ public class PropertyTest {
       set.put("useJsonParser", "true");
       set.put("staticBoolean", "true");
       ObjectParser op = new ObjectParser(new StringReader(obj));
-      ObjectCreatingParser.ObjectParamHolder parse = op.parseAsObject(P.class.getPackage().getName());
+      ObjectCreatingParser.ObjectParamHolder parse =
+          (ObjectCreatingParser.ObjectParamHolder)op.parseObject(P.class.getPackage().getName());
       P p = (P) parse.getO();
-      SettingsAnnotationProcessorImpl.SAP.initStaticSettings(P.class, set);
+      SettingsAnnotationProcessorImpl.SAP.initSettings(P.class, set);
       SettingsAnnotationProcessorImpl.SAP.initSettings(p, set);
       ParamAnnotationProcessorImpl.PAP.initParameters(p);
       p.setup(parse.getParams(), set);

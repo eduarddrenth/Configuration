@@ -30,26 +30,11 @@ import com.vectorprint.configuration.EnhancedMap;
 public interface SettingsAnnotationProcessor {
    
    /**
-    * initializes non static fields
-    * @param o
-    * @param settings 
+    * initializes annotated fields for a class or object. When the object argument is a Class,
+    * only static fields will be initialized, otherwise only instance fields.
+    * @param o the Class or Object
+    * @param settings the settings to use for initialization
     */
    void initSettings(Object o, EnhancedMap settings);
-   /**
-    * initializes non static fields
-    * @param o 
-    */
-   void initSettings(Object o);
-   /**
-    * initializes static fields
-    * @param c
-    * @param settings 
-    */
-   void initStaticSettings(Class c, EnhancedMap settings);
-   /**
-    * initializes static fields
-    * @param c 
-    */
-   void initStaticSettings(Class c);
 
 }

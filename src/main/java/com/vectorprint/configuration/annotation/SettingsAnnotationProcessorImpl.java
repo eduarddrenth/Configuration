@@ -70,21 +70,11 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
     * in that case, and not call the settings argument directly after initialization is performed.
     *
     * @param o
-    * @param settings
+    * @param settings when null create a new {@link Settings} instance.
     */
    @Override
    public void initSettings(Object o, EnhancedMap settings) {
-      initSettings(o.getClass(), o, settings, true);
-   }
-
-   /**
-    * Create a new {@link ApplicationSettings#ApplicationSettings() } for the settings.
-    *
-    * @param o
-    */
-   @Override
-   public void initSettings(Object o) {
-      initSettings(o.getClass(), o, new Settings(), false);
+      initSettings(o instanceof Class ? (Class)o : o.getClass(), o instanceof Class ? null : o, settings==null?new Settings():settings, true);
    }
 
    private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
@@ -271,16 +261,6 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private boolean hasProps(EnhancedMap settings, Class<? extends AbstractPropertiesDecorator> clazz) {
       return settings instanceof AbstractPropertiesDecorator && ((AbstractPropertiesDecorator) settings).hasProperties(clazz);
-   }
-
-   @Override
-   public void initStaticSettings(Class c, EnhancedMap settings) {
-      initSettings(c, null, settings, true);
-   }
-
-   @Override
-   public void initStaticSettings(Class c) {
-      initSettings(c, null, new Settings(), false);
    }
 
 }

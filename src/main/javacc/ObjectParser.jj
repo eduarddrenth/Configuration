@@ -57,9 +57,9 @@ PARSER_BEGIN(ObjectParser)
          this.pkg = pkg;
       }
 
-      public ObjectCreatingParser.ObjectParamHolder parse() {
+      public Object parse() {
          try {
-            return parseAsObject(pkg);
+            return parseObject(pkg);
          } catch(Exception ex) {
             if (ex instanceof RuntimeException) {
                throw (RuntimeException)ex;
@@ -125,7 +125,7 @@ TOKEN:
 Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
       * @param pkg the name of the package without trailing dot or null. When pkg is null a full className is expected for the object
 */
-ObjectCreatingParser.ObjectParamHolder parseAsObject(String pkg)
+ObjectCreatingParser.ObjectParamHolder parseObject(String pkg)
 throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException:
 { Token t = null; Map<String, String> params = new HashMap<String,String>(5); String[] kv = null; }
 {

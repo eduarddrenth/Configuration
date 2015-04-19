@@ -133,7 +133,7 @@ public class ParameterizableImpl implements Parameterizable {
       }
       if (ParameterizableImpl.settings != null) {
          for (Parameter parameter : parameters.values()) {
-            SettingsAnnotationProcessorImpl.SAP.initStaticSettings(parameter.getClass(), ParameterizableImpl.settings);
+            SettingsAnnotationProcessorImpl.SAP.initSettings(parameter.getClass(), ParameterizableImpl.settings);
             SettingsAnnotationProcessorImpl.SAP.initSettings(parameter, ParameterizableImpl.settings);
          }
       } else {
