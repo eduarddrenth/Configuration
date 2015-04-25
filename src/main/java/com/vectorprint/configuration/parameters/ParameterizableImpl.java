@@ -25,18 +25,18 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.annotation.SettingsField;
+import static com.vectorprint.configuration.parameters.ParameterHelper.findDefaultKey;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-import com.vectorprint.configuration.parser.ObjectParser;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -47,12 +47,10 @@ public class ParameterizableImpl implements Parameterizable {
 
    public static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
    private static final Logger logger = Logger.getLogger(ParameterizableImpl.class.getName());
-   
-   @SettingsField
-   private static EnhancedMap settings;
 
    /**
-    * will call {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }
+    * will call {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable)
+    * }
     */
    public ParameterizableImpl() {
       try {
@@ -86,18 +84,23 @@ public class ParameterizableImpl implements Parameterizable {
       public void clear() {
       }
    };
+   
+   @SettingsField
+   private static EnhancedMap settings;
 
    /**
-    * Adds the parameter to this Parameterizable and registers this Parameterizable with the
-    * Parameter as Observer.
-    * @param parameter 
+    * Adds the parameter to this Parameterizable and registers this Parameterizable with the Parameter as Observer.
+    *
+    * @param parameter
     */
    @Override
    public void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass) {
+      SettingsAnnotationProcessorImpl.SAP.initSettings(parameter.getClass(), settings);
+      SettingsAnnotationProcessorImpl.SAP.initSettings(parameter, settings);
       parameters.put(parameter.getKey(), parameter);
       parameter.addObserver(this);
       if (parameter instanceof ParameterImpl) {
-         ((ParameterImpl)parameter).setDeclaringClass(declaringClass);
+         ((ParameterImpl) parameter).setDeclaringClass(declaringClass);
       }
    }
 
@@ -110,9 +113,9 @@ public class ParameterizableImpl implements Parameterizable {
    public Map<String, Parameter> getParameters() {
       return parameters;
    }
-   
+
    private final Map<String, Object> cache = new HashMap<String, Object>(10);
-   
+
    @Override
    public <TYPE extends Serializable> TYPE getValue(String key, Class<TYPE> T) {
       if (!cache.containsKey(key)) {
@@ -126,20 +129,23 @@ public class ParameterizableImpl implements Parameterizable {
       parameters.get(key).setValue(value);
    }
 
+   /**
+    *
+    * @param settings the value of settings
+    */
    @Override
-   public void setup(Map<String, String> args, EnhancedMap settings) {
-      if (args == null) {
-         args = new HashMap<String, String>(5);
-      }
-      if (ParameterizableImpl.settings != null) {
+   public void initDefaults(EnhancedMap settings) {
+      if (settings != null) {
          for (Parameter parameter : parameters.values()) {
-            SettingsAnnotationProcessorImpl.SAP.initSettings(parameter.getClass(), ParameterizableImpl.settings);
-            SettingsAnnotationProcessorImpl.SAP.initSettings(parameter, ParameterizableImpl.settings);
+            String key = findDefaultKey(parameter.getKey(), getClass(), settings);
+            if (key != null) {
+               if (logger.isLoggable(Level.FINE)) {
+                  logger.fine(String.format("found default %s for key %s and class %s", key, parameter.getKey(), getClass().getName()));
+               }
+               parameter.setDefault(parameter.convert(settings.get(key)));
+            }
          }
-      } else {
-         logger.warning("static settings not initialized");
       }
-      ParameterHelper.setup(this, args, settings);
    }
 
    @Override
@@ -173,26 +179,18 @@ public class ParameterizableImpl implements Parameterizable {
    }
 
    /**
-    * When the argument Observable is a Parameter, this method updates the cache. Overriders must
-    * call this method to keep cache up to date.
+    * When the argument Observable is a Parameter, this method clears the cache for the parameter key. Overriders must call this method to
+    * keep cache up to date.
+    *
     * @param o
-    * @param arg 
+    * @param arg
     */
    @Override
    public void update(Observable o, Object arg) {
       if (o instanceof Parameter) {
          Parameter p = (Parameter) o;
-         cache.put(p.getKey(), p.getValue());
+         cache.remove(p.getKey());
       }
-   }
-
-   /**
-    * Called by {@link ObjectParser}, settings will be used in {@link #setup(java.util.Map, java.util.Map) } to initialize settings
-    * for parameters.
-    * @param settings 
-    */
-   public static void setSettings(EnhancedMap settings) {
-      ParameterizableImpl.settings = settings;
    }
 
 }

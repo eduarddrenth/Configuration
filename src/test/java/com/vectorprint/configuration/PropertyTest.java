@@ -23,6 +23,7 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
+import com.vectorprint.configuration.parameters.parsing.Parser;
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.ClassHelper;
 import com.vectorprint.testing.ThreadTester;
@@ -730,16 +731,16 @@ public class PropertyTest {
 
    @Test
    public void testParmeterizable() throws IOException, ParseException {
-      EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
-      P.setSettings(vp);
       Parameterizable p = new P();
       assertEquals(p.getClass(), p.getParameter("b", BooleanParameter.class).getDeclaringClass());
-      p.addParameter(new StringParameter("s", "h").setValue("v"),P.class);
-      vp.put("-ParameterizableImpl.s", "w");
-      p.setup(null, vp);
+      p.addParameter(new StringParameter("s", "help").setDefault("v"),P.class);
+      assertEquals("v", p.getParameter("s", String.class).getDefault());
       assertEquals("v", p.getValue("s", String.class));
-      vp.addFromArguments(new String[]{"-ParameterizableImpl.s", "w"});
-      p.setup(null, vp);
+
+      EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
+      vp.put("ParameterizableImpl.s", "w");
+      p.initDefaults(vp);
+      
       assertEquals("w", p.getValue("s", String.class));
    }
    
@@ -749,14 +750,8 @@ public class PropertyTest {
       Settings set = new Settings();
       set.put("useJsonParser", "true");
       set.put("staticBoolean", "true");
-      ObjectParser op = new ObjectParser(new StringReader(obj));
-      ObjectCreatingParser.ObjectParamHolder parse =
-          (ObjectCreatingParser.ObjectParamHolder)op.parseObject(P.class.getPackage().getName());
-      P p = (P) parse.getO();
-      SettingsAnnotationProcessorImpl.SAP.initSettings(P.class, set);
-      SettingsAnnotationProcessorImpl.SAP.initSettings(p, set);
-      ParamAnnotationProcessorImpl.PAP.initParameters(p);
-      p.setup(parse.getParams(), set);
+      ObjectParser op = (ObjectParser) new ObjectParser(new StringReader(obj)).setPackageName(P.class.getPackage().getName()).setSettings(set);
+      P p = (P) op.parse();
       int i = p.getValue("a", Integer[].class)[0];
       int j = p.getValue("a", Integer[].class)[1];
       assertEquals(i,1);

@@ -103,12 +103,14 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    *
+    * Sets the value and notifies Observers
     * @param value the default value
     */
    @Override
    public Parameter<TYPE> setDefault(TYPE value) {
       this.def = value;
+      setChanged();
+      notifyObservers();
       return this;
    }
 

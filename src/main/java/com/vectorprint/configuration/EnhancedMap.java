@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * This interface describes map enhancements for data type support, multiple value support, key based help.
  *
- * @see ApplicationSettings
+ * @see Settings
  * @see AbstractPropertiesDecorator
  * @author Eduard Drenth at VectorPrint.nl
  */
@@ -108,6 +108,10 @@ public interface EnhancedMap extends Map<String, String>, Cloneable, Serializabl
 
    public void setHelp(Map<String, PropertyHelp> h);
 
+   /**
+    * Add property from (java commandline) arguments
+    * @param args 
+    */
    public void addFromArguments(String[] args);
 
    public EnhancedMap clone();
@@ -134,11 +138,4 @@ public interface EnhancedMap extends Map<String, String>, Cloneable, Serializabl
    String getId();
    void setId(String id);
 
-   /**
-    * When true this property was set from {@link #addFromArguments(String[])} .
-    *
-    * @param key
-    * @return
-    */
-   boolean isFromArguments(String key);
 }

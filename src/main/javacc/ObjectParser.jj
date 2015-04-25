@@ -31,9 +31,17 @@ PARSER_BEGIN(ObjectParser)
    
     package com.vectorprint.configuration.parser;
 
-    import com.vectorprint.configuration.ObjectCreatingParser;
+    import com.vectorprint.configuration.Configurable;
+    import com.vectorprint.configuration.EnhancedMap;
+    import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+    import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
+    import com.vectorprint.configuration.parameters.parsing.Parser;
+    import com.vectorprint.configuration.parameters.Parameterizable;
+    import com.vectorprint.configuration.parameters.Parameter;
+    import com.vectorprint.configuration.parameters.ParameterizableImpl;
+    import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
+    import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
     import com.vectorprint.VectorPrintRuntimeException;
-    import java.io.StringReader;
 
     import java.util.Map;
     import java.util.HashMap;
@@ -47,25 +55,38 @@ PARSER_BEGIN(ObjectParser)
          Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
       * <pre>
       *
+      * For Parameterizable objects parameter annotations will be processed and setup will be called.
+      * When settings is an instance of EnhancedMap {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)}
+      * and {@link SettingsAnnotationProcessor#initSettings(Class,EnhancedMap)} will be called.
       */
-    public class ObjectParser implements ObjectCreatingParser {
+    public class ObjectParser implements Parser {
 
       private String pkg;
-
-      public ObjectParser(String pkg, StringReader input) {
-         this(input);
+      private EnhancedMap settings;
+      public ObjectParser setSettings(EnhancedMap settings) {
+         this.settings = settings;
+         return this;
+      }
+      public ObjectParser setPackageName(String pkg) {
          this.pkg = pkg;
+         return this;
       }
 
-      public Object parse() {
+      private void checkKey(Object st, String key) throws ParseException {
+         if (st instanceof Parameterizable && !((Parameterizable)st).getParameters().containsKey(key)) {
+            throw new ParseException(String.format("wrong paramter(s) for %s: %s; parameters allowed are: %s",
+                      st.getClass().getSimpleName(), key, ((Parameterizable)st).getParameters()));
+         }
+      }
+
+      /**
+        * @param pkg the name of the package without trailing dot or null. When pkg is null a full className is expected for the object
+        */
+      public Parameterizable parse() {
          try {
-            return parseObject(pkg);
-         } catch(Exception ex) {
-            if (ex instanceof RuntimeException) {
-               throw (RuntimeException)ex;
-            } else {
-               throw new RuntimeException(ex);
-            }
+            return parseAsObject();
+         } catch(Exception e) {
+            throw new VectorPrintRuntimeException(e);
          }
       }
 
@@ -125,29 +146,59 @@ TOKEN:
 Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
       * @param pkg the name of the package without trailing dot or null. When pkg is null a full className is expected for the object
 */
-ObjectCreatingParser.ObjectParamHolder parseObject(String pkg)
+Parameterizable parseAsObject()
 throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException:
-{ Token t = null; Map<String, String> params = new HashMap<String,String>(5); String[] kv = null; }
+{ Token t = null; String[] kv = null; }
 {
    t=<IDENTIFIER>
    {
       Class c = (pkg!=null) ? Class.forName(pkg + "." + t.image) : Class.forName(t.image);
-      Object st = c.newInstance();
+      if (!Parameterizable.class.isAssignableFrom(c)) {
+         throw new VectorPrintRuntimeException(String.format("%s is not a %s",c.getName(),Parameterizable.class.getName()));
+      }
+      if (settings != null) {
+         // init static settings
+         SettingsAnnotationProcessorImpl.SAP.initSettings(c,settings);
+      }
+      Parameterizable st = (Parameterizable)c.newInstance();
+      if (settings != null) {
+         // and object settings
+         SettingsAnnotationProcessorImpl.SAP.initSettings(st,settings);
+      }
+      if (st instanceof Configurable) {
+         ((Configurable)st).initSettings(settings);
+      }
+      if (st instanceof Parameterizable && !(st instanceof ParameterizableImpl)) {
+         try {
+            ParamAnnotationProcessorImpl.PAP.initParameters((Parameterizable) st);
+         } catch (Exception ex) {
+            throw new VectorPrintRuntimeException(ex);
+         }
+      }
    }
    (
       (" ")* <LEFTPAREN> (" ")*
       (
-         kv=keyValue() {params.put(kv[0],kv[1]);}
+         kv=keyValue() {
+            checkKey(st,kv[0]);
+            Parameter p = st.getParameters().get(kv[0]);
+            p.setValue(p.convert(kv[1]));
+         }
          (
             <KOMMA> (" ")*
             
-            kv=keyValue() {params.put(kv[0],kv[1]);}
+            kv=keyValue() {
+            checkKey(st,kv[0]);
+            p = st.getParameters().get(kv[0]);
+            p.setValue(p.convert(kv[1]));
+         }
          )*
       )
       (" ")* <RIGHTPAREN> (" ")*
    )?
    {
-      return new ObjectCreatingParser.ObjectParamHolder(st,params);
+      st.initDefaults(settings);
+      return st;
    }
 }
 

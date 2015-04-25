@@ -26,10 +26,7 @@ package com.vectorprint.configuration.parameters;
  */
 
 //~--- JDK imports ------------------------------------------------------------
-import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.parser.JSONParser;
-import com.vectorprint.configuration.parser.ObjectParser;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Observer;
@@ -67,20 +64,12 @@ public interface Parameterizable extends Cloneable, Observer {
    <TYPE extends Serializable> TYPE getValue(String key, Class<TYPE> T);
    
    <TYPE extends Serializable> void setValue(String key, TYPE value);
+
    /**
-    * A Parameterizable can be initialized using a map of key/value pairs and a map holding application settings. A default value for a
-    * certain Parameter in a Parameterizable can be specified in application settings in the form SimpleClassName.ParameterKey=value.
-    * This default will be used when no key/value pair is present in the arguments of the Parameterizable and also when a default is
-    * set on the {@link EnhancedMap#isFromArguments(java.lang.String) commandline}.
-    * 
     *
-    * @param args the arguments to this parameter, see {@link ObjectParser} or {@link JSONParser}.
-    * @param settings settings for the application, possibly holding default values
-    * @see EnhancedMap#isFromArguments(java.lang.String) 
-    * @see ParameterHelper#setup(com.vectorprint.configuration.parameters.Parameterizable, java.util.Map, java.util.Map)
-    * @see ParameterHelper#findDefaultKey(java.lang.String, java.lang.Class, java.util.Map) 
+    * @param settings the value of settings
     */
-   void setup(Map<String, String> args, EnhancedMap settings);
+   void initDefaults(EnhancedMap settings);
    
    /**
     * addParameter a Parameter to this Parameterizable which value may be unknown at this time

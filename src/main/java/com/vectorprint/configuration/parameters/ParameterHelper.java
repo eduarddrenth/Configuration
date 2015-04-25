@@ -67,43 +67,6 @@ public class ParameterHelper {
    }
 
    /**
-    * initializes values for parameters, uses {@link #findDefaultSetting(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap)
-    * } for defaults in the settings.
-    *
-    * @param p the parameterizable for which the parameters will be initialized
-    * @param args the arguments with keys and values
-    * @param settings
-    */
-   public static void setup(Parameterizable p, Map<String, String> args, EnhancedMap settings) {
-      for (Parameter param : p.getParameters().values()) {
-         String key = findDefaultKey(param.getKey(), p.getClass(), settings);
-         if (log.isLoggable(Level.FINE)) {
-            log.fine(String.format("found %s for key %s and class %s", key,param.getKey(),p.getClass().getName()));
-         }
-         // when a default is set from commandline, use it to override configuration
-         boolean override = key != null && settings.isFromArguments(key);
-         if ((!args.containsKey(param.getKey()) && key != null) || override) {
-            if (log.isLoggable(Level.FINE)) {
-               if (override) {
-                  log.fine(String.format("using %s with value %s instead of %s",key,settings.get(key),args.get(param.getKey())));
-               } else {
-                  log.fine(String.format("using %s with value %s for missing %s",key,settings.get(key),param.getKey()));
-               }
-            }
-            param.setValue(param.convert(settings.get(key)));
-         } else {
-            if (args.get(param.getKey()) != null) {
-               param.setValue(param.convert(args.get(param.getKey())));
-            } else {
-               if (log.isLoggable(Level.FINE)) {
-                  log.fine(String.format("no value for %s found", param.getKey()));
-               }
-            }
-         }
-      }
-   }
-
-   /**
     * returns a String in the form simpleClassName(key=value,key2=v1|v2|v3,key3=value)
     *
     * @param parameterizable

@@ -68,7 +68,6 @@ public final class Settings extends HashMap<String, String>
    }
    private String id;
    private final Map<String, PropertyHelp> help = new HashMap<String, PropertyHelp>(50);
-   private final Set<String> propsFromArgs = new HashSet<String>(10);
    private final List<Class<? extends AbstractPropertiesDecorator>> decorators
        = new ArrayList<Class<? extends AbstractPropertiesDecorator>>(3);
    private AbstractPropertiesDecorator outermostWrapper;
@@ -125,7 +124,6 @@ public final class Settings extends HashMap<String, String>
    public void addFromArguments(String[] args) {
       Map<String, String> props = ArgumentParser.parseArgs(args);
       if (props != null) {
-         propsFromArgs.addAll(props.keySet());
          putAll(props);
       }
    }
@@ -458,9 +456,6 @@ public final class Settings extends HashMap<String, String>
       if (this.help != other.help && (this.help == null || !this.help.equals(other.help))) {
          return false;
       }
-      if (this.propsFromArgs != other.propsFromArgs && (this.propsFromArgs == null || !this.propsFromArgs.equals(other.propsFromArgs))) {
-         return false;
-      }
       if (this.unused != other.unused && (this.unused == null || !this.unused.equals(other.unused))) {
          return false;
       }
@@ -509,17 +504,6 @@ public final class Settings extends HashMap<String, String>
       return sb.toString();
    }
 
-   /**
-    * When true this property was set from {@link #addFromArguments(String[])} .
-    *
-    * @param key
-    * @return
-    */
-   @Override
-   public boolean isFromArguments(String key) {
-      return containsKey(key) && propsFromArgs.contains(key);
-   }
-
    @Override
    public long[] getLongProperties(String key, long[] defaultValue) {
       if (shouldUseDefault(key, defaultValue)) {
@@ -542,7 +526,6 @@ public final class Settings extends HashMap<String, String>
    public final void clear() {
       unused.clear();
       notPresent.clear();
-      propsFromArgs.clear();
       help.clear();
       decorators.clear();
       super.clear();
@@ -551,13 +534,11 @@ public final class Settings extends HashMap<String, String>
    @Override
    public final String remove(Object key) {
       unused.remove(key);
-      propsFromArgs.remove(key);
       return super.remove(key);
    }
 
    private void init(Settings vp) {
       vp.help.putAll(help);
-      vp.propsFromArgs.addAll(propsFromArgs);
       vp.unused.addAll(unused);
       vp.id = id;
       vp.notPresent.addAll(notPresent);

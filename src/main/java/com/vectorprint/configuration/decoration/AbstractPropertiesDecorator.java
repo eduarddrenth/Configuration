@@ -395,11 +395,6 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
-   public boolean isFromArguments(String key) {
-      return settings.isFromArguments(key);
-   }
-
-   @Override
    public void setId(String id) {
       settings.setId(id);
    }
