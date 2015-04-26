@@ -43,7 +43,7 @@ public class IntParameter extends ParameterImpl<Integer>{
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public Integer convert(String value) throws VectorPrintRuntimeException {
+   public Integer unMarshall(String value) throws VectorPrintRuntimeException {
       return Integer.parseInt(value);
    }
    

@@ -39,7 +39,7 @@ public class StringParameter extends ParameterImpl<String>{
     *
     */
    @Override
-   public String convert(String value) {
+   public String unMarshall(String value) {
       return value;
    }
 

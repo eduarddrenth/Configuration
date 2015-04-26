@@ -44,7 +44,7 @@ public class FloatArrayParameter extends ParameterImpl<Float[]>{
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public Float[] convert(String value) throws VectorPrintRuntimeException {
+   public Float[] unMarshall(String value) throws VectorPrintRuntimeException {
       try {
          return ArrayHelper.toArray(MultipleValueParser.getArrayInstance(isUseJsonParser()).parseFloatValues(value));
       } catch (ParseException ex) {

@@ -51,7 +51,7 @@ public class CharPasswordParameter extends ParameterImpl<char[]> {
    }
 
    @Override
-   public char[] convert(String value) throws VectorPrintRuntimeException {
+   public char[] unMarshall(String value) throws VectorPrintRuntimeException {
       return value.toCharArray();
    }
 

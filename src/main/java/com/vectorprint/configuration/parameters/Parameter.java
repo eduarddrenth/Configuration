@@ -32,7 +32,7 @@ import java.io.Serializable;
 
 /**
  * Parameters for a {@link Parametrizable} provide help, a key to identify the parameter and the intelligence
- * to convert a String into the value type for the parameter.
+ to unMarshall a String into the value type for the parameter.
  * @author Eduard Drenth at VectorPrint.nl
  * @param <TYPE> 
  */
@@ -59,12 +59,12 @@ public interface Parameter<TYPE extends Serializable> extends Cloneable, Seriali
     * @return the TYPE
     * @throws VectorPrintRuntimeException can be thrown when conversion fails
     */
-   TYPE convert(String value) throws VectorPrintRuntimeException;
+   TYPE unMarshall(String value) throws VectorPrintRuntimeException;
    
    /**
     *
     */
-   String serializeValue(TYPE value);
+   String marshall(TYPE value);
    /**
     *
     * @param value the new value

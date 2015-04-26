@@ -23,7 +23,7 @@ import java.io.Reader;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface ParserFactory {
-   
+         
    Parser getParser(Reader input);
 
 }

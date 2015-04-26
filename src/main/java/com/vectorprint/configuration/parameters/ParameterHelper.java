@@ -136,11 +136,9 @@ public class ParameterHelper {
     */
    public static StringBuilder toConfig(Parameter p, boolean printOnlyNonDefault) {
       StringBuilder sb = new StringBuilder(15);
-      Object a = p.getValue();
-      Object aa = p.getDefault();
       if (include(p, printOnlyNonDefault)) {
          sb.append(p.getKey()).append(ObjectParserConstants.tokenImage[ObjectParserConstants.EQ].substring(1, 2))
-             .append(p.serializeValue(p.getValue()));
+             .append(p.marshall(p.getValue()));
       }
       return sb;
    }

@@ -43,7 +43,7 @@ public class RegexParameter extends ParameterImpl<Pattern>{
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public Pattern convert(String value) throws VectorPrintRuntimeException {
+   public Pattern unMarshall(String value) throws VectorPrintRuntimeException {
       return Pattern.compile(value);
    }
    

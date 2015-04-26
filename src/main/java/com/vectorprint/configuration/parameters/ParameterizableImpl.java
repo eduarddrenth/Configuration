@@ -142,7 +142,7 @@ public class ParameterizableImpl implements Parameterizable {
                if (logger.isLoggable(Level.FINE)) {
                   logger.fine(String.format("found default %s for key %s and class %s", key, parameter.getKey(), getClass().getName()));
                }
-               parameter.setDefault(parameter.convert(settings.get(key)));
+               parameter.setDefault(parameter.unMarshall(settings.get(key)));
             }
          }
       }

@@ -41,13 +41,13 @@ public class ColorParameter extends ParameterImpl<Color> {
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public Color convert(String value) throws VectorPrintRuntimeException {
+   public Color unMarshall(String value) throws VectorPrintRuntimeException {
       return ParameterHelper.getColorFromString(value);
    }
 
    @Override
    protected String valueToString(Object value) {
-      return '#' + Integer.toHexString(((Color) value).getRGB()).substring(2);
+      return value!=null?'#' + Integer.toHexString(((Color) value).getRGB()).substring(2):"";
    }
 
 }

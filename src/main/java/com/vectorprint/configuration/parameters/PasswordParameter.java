@@ -51,7 +51,7 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
    }
 
    @Override
-   public byte[] convert(String value) throws VectorPrintRuntimeException {
+   public byte[] unMarshall(String value) throws VectorPrintRuntimeException {
       return value.getBytes();
    }
 

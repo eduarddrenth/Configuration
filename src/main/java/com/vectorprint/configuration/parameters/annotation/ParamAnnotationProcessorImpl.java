@@ -88,7 +88,7 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
             Constructor con = pic.getConstructor(String.class, String.class);
             ParameterImpl pi = (ParameterImpl) con.newInstance(key, help);
             if (def != null) {
-               pi.setDefault(pi.convert(def));
+               pi.setDefault(pi.unMarshall(def));
             }
             parameterizable.addParameter(pi,c);
          }

@@ -43,7 +43,7 @@ public class BooleanParameter extends ParameterImpl<Boolean>{
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public Boolean convert(String value) throws VectorPrintRuntimeException {
+   public Boolean unMarshall(String value) throws VectorPrintRuntimeException {
       return Boolean.parseBoolean(value);
    }
    

@@ -44,7 +44,7 @@ public class DoubleArrayParameter extends ParameterImpl<Double[]>{
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public Double[] convert(String value) throws VectorPrintRuntimeException {
+   public Double[] unMarshall(String value) throws VectorPrintRuntimeException {
       try {
          return ArrayHelper.toArray(MultipleValueParser.getArrayInstance(isUseJsonParser()).parseDoubleValues(value));
       } catch (ParseException ex) {

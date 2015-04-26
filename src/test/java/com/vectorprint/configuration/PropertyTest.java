@@ -59,6 +59,7 @@ import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parameters.StringParameter;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import com.vectorprint.configuration.parameters.parsing.DefaultParserFactory;
 import com.vectorprint.configuration.parser.ObjectParser;
 import com.vectorprint.configuration.parser.ParseException;
 import java.awt.Color;
@@ -650,6 +651,10 @@ public class PropertyTest {
             if (ParameterImpl.class.isAssignableFrom(c)) {
                Constructor con = c.getConstructor(String.class, String.class);
                Parameter p = (Parameter) con.newInstance(c.getSimpleName(), "some help");
+               if (p.getValueClass().equals(Integer[].class)) {
+                  IntArrayParameter ip = (IntArrayParameter) p;
+                  ip.setValue(new Integer[] {1,2});
+               }
 
                ByteArrayOutputStream bo = new ByteArrayOutputStream();
                ObjectOutputStream oos = new ObjectOutputStream(bo);
@@ -659,8 +664,14 @@ public class PropertyTest {
                ObjectInputStream oin = new ObjectInputStream(new ByteArrayInputStream(bo.toByteArray()));
 
                final Parameter deserialized = (Parameter) oin.readObject();
+               if (p.getValueClass().equals(Integer[].class)) {
+                  IntArrayParameter ip = (IntArrayParameter) p;
+                  IntArrayParameter dip = (IntArrayParameter) deserialized;
+                  assertArrayEquals((Integer[])ip.getValue(), (Integer[])deserialized.getValue());
+               }
 
                assertEquals(p.toString(), deserialized.toString());
+               assertEquals(p, deserialized);
             }
          }
       }
@@ -689,7 +700,7 @@ public class PropertyTest {
                }
                for (String init : testStrings) {
                   try {
-                     p.setValue(p.convert(init));
+                     p.setValue(p.unMarshall(init));
                      assertNotNull(p.toString(), p.getValue());
                      if (!(p instanceof BooleanParameter && !"true".equals(init)) && !(p instanceof CharPasswordParameter) && !(p instanceof PasswordParameter)) {
                         assertNotEquals(p.getValue(), cl.getValue());
@@ -701,14 +712,17 @@ public class PropertyTest {
                      }
                      String conf = ParameterHelper.toConfig(p, false).toString();
                      if (conf != null && !"".equals(conf)) {
-                        if (p.getValue().getClass().isArray()) {
+                        if (p.getValueClass().isArray()) {
                            Object[] orig = (Object[]) p.getValue();
-                           Object[] neww = (Object[]) p.convert(conf.substring(conf.indexOf('=') + 1));
+                           Object[] neww = (Object[]) p.unMarshall(conf.substring(conf.indexOf('=') + 1));
+                           String marshall = p.marshall(p.getValue());
+                           Object[] unmarshalled = (Object[]) p.unMarshall(marshall);
                            if (orig.length > 0) {
                               Assert.assertArrayEquals(orig, neww);
+                              Assert.assertArrayEquals(orig, unmarshalled);
                            }
                         } else {
-                           assertEquals(p.serializeValue(p.getValue()), conf.substring(conf.indexOf('=') + 1));
+                           assertEquals(p.marshall(p.getValue()), conf.substring(conf.indexOf('=') + 1));
                         }
                      }
                   } catch (NumberFormatException runtimeException) {
@@ -750,7 +764,7 @@ public class PropertyTest {
       Settings set = new Settings();
       set.put("useJsonParser", "true");
       set.put("staticBoolean", "true");
-      ObjectParser op = (ObjectParser) new ObjectParser(new StringReader(obj)).setPackageName(P.class.getPackage().getName()).setSettings(set);
+      Parser op = new DefaultParserFactory().getParser(new StringReader(obj)).setPackageName(P.class.getPackage().getName()).setSettings(set);
       P p = (P) op.parse();
       int i = p.getValue("a", Integer[].class)[0];
       int j = p.getValue("a", Integer[].class)[1];

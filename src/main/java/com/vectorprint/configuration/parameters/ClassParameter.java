@@ -35,7 +35,7 @@ public class ClassParameter extends ParameterImpl<Class> {
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public Class convert(String value) throws VectorPrintRuntimeException {
+   public Class unMarshall(String value) throws VectorPrintRuntimeException {
       try {
          return MultipleValueParser.classFromKey(value);
       } catch (ClassNotFoundException ex) {
@@ -45,7 +45,7 @@ public class ClassParameter extends ParameterImpl<Class> {
 
    @Override
    protected String valueToString(Object value) {
-      return ((Class) value).getName();
+      return value!=null?((Class) value).getName():"";
    }
 
 }

@@ -44,7 +44,7 @@ public class URLParameter extends ParameterImpl<URL>{
     * @throws VectorPrintRuntimeException
     */
    @Override
-   public URL convert(String value) throws VectorPrintRuntimeException {
+   public URL unMarshall(String value) throws VectorPrintRuntimeException {
       try {
          return new URL(value);
       } catch (MalformedURLException ex) {

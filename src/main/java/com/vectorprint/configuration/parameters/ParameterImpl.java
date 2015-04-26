@@ -30,6 +30,7 @@ import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProces
 import com.vectorprint.configuration.parser.MultiValueParamParserConstants;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Observable;
 
 /**
@@ -116,12 +117,12 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    @Override
    public String toString() {
-      return getClass().getSimpleName()+"{" + "key=" + key + ", value=" + value + ", def=" + def + ", help=" + help + ", declaringClass=" + declaringClass + '}';
+      return getClass().getSimpleName()+"{" + "key=" + key + ", value=" + marshall(value) + ", def=" + marshall(def) + ", help=" + help + ", declaringClass=" + declaringClass + '}';
    }
 
 
    /**
-    * used by {@link #serializeValue() }, calls String.valueOf, give subclasses a chance to do something other than
+    * used by {@link #marshall(java.io.Serializable) }, calls String.valueOf, give subclasses a chance to do something other than
     * String.valueOf if needed.
     *
     * @param value
@@ -184,7 +185,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
     * 
     */
    @Override
-   public final String serializeValue(TYPE value) {
+   public final String marshall(TYPE value) {
       if (value != null) {
          Class clazz = ClassHelper.findParameterClass(0, this.getClass(), Parameter.class);
          if (clazz.isArray()) {
@@ -261,11 +262,20 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if ((this.help == null) ? (other.help != null) : !this.help.equals(other.help)) {
          return false;
       }
-      if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
-         return false;
-      }
-      if (this.def != other.def && (this.def == null || !this.def.equals(other.def))) {
-         return false;
+      if (valueClass.isArray()) {
+         if (this.value != other.value && (this.value == null || !Arrays.equals((Object[])this.value,(Object[])other.value))) {
+            return false;
+         }
+         if (this.def != other.def && (this.def == null || !!Arrays.equals((Object[])this.def,(Object[])other.def))) {
+            return false;
+         }
+      } else {
+         if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+            return false;
+         }
+         if (this.def != other.def && (this.def == null || !this.def.equals(other.def))) {
+            return false;
+         }
       }
       if (this.declaringClass != other.declaringClass && (this.declaringClass == null || !this.declaringClass.equals(other.declaringClass))) {
          return false;
@@ -277,7 +287,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    * used in {@link #convert(java.lang.String) } when the value type is an array.
+    * used in {@link #unMarshall(java.lang.String) } when the value type is an array.
     * @see MultipleValueParser#getArrayInstance(boolean) 
     * @return 
     */
