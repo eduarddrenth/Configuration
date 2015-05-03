@@ -1,3 +1,7 @@
+Busy refactoring towards loosly coupled support for parsing, marshalling and unmarshalling.....created a branche in subversion for this.
+
+It will be worthwhile waiting for the upcomming version!
+
 This project is about configuration of applications and about parameterization of Objects.
 
 This library offers annotations and processors, parsers, typing, observing changes, serialization, cloning and more when working with
