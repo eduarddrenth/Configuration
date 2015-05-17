@@ -23,23 +23,25 @@ package com.vectorprint.configuration.observing;
  * limitations under the License.
  * #L%
  */
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class TrimKeyValue extends AbstractPrepareKeyValue<String, String> {
+public class TrimKeyValue extends AbstractPrepareKeyValue<String, String[]> {
 
-        @Override
-        public void prepare(KeyValue<String, String> keyValue) {
-           if (keyValue.getValue()!=null) {
-              keyValue.setValue(keyValue.getValue().trim());
-           }
-           if (keyValue.getKey()!=null) {
-              keyValue.setKey(keyValue.getKey().trim());
-           }
-        }
+   @Override
+   public void prepare(KeyValue<String, String[]> keyValue) {
+      if (keyValue.getValue() != null) {
+         int i = 0;
+         for (String v : keyValue.getValue()) {
+            if (v != null) {
+               keyValue.getValue()[i] = v.trim();
+            }
+            i++;
+         }
+      }
+      if (keyValue.getKey() != null) {
+         keyValue.setKey(keyValue.getKey().trim());
+      }
+   }
 }

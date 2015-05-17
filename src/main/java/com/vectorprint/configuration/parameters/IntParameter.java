@@ -25,8 +25,6 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import com.vectorprint.VectorPrintRuntimeException;
-
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
@@ -38,14 +36,5 @@ public class IntParameter extends ParameterImpl<Integer>{
       setDefault(0);
    }
 
-   /**
-    *
-    * @throws VectorPrintRuntimeException
-    */
-   @Override
-   public Integer unMarshall(String value) throws VectorPrintRuntimeException {
-      return Integer.parseInt(value);
-   }
-   
 
 }

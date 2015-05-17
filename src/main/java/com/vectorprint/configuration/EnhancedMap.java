@@ -24,6 +24,8 @@ package com.vectorprint.configuration;
  * #L%
  */
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.binding.StringConversion;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -32,21 +34,29 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
- * This interface describes map enhancements for data type support, multiple value support, key based help.
+ * This interface is a suggested way to store values for settings as arrays of String and retrieve settings
+ * in the type needed by applications.
  *
  * @see Settings
  * @see AbstractPropertiesDecorator
+ * @see EnhancedMapBindingFactory
+ * @see StringConversion
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface EnhancedMap extends Map<String, String>, Cloneable, Serializable {
+public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializable {
 
    boolean getBooleanProperty(String key, Boolean defaultValue);
 
    Class getClassProperty(String key, Class defaultValue) throws ClassNotFoundException;
-
+   
    Class[] getClassProperties(String key, Class[] defaultValue) throws ClassNotFoundException;
+
+   Pattern getRegexProperty(String key, Pattern defaultValue);
+   
+   Pattern[] getRegexProperties(String key, Pattern[] defaultValue);
 
    Color getColorProperty(String key, Color defaultValue);
 
@@ -108,12 +118,6 @@ public interface EnhancedMap extends Map<String, String>, Cloneable, Serializabl
 
    public void setHelp(Map<String, PropertyHelp> h);
 
-   /**
-    * Add property from (java commandline) arguments
-    * @param args 
-    */
-   public void addFromArguments(String[] args);
-
    public EnhancedMap clone();
 
    /**
@@ -138,4 +142,5 @@ public interface EnhancedMap extends Map<String, String>, Cloneable, Serializabl
    String getId();
    void setId(String id);
 
+   String[] put(String key, String value);
 }

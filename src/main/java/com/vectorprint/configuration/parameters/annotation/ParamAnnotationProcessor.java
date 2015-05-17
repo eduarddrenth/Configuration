@@ -33,6 +33,10 @@ import java.lang.reflect.InvocationTargetException;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface ParamAnnotationProcessor {
+   /**
+    * you can safely use this, also from different threads
+    */
+   public static final ParamAnnotationProcessor PAP = new ParamAnnotationProcessorImpl();
    
    void initParameters(Parameterizable parameterizable) throws NoSuchMethodException,InstantiationException,IllegalAccessException, InvocationTargetException;
 

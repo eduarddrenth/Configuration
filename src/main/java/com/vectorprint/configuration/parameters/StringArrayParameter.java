@@ -25,10 +25,6 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import com.vectorprint.ArrayHelper;
-import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.parser.ParseException;
-
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
@@ -37,19 +33,6 @@ public class StringArrayParameter extends ParameterImpl<String[]>{
 
    public StringArrayParameter(String key, String help) {
       super(key, help);
-   }
-
-   /**
-    *
-    * @throws VectorPrintRuntimeException
-    */
-   @Override
-   public String[] unMarshall(String value) throws VectorPrintRuntimeException{
-      try {
-         return ArrayHelper.toArray(MultipleValueParser.getArrayInstance(isUseJsonParser()).parseStringValues(value));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
    }
 
 }

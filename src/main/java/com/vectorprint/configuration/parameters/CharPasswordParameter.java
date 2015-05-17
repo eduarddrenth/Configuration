@@ -24,7 +24,6 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 import com.vectorprint.ArrayHelper;
-import com.vectorprint.VectorPrintRuntimeException;
 import java.util.Arrays;
 
 /**
@@ -48,11 +47,6 @@ public class CharPasswordParameter extends ParameterImpl<char[]> {
    public CharPasswordParameter(String key, String help, boolean clearAfterGet) {
       super(key, help);
       this.clearAfterGet = clearAfterGet;
-   }
-
-   @Override
-   public char[] unMarshall(String value) throws VectorPrintRuntimeException {
-      return value.toCharArray();
    }
 
    @Override

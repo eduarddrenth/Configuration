@@ -18,7 +18,6 @@ package com.vectorprint.configuration.decoration.visiting;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.decoration.ParsingProperties;
-import com.vectorprint.configuration.parser.ParseException;
 import java.io.IOException;
 import java.net.URL;
 
@@ -49,8 +48,6 @@ public class ParsingVisitor implements DecoratorVisitor<ParsingProperties>{
          e.addFromURL(url);
       } catch (IOException iOException) {
          throw new VectorPrintRuntimeException(iOException);
-      } catch (ParseException parseException) {
-         throw new VectorPrintRuntimeException(parseException);
       }
    }
 

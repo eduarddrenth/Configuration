@@ -20,28 +20,27 @@ package com.vectorprint.configuration;
  * #L%
  */
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.ArrayHelper;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
-import com.vectorprint.configuration.parameters.MultipleValueParser;
-import com.vectorprint.configuration.parameters.ParameterHelper;
-import com.vectorprint.configuration.parser.ParseException;
+import com.vectorprint.configuration.binding.StringConversion;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.annotation.PreDestroy;
+import static com.vectorprint.configuration.binding.StringConversion.getStringConversion;
 
 /**
- * Enhances Java Map with support for data types, debugging info, overriding properties from command line arguments, working with
- * default values in code. You cannot subclass this class, instead subclass {@link AbstractPropertiesDecorator} and wrap an instance of this class.
+ * Enhances Java Map with support for data types, debugging info, overriding properties from command line arguments,
+ * working with default values in code. You cannot subclass this class, instead subclass
+ * {@link AbstractPropertiesDecorator} and wrap an instance of this class.
  *
  * @see com.vectorprint.configuration.decoration
  * @see SettingsAnnotationProcessor
@@ -50,7 +49,7 @@ import javax.annotation.PreDestroy;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public final class Settings extends HashMap<String, String>
+public final class Settings extends HashMap<String, String[]>
     implements EnhancedMap {
 
    private static final long serialVersionUID = 1;
@@ -60,8 +59,8 @@ public final class Settings extends HashMap<String, String>
    @Override
    public void listProperties(PrintStream ps) {
       ps.println("settings with id " + getId() + ":" + EOL);
-      for (Map.Entry<String, String> entry : super.entrySet()) {
-         ps.println(entry.getKey() + "=" + entry.getValue());
+      for (Map.Entry<String, String[]> entry : super.entrySet()) {
+         ps.println(entry.getKey() + "=" + Arrays.asList(entry.getValue()));
       }
       ps.println("");
       ps.println("settings wrapped by " + decorators.toString());
@@ -100,32 +99,8 @@ public final class Settings extends HashMap<String, String>
     * Calls {@link HashMap#HashMap(java.util.Map) ) }.
     *
     */
-   public Settings(Map<String, String> map) {
+   public Settings(Map<String, String[]> map) {
       super(map);
-   }
-
-   /**
-    * Calls {@link HashMap#HashMap() } and calls {@link #addFromArguments(java.lang.String[]) }.
-    *
-    * @see ArgumentParser
-    */
-   public Settings(String[] args) {
-      super();
-      addFromArguments(args);
-   }
-
-   /**
-    * {@link ArgumentParser#parseArgs(java.lang.String[]) parses the arguments} and calls {@link #putAll(java.util.Map)
-    * }
-    *
-    * @param args
-    */
-   @Override
-   public void addFromArguments(String[] args) {
-      Map<String, String> props = ArgumentParser.parseArgs(args);
-      if (props != null) {
-         putAll(props);
-      }
    }
 
    private void debug(String key, Object val) {
@@ -183,7 +158,7 @@ public final class Settings extends HashMap<String, String>
    }
 
    @Override
-   public final String get(Object key) {
+   public final String[] get(Object key) {
       unused.remove(key);
       return super.get(key);
    }
@@ -193,11 +168,15 @@ public final class Settings extends HashMap<String, String>
       if (log.isLoggable(Level.FINE)) {
          debug(key, (containsKey(key)) ? super.get(key) : null, false);
       }
-      if (containsKey(key)) {
-         return get(key);
-      } else {
+      return getFirst(key);
+   }
+
+   private String getFirst(String key) {
+      if (!containsKey(key)) {
          return null;
       }
+      String[] l = get(key);
+      return (l == null || l.length == 0) ? null : l[0];
    }
 
    @Override
@@ -214,7 +193,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return new URL(getProperty(key));
+      return getStringConversion().parse(getProperty(key), URL.class);
    }
 
    @Override
@@ -222,7 +201,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return Float.parseFloat(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Float.class);
    }
 
    @Override
@@ -230,7 +209,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return Boolean.parseBoolean(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Boolean.class);
    }
 
    /**
@@ -260,7 +239,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return Double.parseDouble(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Double.class);
    }
 
    @Override
@@ -268,7 +247,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return Integer.parseInt(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Integer.class);
    }
 
    @Override
@@ -276,7 +255,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return Short.parseShort(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Short.class);
    }
 
    @Override
@@ -284,7 +263,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getProperty(key).charAt(0);
+      return getStringConversion().parse(getProperty(key), Character.class);
    }
 
    @Override
@@ -292,7 +271,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return Byte.decode(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Byte.class);
    }
 
    @Override
@@ -300,7 +279,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return Long.parseLong(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Long.class);
    }
 
    @Override
@@ -308,7 +287,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return ParameterHelper.getColorFromString(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Color.class);
    }
 
    @Override
@@ -316,24 +295,15 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.toArray(mvp.parseStringValues(getProperty(key)));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return get(key);
    }
-   private transient MultipleValueParser mvp = MultipleValueParser.getInstance();
 
    @Override
    public URL[] getURLProperties(String key, URL[] defaultValue) throws MalformedURLException {
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.toArray(mvp.parseURLValues(getProperty(key)));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseURLValues(getStringProperties(key, null));
    }
 
    @Override
@@ -341,11 +311,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseFloatValues(getStringProperties(key, null));
    }
 
    @Override
@@ -353,11 +319,8 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseCharValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseCharValues(getStringProperties(key, null));
+
    }
 
    @Override
@@ -365,11 +328,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseShortValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseShortValues(getStringProperties(key, null));
    }
 
    @Override
@@ -377,11 +336,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseByteValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseByteValues(getStringProperties(key, null));
    }
 
    @Override
@@ -389,11 +344,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseDoubleValues(getStringProperties(key, null));
    }
 
    @Override
@@ -401,11 +352,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseIntValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseIntValues(getStringProperties(key, null));
    }
 
    @Override
@@ -413,11 +360,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseBooleanValues(getStringProperties(key, null));
    }
 
    @Override
@@ -425,11 +368,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.toArray(mvp.parseColorValues(getProperty(key)));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseColorValues(getStringProperties(key, null));
    }
 
    @Override
@@ -509,15 +448,11 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseLongValues(getProperty(key))));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseLongValues(getStringProperties(key, null));
    }
 
    @Override
-   public final String put(String key, String value) {
+   public final String[] put(String key, String[] value) {
       unused.add(key);
       return super.put(key, value);
    }
@@ -532,7 +467,7 @@ public final class Settings extends HashMap<String, String>
    }
 
    @Override
-   public final String remove(Object key) {
+   public final String[] remove(Object key) {
       unused.remove(key);
       return super.remove(key);
    }
@@ -600,104 +535,21 @@ public final class Settings extends HashMap<String, String>
     * @throws VectorPrintRuntimeException when no value is found and defaultValue is null
     */
    private <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
-      Object o = null;
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
-      }
-      try {
-         if (Boolean.class.equals(clazz) || boolean.class.equals(clazz)) {
-            o = Boolean.valueOf(getProperty(key));
-         } else if (Color.class.equals(clazz)) {
-            o = Color.decode(getProperty(key));
-         } else if (Byte.class.equals(clazz) || byte.class.equals(clazz)) {
-            o = Byte.decode(getProperty(key));
-         } else if (Character.class.equals(clazz) || char.class.equals(clazz)) {
-            o = getProperty(key).charAt(0);
-         } else if (Short.class.equals(clazz) || short.class.equals(clazz)) {
-            o = Short.valueOf(getProperty(key));
-         } else if (Double.class.equals(clazz) || double.class.equals(clazz)) {
-            o = Double.valueOf(getProperty(key));
-         } else if (Float.class.equals(clazz) || float.class.equals(clazz)) {
-            o = Float.valueOf(getProperty(key));
-         } else if (Integer.class.equals(clazz) || int.class.equals(clazz)) {
-            o = Integer.valueOf(getProperty(key));
-         } else if (Long.class.equals(clazz) || long.class.equals(clazz)) {
-            o = Long.valueOf(getProperty(key));
-         } else if (String.class.equals(clazz)) {
-            o = getProperty(key);
-         } else if (URL.class.equals(clazz)) {
-            try {
-               o = new URL(getProperty(key));
-            } catch (MalformedURLException ex) {
-               throw new VectorPrintRuntimeException(ex);
+      } else {
+         if (clazz.isArray()) {
+            if (String[].class.equals(clazz)) {
+               return (T) get(key);
             }
-         } else if (Date.class.equals(clazz)) {
-            try {
-               o = new SimpleDateFormat().parse(getProperty(key));
-            } catch (java.text.ParseException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            }
-         } else if (Class.class.equals(clazz)) {
-            try {
-               o = MultipleValueParser.classFromKey(getProperty(key));
-            } catch (ClassNotFoundException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            }
-         } else if (String[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseStringValues(getProperty(key)));
-         } else if (URL[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseURLValues(getProperty(key)));
-         } else if (Float[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key)));
-         } else if (float[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key))));
-         } else if (Double[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key)));
-         } else if (double[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseDoubleValues(getProperty(key))));
-         } else if (Short[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseShortValues(getProperty(key)));
-         } else if (short[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseShortValues(getProperty(key))));
-         } else if (Character[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseCharValues(getProperty(key)));
-         } else if (char[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseCharValues(getProperty(key))));
-         } else if (Byte[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseByteValues(getProperty(key)));
-         } else if (byte[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseByteValues(getProperty(key))));
-         } else if (Integer[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key)));
-         } else if (int[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseFloatValues(getProperty(key))));
-         } else if (Long[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseLongValues(getProperty(key)));
-         } else if (long[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseLongValues(getProperty(key))));
-         } else if (Boolean[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key)));
-         } else if (boolean[].class.equals(clazz)) {
-            o = ArrayHelper.unWrap(ArrayHelper.toArray(mvp.parseBooleanValues(getProperty(key))));
-         } else if (Color[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseColorValues(getProperty(key)));
-         } else if (Date[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseDateValues(getProperty(key)));
-         } else if (Class[].class.equals(clazz)) {
-            o = ArrayHelper.toArray(mvp.parseClassValues(getProperty(key)));
+            return getStringConversion().parse(get(key), clazz);
          } else {
-            throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
+            if (String.class.equals(clazz)) {
+               return (T) getProperty(key);
+            }
+            return getStringConversion().parse(getProperty(key), clazz);
          }
-      } catch (ParseException parseException) {
-         throw new VectorPrintRuntimeException(parseException);
       }
-      return (T) o;
-   }
-
-   private void readObject(java.io.ObjectInputStream s)
-       throws IOException, ClassNotFoundException {
-      s.defaultReadObject();
-      mvp = MultipleValueParser.getInstance();
    }
 
    @Override
@@ -705,11 +557,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return new SimpleDateFormat().parse(getProperty(key));
-      } catch (java.text.ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parse(getProperty(key), Date.class);
    }
 
    @Override
@@ -717,11 +565,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.toArray(mvp.parseDateValues(getProperty(key)));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseDateValues(getStringProperties(key, null));
    }
 
    private final Collection<String> unused = new HashSet<String>(25);
@@ -753,7 +597,7 @@ public final class Settings extends HashMap<String, String>
    }
 
    /**
-    * uses {@link MultipleValueParser#classFromKey(java.lang.String) }
+    * uses {@link StringConversion#classFromKey(java.lang.String)  }
     *
     * @param key
     * @param defaultValue
@@ -765,11 +609,27 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return MultipleValueParser.classFromKey(getProperty(key));
+      return getStringConversion().parse(getProperty(key), Class.class);
+   }
+
+   @Override
+   public Pattern getRegexProperty(String key, Pattern defaultValue) {
+      if (shouldUseDefault(key, defaultValue)) {
+         return defaultValue;
+      }
+      return getStringConversion().parse(getProperty(key), Pattern.class);
+   }
+
+   @Override
+   public Pattern[] getRegexProperties(String key, Pattern[] defaultValue) {
+      if (shouldUseDefault(key, defaultValue)) {
+         return defaultValue;
+      }
+      return getStringConversion().parseRegexValues(getStringProperties(key, null));
    }
 
    /**
-    * uses {@link MultipleValueParser#parseClassValues(java.lang.String, boolean) }
+    * uses {@link StringConversion#parseClassValues(java.lang.String[])  }
     *
     * @param key
     * @param defaultValue
@@ -781,11 +641,7 @@ public final class Settings extends HashMap<String, String>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      try {
-         return ArrayHelper.toArray(mvp.parseClassValues(getProperty(key)));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+      return getStringConversion().parseClassValues(getStringProperties(key, null));
    }
 
    /**
@@ -833,4 +689,26 @@ public final class Settings extends HashMap<String, String>
       log.warning(String.format("NB! Settings wrapped by %s, you should use this instead of %s", outermostWrapper.getClass().getName(),
           getClass().getName()));
    }
+
+   @Override
+   public String[] put(String key, String value) {
+      return put(key, new String[]{value});
+   }
+
+   @Override
+   public boolean containsValue(Object value) {
+      if (value == null) {
+         return super.containsValue(null);
+      }
+      if (String[].class.equals(value.getClass())) {
+
+         for (Entry<String, String[]> e : entrySet()) {
+            if (Arrays.equals(e.getValue(), (String[])value)) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
 }

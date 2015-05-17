@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.vectorprint.configuration.parameters;
 
 /*
@@ -24,76 +23,76 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
-
-import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.parameters.annotation.Param;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import java.io.Serializable;
 
 /**
- * Parameters for a {@link Parametrizable} provide help, a key to identify the parameter and the intelligence
- to unMarshall a String into the value type for the parameter.
+ * Parameters for a {@link Parametrizable} provide help, a key to identify the parameter.
+ *
+ * @see ParamAnnotationProcessorImpl
+ * @see ParameterizableBindingFactory
  * @author Eduard Drenth at VectorPrint.nl
- * @param <TYPE> 
+ * @param <TYPE>
  */
 public interface Parameter<TYPE extends Serializable> extends Cloneable, Serializable, Observable {
+
    /**
-    * 
+    *
     * @return the class of the parameter value
     */
-   Class<?extends Serializable> getValueClass();
-   
+   Class<TYPE> getValueClass();
+
    /**
     * the identifier for this parameter
-    * @return 
+    *
+    * @return
     */
    String getKey();
+
    /**
     * provide some information about the parameter
-    * @return 
+    *
+    * @return
     */
    String getHelp();
-   /**
-    *
-    * @param value a String to be converted to a value of the required type
-    * @return the TYPE
-    * @throws VectorPrintRuntimeException can be thrown when conversion fails
-    */
-   TYPE unMarshall(String value) throws VectorPrintRuntimeException;
-   
-   /**
-    *
-    */
-   String marshall(TYPE value);
+
+
    /**
     *
     * @param value the new value
     */
    Parameter<TYPE> setValue(TYPE value);
+
    /**
     *
     * @param value the new default value
     */
    Parameter<TYPE> setDefault(TYPE value);
+
    /**
     * return the value for this parameter or, when it is null, the default value
+    *
     * @return the value
     */
    TYPE getValue();
+
    /**
-    * 
+    *
     * @return the default value
     */
    TYPE getDefault();
 
    Parameter<TYPE> clone();
-   
+
    /**
     * You may want to know which class declared this Parameter
+    *
     * @see Param
-    * @see ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable) 
-    * @see Parameterizable#addParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Class) 
-    * @return 
+    * @see ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable)
+    * @see Parameterizable#addParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Class)
+    * @return
     */
    Class<? extends Parameterizable> getDeclaringClass();
 }

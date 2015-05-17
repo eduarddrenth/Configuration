@@ -37,14 +37,4 @@ public class DoubleParameter extends ParameterImpl<Double>{
       setDefault(0d);
    }
 
-   /**
-    *
-    */
-   @Override
-   public Double unMarshall(String value) {
-      return Double.parseDouble(value);
-   }
-   
-   
-
 }

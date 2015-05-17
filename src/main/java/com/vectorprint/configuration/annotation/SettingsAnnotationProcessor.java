@@ -20,7 +20,7 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 
 /**
- * Processes objects or classes looking for fields annotated with {@link Setting} or {@link Settings}, when both are present only {@link Settings} is processed.
+ * Processes objects or classes looking for fields annotated with {@link Setting} or {@link SettingsField}, when both are present only {@link SettingsField} is processed.
  * When the field has no value a value from settings will be required, when none is found you will get a {@link VectorPrintRuntimeException}.
  * @author Eduard Drenth at VectorPrint.nl
  * @see EnhancedMap#getGenericProperty(java.lang.String, java.lang.Object, java.lang.Class) 
@@ -28,6 +28,10 @@ import com.vectorprint.configuration.EnhancedMap;
  * @see Setting
  */
 public interface SettingsAnnotationProcessor {
+   /**
+    * you can safely use this, also from different threads
+    */
+   public static final SettingsAnnotationProcessor SAP = new SettingsAnnotationProcessorImpl();
    
    /**
     * initializes annotated fields for a class or object. When the object argument is a Class,

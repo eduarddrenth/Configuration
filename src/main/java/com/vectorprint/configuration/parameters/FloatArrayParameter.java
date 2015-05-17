@@ -5,6 +5,8 @@
 
 package com.vectorprint.configuration.parameters;
 
+import java.util.Arrays;
+
 /*
  * #%L
  * VectorPrintReport
@@ -25,31 +27,18 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import com.vectorprint.ArrayHelper;
-import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.parser.ParseException;
-
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class FloatArrayParameter extends ParameterImpl<Float[]>{
+public class FloatArrayParameter extends ParameterImpl<float[]>{
    
    public FloatArrayParameter(String key, String help) {
       super(key, help);
    }
 
-   /**
-    *
-    * @throws VectorPrintRuntimeException
-    */
    @Override
-   public Float[] unMarshall(String value) throws VectorPrintRuntimeException {
-      try {
-         return ArrayHelper.toArray(MultipleValueParser.getArrayInstance(isUseJsonParser()).parseFloatValues(value));
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
+   protected String valueToString(float[] value) {
+      return Arrays.toString(value);
    }
-
 }

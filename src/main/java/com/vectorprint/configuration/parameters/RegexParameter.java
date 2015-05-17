@@ -25,7 +25,6 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import com.vectorprint.VectorPrintRuntimeException;
 import java.util.regex.Pattern;
 
 /**
@@ -38,14 +37,5 @@ public class RegexParameter extends ParameterImpl<Pattern>{
       super(key, help);
    }
 
-   /**
-    *
-    * @throws VectorPrintRuntimeException
-    */
-   @Override
-   public Pattern unMarshall(String value) throws VectorPrintRuntimeException {
-      return Pattern.compile(value);
-   }
-   
 
 }

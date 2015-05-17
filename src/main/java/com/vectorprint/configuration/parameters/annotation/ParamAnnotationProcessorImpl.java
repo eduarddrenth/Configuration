@@ -25,9 +25,12 @@ package com.vectorprint.configuration.parameters.annotation;
  */
 import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
+import com.vectorprint.configuration.binding.StringConversion;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,10 +41,6 @@ import java.util.logging.Logger;
 public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
 
    private static final Logger log = Logger.getLogger(ParamAnnotationProcessorImpl.class.getName());
-   /**
-    * you can safely use this, also from different threads
-    */
-   public static final ParamAnnotationProcessor PAP = new ParamAnnotationProcessorImpl();
 
    /**
     * looks for parameter annotations on each class in the hierarchy and adds a parameter to the parameterizable for
@@ -81,18 +80,21 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
             }
             String help = p.help();
             String def = (Param.NULL.equals(p.defaultValue())) ? null : p.defaultValue();
+            String[] defArray = (Param.NULL.equals(p.defaultArray()[0])) ? null : p.defaultArray();
             Class<? extends ParameterImpl> pic = p.clazz();
             if (log.isLoggable(Level.FINE)) {
-               log.fine(String.format("applying parameter %s with key %s and default %s on %s", pic.getName(), key, def, c.getName()));
+               log.fine(String.format("applying parameter %s with key %s and default %s on %s", pic.getName(), key, (def)==null?Arrays.toString(defArray):def, c.getName()));
             }
             Constructor con = pic.getConstructor(String.class, String.class);
             ParameterImpl pi = (ParameterImpl) con.newInstance(key, help);
             if (def != null) {
-               pi.setDefault(pi.unMarshall(def));
+               pi.setDefault((Serializable) StringConversion.getStringConversion().parse(def, pi.getValueClass()));
+            } else if (defArray!=null) {
+               pi.setDefault((Serializable) StringConversion.getStringConversion().parse(defArray, pi.getValueClass()));
             }
             parameterizable.addParameter(pi,c);
          }
       }
    }
-
+   
 }

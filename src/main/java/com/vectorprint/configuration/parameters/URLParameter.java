@@ -25,8 +25,6 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import com.vectorprint.VectorPrintRuntimeException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -39,18 +37,5 @@ public class URLParameter extends ParameterImpl<URL>{
       super(key, help);
    }
 
-   /**
-    *
-    * @throws VectorPrintRuntimeException
-    */
-   @Override
-   public URL unMarshall(String value) throws VectorPrintRuntimeException {
-      try {
-         return new URL(value);
-      } catch (MalformedURLException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
-   }
-   
 
 }

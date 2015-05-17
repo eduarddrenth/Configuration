@@ -26,14 +26,13 @@ package com.vectorprint.configuration.parameters;
  */
 
 //~--- JDK imports ------------------------------------------------------------
-import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Observer;
 
 /**
- * Provides a way to use parameters in objects, parameters do not hold their values themselves, they
- * do provide a method to convert a String value to the type of value we actually need.
+ * Provides a way to use parameters in objects.
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface Parameterizable extends Cloneable, Observer {
@@ -55,7 +54,7 @@ public interface Parameterizable extends Cloneable, Observer {
    <TYPE extends Serializable> Parameter<TYPE> getParameter(String key, Class<TYPE> T);
    
    /**
-    * method to get the type of value needed, using the intelligence of a parameter.
+    * get a value from a parameter.
     *
     * @param key
     * @param T
@@ -63,23 +62,29 @@ public interface Parameterizable extends Cloneable, Observer {
     */
    <TYPE extends Serializable> TYPE getValue(String key, Class<TYPE> T);
    
-   <TYPE extends Serializable> void setValue(String key, TYPE value);
 
    /**
-    *
-    * @param settings the value of settings
+    * set a value of a parameter
+    * @param <TYPE>
+    * @param key
+    * @param value 
     */
-   void initDefaults(EnhancedMap settings);
+   <TYPE extends Serializable> void setValue(String key, TYPE value);
    
    /**
     * addParameter a Parameter to this Parameterizable which value may be unknown at this time
     * @param declaringClass the class in which the parameter was declared
-    * @see #setup(java.util.Map) 
+    * @see ParamAnnotationProcessor
     * @param parameter 
     */
    void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass);
    
    Parameterizable clone();
    
+   /**
+    * return true when {@link Parameter#getValue() } is not null.
+    * @param key
+    * @return 
+    */
    boolean isParameterSet(String key);
 }

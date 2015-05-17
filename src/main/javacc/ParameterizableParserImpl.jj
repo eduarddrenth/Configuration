@@ -1,0 +1,347 @@
+/*
+ * #%L
+ * VectorPrintReport4.0
+ * %%
+ * Copyright (C) 2012 - 2013 VectorPrint
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+options {
+    STATIC = false;
+    DEBUG_TOKEN_MANAGER = false;
+    DEBUG_PARSER = false;
+}
+
+/* Parser to instantiate and configure a Configurable and Parameterizable object
+Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
+*/
+
+PARSER_BEGIN(ParameterizableParserImpl)
+   
+    package com.vectorprint.configuration.parser;
+
+    import com.vectorprint.ArrayHelper;
+    import com.vectorprint.configuration.Configurable;
+    import com.vectorprint.configuration.EnhancedMap;
+    import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+    import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
+    import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
+    import com.vectorprint.configuration.binding.StringConversion;
+    import com.vectorprint.configuration.binding.parameters.ParameterHelper;
+    import com.vectorprint.configuration.parameters.Parameterizable;
+    import com.vectorprint.configuration.parameters.Parameter;
+    import com.vectorprint.configuration.parameters.ParameterizableImpl;
+    import com.vectorprint.VectorPrintRuntimeException;
+
+    import java.util.Map;
+    import java.util.HashMap;
+    import java.util.List;
+    import java.util.ArrayList;
+    import java.util.Collection;
+    import java.io.Writer;
+    import java.io.IOException;
+    import java.io.Serializable;
+    import java.io.StringReader;
+
+    /**
+      * A parser for Parameterizable objects and / or Configurable in the form
+         class(param1=v1|v2,param2=v3) separators ("," or ")") can be escaped, example configuration:
+      *
+      * <pre>
+
+         Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
+      * <pre>
+      *
+      * Annotations will be processed, {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)} will be called on the class.
+      * Parameterizables and Parameters will be initialized and default values for parameters will initialized from settings, see
+      * {@link ParameterHelper#findDefaultKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap)}
+      */
+    public class ParameterizableParserImpl extends AbstractParameterizableParser<List<String>> {
+
+      private Parameterizable parameterizable = null;
+
+      @Override
+      public Parameterizable parseParameterizable() {
+         try {
+            return parseAsObject();
+         } catch(Exception e) {
+            throw new VectorPrintRuntimeException(e);
+         }
+      }
+
+      @Override
+      public List<String> parseAsParameterValue(String valueToParse, String key) {
+         ParameterizableParserImpl parser = new ParameterizableParserImpl(new StringReader(key+"="+valueToParse));
+         parser.token_source.SwitchTo(ParameterizableParserImplTokenManager.PARAMMODE);
+         List<String> kv;
+         try {
+            kv = parser.keyValue();
+         } catch (ParseException ex) {
+            throw new VectorPrintRuntimeException(ex);
+         }
+         kv.remove(0);
+         return kv;
+      }
+
+      @Override
+      public void setValueOrDefault(Parameter parameter, List<String> values, boolean setDefault) {
+         if (values.isEmpty()) {
+            return;
+         }
+         if (parameter.getValueClass().isArray()) {
+            if (String[].class.equals(parameter.getValueClass())) {
+                if (setDefault) parameter.setDefault(values.toArray()); else parameter.setValue(values.toArray());
+            } else {
+               Serializable o = (Serializable)getStringConversion().parse(ArrayHelper.toArray(values),parameter.getValueClass());
+               if (setDefault) parameter.setDefault(o); else parameter.setValue(o);
+            }
+         } else {
+            if (String.class.equals(parameter.getValueClass())) {
+                if (setDefault) parameter.setDefault(values.get(0)); else parameter.setValue(values.get(0));
+            } else {
+               Serializable o = (Serializable)getStringConversion().parse(values.get(0),parameter.getValueClass());
+               if (setDefault) parameter.setDefault(o); else parameter.setValue(o);
+            }
+         }
+      }
+
+      @Override
+      public void initParameter(Parameter parameter, List<String> o) {
+         if (o!=null) {
+            setValueOrDefault(parameter, o, false);
+         }
+
+      }
+      @Override
+      public void serialize(Parameterizable parameterizable, Writer writer) throws IOException {
+         writer.write(toConfig(parameterizable).toString());
+      }
+      @Override
+      public void serialize(Parameter parameter, Writer writer) throws IOException {
+         StringBuilder sb = new StringBuilder(15);
+         toConfig(parameter,sb);
+         writer.write(sb.toString());
+      }
+
+
+      /**
+       * returns a String in the form simpleClassName(key=value,key2=v1|v2|v3,key3=value)
+       *
+       * @param parameterizable
+       * @param printOnlyNonDefault when true only print non default values
+       * @return
+       */
+      private StringBuilder toConfig(Parameterizable parameterizable) {
+         StringBuilder sb = new StringBuilder(10 + parameterizable.getParameters().size() * 15);
+         sb.append(parameterizable.getClass().getSimpleName());
+         if (!parameterizable.getParameters().isEmpty()) {
+            int offset = sb.length();
+            toConfig(parameterizable.getParameters().values(),sb);
+            if (sb.length() > offset) {
+               sb.insert(offset, ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.LEFTPAREN].substring(1, 2))
+                   .append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.RIGHTPAREN].substring(1, 2));
+            }
+         }
+         return sb;
+      }
+
+      /**
+       * returns a String in the form key=value,key2=v1|v2|v3,key3=value. Only includes parameters with non default values,
+       * see {@link
+       * Parameter#getDefault() }.
+       *
+       * @param parameters
+       * @param printOnlyNonDefault when true only print non default values
+       * @return
+       */
+      private void toConfig(Collection<Parameter> parameters, StringBuilder sb) {
+         if (!parameters.isEmpty()) {
+            boolean del = false;
+            for (Parameter p : parameters) {
+               if (include(p)) {
+                  toConfig(p,sb);
+                  sb.append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.KOMMA].substring(1, 2));
+                  del = true;
+               }
+            }
+            if (del) {
+               sb.deleteCharAt(sb.length() - 1);
+            }
+         }
+      }
+
+      private boolean include(Parameter p) {
+         if (null == p.getValue()) {
+            return false;
+         }
+         if (getPrintOnlyNonDefault()) {
+            return !p.getValue().equals(p.getDefault());
+         } else {
+            return true;
+         }
+      }
+
+      /**
+       * returns a String in the form key=value or key2=v1|v2|v3, but only when the value is non default, see {@link
+       * Parameter#getDefault() }.
+       *
+       * @param p
+       * @param printOnlyNonDefault when true only print non default values
+       *
+       * @return
+       */
+      private void toConfig(Parameter p, StringBuilder sb) {
+         if (include(p)) {
+            sb.append(p.getKey()).append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.EQ].substring(1, 2));
+            getStringConversion().serializeValue(p.getValue(), sb,ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.PIPE].substring(1, 2));
+         }
+      }
+
+    }
+
+
+PARSER_END(ParameterizableParserImpl)
+
+TOKEN:
+{
+    <LEFTPAREN: "("   >: PARAMMODE
+}
+
+TOKEN :
+{
+  < IDENTIFIER: <LETTER> (<PART_LETTER>)* >
+|
+  < #LETTER:
+      [  
+         "$",
+         "A"-"Z",
+         "_",
+         "a"-"z"
+      ]
+  >
+|
+  < #PART_LETTER:
+      [  
+         "$",
+         "0"-"9",
+         "A"-"Z",
+         "_",
+         "a"-"z",
+         "."
+      ]
+  >
+}
+
+<PARAMMODE>
+TOKEN:
+{
+    <KEY: <IDENTIFIER>>
+|   <EQ: "="    >: PARAMVALUEMODE
+}
+
+<PARAMVALUEMODE>
+TOKEN:
+{
+    <RIGHTPAREN: ")"    >: DEFAULT
+|   <ESC_RIGHTPAREN: "\\" <RIGHTPAREN>   >
+|   <KOMMA: ","    >: PARAMMODE
+|   <ESC_KOMMA: "\\" <KOMMA>    >
+|   <PIPE: "|">
+|   <ESC_PIPE: "\\|" >
+|   <VALUE: ( ~[",",")","=","|"] )* ~["\\",",",")","=","|"] >
+}
+/** stuf like this should be parsed
+Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
+      * @param pkg the name of the package without trailing dot or null. When pkg is null a full className is expected for the object
+*/
+Parameterizable parseAsObject()
+throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException:
+{ Token t = null; List<String> kv = null;}
+{
+   t=<IDENTIFIER>
+   {
+      String pkg = getPackageName();
+      EnhancedMap settings = getSettings();
+      Class c = (pkg!=null) ? Class.forName(pkg + "." + t.image) : Class.forName(t.image);
+      if (!Parameterizable.class.isAssignableFrom(c)) {
+         throw new VectorPrintRuntimeException(String.format("%s is not a %s",c.getName(),Parameterizable.class.getName()));
+      }
+      if (settings != null) {
+         // init static settings
+         SettingsAnnotationProcessorImpl.SAP.initSettings(c,settings);
+      }
+      parameterizable = (Parameterizable)c.newInstance();
+      initParameterizable(parameterizable);
+   }
+   (
+      (" ")* <LEFTPAREN> (" ")*
+      (
+         kv=keyValue() {
+            checkKey(parameterizable,kv.get(0));
+            Parameter p = parameterizable.getParameters().get(kv.get(0));
+            kv.remove(0);
+            initParameter(p,kv);
+         }
+         (
+            <KOMMA> (" ")*
+            
+            kv=keyValue() {
+            checkKey(parameterizable,kv.get(0));
+            p = parameterizable.getParameters().get(kv.get(0));
+            kv.remove(0);
+            initParameter(p,kv);
+         }
+         )*
+      )
+      (" ")* <RIGHTPAREN> (" ")*
+   )?
+   {
+      for (Parameter pa : parameterizable.getParameters().values()) {
+         String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
+         if (key!=null) {
+            List<String> values = parseAsParameterValue(getSettings().getProperty(key), pa.getKey());
+            setValueOrDefault(pa, values, true);
+         }
+      }
+      return parameterizable;
+   }
+}
+
+
+List<String> keyValue():
+{ List<String> kv = new ArrayList(2); Token t = null; String v = null; }
+{
+   t=<KEY> {kv.add(t.image);}
+   <EQ>
+   v=value() {kv.add(v);}
+   (    
+      t=<PIPE>
+      v=value() {kv.add(v);}   
+   )*
+   {return kv;}
+}
+String value():
+{StringBuilder v = new StringBuilder();Token t = null;}
+{  
+   (
+      <ESC_KOMMA> {v.append(',');}
+      |
+      <ESC_RIGHTPAREN> {v.append(')');}
+      |
+      <ESC_PIPE> {v.append('|');}
+      |
+      t=<VALUE> {v.append(t.image);}
+   )*
+   {return v.toString();}
+}

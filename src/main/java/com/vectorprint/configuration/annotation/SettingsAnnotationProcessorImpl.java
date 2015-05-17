@@ -27,7 +27,6 @@ import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
-import com.vectorprint.configuration.parser.ParseException;
 import java.beans.Statement;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -37,6 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,10 +59,6 @@ import java.util.logging.Logger;
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
 
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
-   /**
-    * you can safely use this, also from different threads
-    */
-   public static final SettingsAnnotationProcessor SAP = new SettingsAnnotationProcessorImpl();
 
    /**
     * Look for annotation in the object, use settings argument to inject settings. NOTE that the settings argument may
@@ -160,8 +156,6 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                   ((AbstractPropertiesDecorator) settings).accept((DecoratorVisitor) obj);
                }
             } catch (IOException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (ParseException ex) {
                throw new VectorPrintRuntimeException(ex);
             } catch (NoSuchMethodException ex) {
                throw new VectorPrintRuntimeException(ex);

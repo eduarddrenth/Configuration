@@ -15,8 +15,6 @@
  */
 package com.vectorprint.configuration.parameters;
 
-import com.vectorprint.VectorPrintRuntimeException;
-
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
@@ -26,26 +24,10 @@ public class ClassParameter extends ParameterImpl<Class> {
    public ClassParameter(String key, String help) {
       super(key, help);
    }
-   
-   /**
-    * uses static cache
-    *
-    * @param value
-    * @return
-    * @throws VectorPrintRuntimeException
-    */
-   @Override
-   public Class unMarshall(String value) throws VectorPrintRuntimeException {
-      try {
-         return MultipleValueParser.classFromKey(value);
-      } catch (ClassNotFoundException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
-   }
 
    @Override
-   protected String valueToString(Object value) {
-      return value!=null?((Class) value).getName():"";
+   protected String valueToString(Class value) {
+      return value!=null?value.getName():"";
    }
 
 }

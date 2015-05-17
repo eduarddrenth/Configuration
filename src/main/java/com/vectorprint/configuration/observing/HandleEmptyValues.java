@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class HandleEmptyValues extends AbstractPrepareKeyValue<String, String> {
+public class HandleEmptyValues extends AbstractPrepareKeyValue<String, String[]> {
 
    /**
     * allow settings to be empty
@@ -52,8 +52,8 @@ public class HandleEmptyValues extends AbstractPrepareKeyValue<String, String> {
    }
 
    @Override
-   public void prepare(KeyValue<String, String> keyValue) {
-      if (keyValue.getValue() == null || keyValue.getValue().isEmpty()) {
+   public void prepare(KeyValue<String, String[]> keyValue) {
+      if (keyValue.getValue() == null || keyValue.getValue().length==0 || keyValue.getValue()[0] == null || keyValue.getValue()[0].isEmpty()) {
          if (allowEmpty) {
             log.warning("empty value for key: " + keyValue.getKey());
          } else {

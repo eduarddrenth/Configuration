@@ -27,48 +27,48 @@ import java.util.Map;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class PreparingProperties extends AbstractPropertiesDecorator implements KeyValueObservable<String, String> {
+public class PreparingProperties extends AbstractPropertiesDecorator implements KeyValueObservable<String, String[]> {
 
 
    public PreparingProperties(EnhancedMap properties) {
       super(properties);
    }
 
-   public PreparingProperties(EnhancedMap properties, List<PrepareKeyValue<String, String>> observers) {
+   public PreparingProperties(EnhancedMap properties, List<PrepareKeyValue<String, String[]>> observers) {
       super(properties);
       this.observers.addAll(observers);
    }
 
    @Override
-   public void addObserver(PrepareKeyValue<String, String> observer) {
+   public void addObserver(PrepareKeyValue<String, String[]> observer) {
       observers.add(observer);
    }
 
    @Override
-   public <PKV extends PrepareKeyValue<String, String>> PKV removeObserver(PKV observer) {
+   public <PKV extends PrepareKeyValue<String, String[]>> PKV removeObserver(PKV observer) {
       return (observers.remove(observer)) ? observer : null;
    }
 
    @Override
-   public void prepareKeyValue(KeyValue<String, String> kv) {
-      for (PrepareKeyValue<String, String> pkv : observers) {
+   public void prepareKeyValue(KeyValue<String, String[]> kv) {
+      for (PrepareKeyValue<String, String[]> pkv : observers) {
          if (pkv.shouldPrepare(kv)) {
             pkv.prepare(kv);
          }
       }
    }
-   private final List<PrepareKeyValue<String, String>> observers = new LinkedList<PrepareKeyValue<String, String>>();
+   private final List<PrepareKeyValue<String, String[]>> observers = new LinkedList<PrepareKeyValue<String, String[]>>();
 
    @Override
-   public String put(String key, String value) {
-      KeyValue<String, String> prepared = new KeyValue<String, String>(key, value);
+   public String[] put(String key, String[] value) {
+      KeyValue<String, String[]> prepared = new KeyValue<String, String[]>(key, value);
       prepareKeyValue(prepared);
       return super.put(prepared.getKey(), prepared.getValue());
    }
 
    @Override
-   public void putAll(Map<? extends String, ? extends String> m) {
-      for (Map.Entry<? extends String, ? extends String> e : m.entrySet()) {
+   public void putAll(Map<? extends String, ? extends String[]> m) {
+      for (Map.Entry<? extends String, ? extends String[]> e : m.entrySet()) {
          put(e.getKey(), e.getValue());
       }
    }

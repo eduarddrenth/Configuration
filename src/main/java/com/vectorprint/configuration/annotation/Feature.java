@@ -18,8 +18,6 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
-import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -29,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * a feature to use in {@link Settings}
+ * a feature to use in {@link SettingsField}
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Documented

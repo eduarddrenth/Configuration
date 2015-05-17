@@ -28,8 +28,14 @@ PARSER_BEGIN(PropertiesParser)
     import java.util.Map;
     import java.util.List;
     import java.util.ArrayList;
+    import java.io.Writer;
+    import java.io.IOException;
+    import com.vectorprint.ArrayHelper;
     import com.vectorprint.configuration.EnhancedMap;
+    import com.vectorprint.configuration.Settings;
     import com.vectorprint.configuration.decoration.ParsingProperties;
+    import com.vectorprint.configuration.binding.settings.AbstractPropertiesParser;
+    import com.vectorprint.VectorPrintRuntimeException;
 
     /**
       * A parser for properties in the form key=value, values can span lines by escaping the end of a line:
@@ -44,68 +50,107 @@ PARSER_BEGIN(PropertiesParser)
           lightmarkcolors=#ff0000;#ff9922;#90cf49
       * <pre>
       */
-    public class PropertiesParser {
+    public class PropertiesParser extends AbstractPropertiesParser {
+
+    private EnhancedMap properties = null;
+      public void parse(EnhancedMap settings) {
+         this.properties = settings;
+         try {
+            parseSettings();
+         } catch(Exception e) {
+            throw new VectorPrintRuntimeException(e);
+         }
+      }
+
+   public void serialize(EnhancedMap p, Writer w) throws IOException {
+      for (Map.Entry<String, String[]> e : p.entrySet()) {
+         if (p instanceof ParsingProperties) {
+            ParsingProperties pp = (ParsingProperties) p;
+            for (String c : pp.getCommentBeforeKey(e.getKey())) {
+               w.append(c);
+            }
+         }
+         w.append(e.getKey());
+         w.append('=');
+         for (String v : e.getValue()) {
+            w.append(v);
+            w.append(';');
+         }
+         w.append(System.getProperty("line.separator"));
+
+      }
+      if (p instanceof ParsingProperties) {
+         ParsingProperties pp = (ParsingProperties) p;
+         for (String c : pp.getTrailingComment()) {
+            w.append(c);
+         }
+      }
+   }
 
     }
 PARSER_END(PropertiesParser)
 
-void parse(Map properties):
-{ String[] kv = null;Token cm; List<String> comments = new ArrayList<String>(1);}
+EnhancedMap parseSettings():
+{  List<String> kv = null;Token cm; List<String> comments = new ArrayList<String>(1);String key = null;}
 {
     (
-    	    
-        kv=keyValue()
-        {
-        	if (properties instanceof ParsingProperties) {
-                for (String s : comments) {
-                    ((ParsingProperties)properties).addCommentBeforeKey(kv[0],s);
-                }
-                comments.clear();
-            }
-            properties.put(kv[0],kv[1]);
-        }
-        |
-        cm=<COMMENT>
-        {
-        	if (properties instanceof EnhancedMap) {
-        		comments.add(cm.image);
-        	}
-        }
-    )*
-    {
-        if (properties instanceof ParsingProperties) {
-            for (String s : comments) {
-                ((ParsingProperties)properties).addTrailingComment(s);
-            }
-        }
-    }
-    <EOF>
-}
-
-String[] keyValue():
-{ Token t = null; StringBuilder v = new StringBuilder(""); String k ="";}
-{
-    t=<KEY>
-    {
-        k=t.image;
-    }
-    (
-         t=<VALUE> 
+         kv=keyValue()
          {
-            v.append(t.image);
+             key = kv.get(0);
+             if (properties instanceof ParsingProperties) {
+                for (String s : comments) {
+                    ((ParsingProperties)properties).addCommentBeforeKey(key,s);
+                }
+             }
+             comments.clear();
+             kv.remove(0);
+             properties.put(key,ArrayHelper.toArray(kv));
+         }
+        |
+         cm=<COMMENT>
+         {
+             comments.add(cm.image);
          }
     )*
-    (
-      <EOL> | <EOF>
-    )
     {
-         return new String[] {k,v.toString()};
+      if (properties instanceof ParsingProperties) {
+         for (String s : comments) {
+             ((ParsingProperties)properties).addTrailingComment(s);
+         }
+      }
     }
+    <EOF>
+    {return properties;}
+}
+
+List<String> keyValue():
+{ List<String> kv = new ArrayList(2); Token t = null; String v = null; }
+{
+   t=<KEY> {kv.add(t.image);}
+   <EQ>
+   v=value() {kv.add(v);}
+   (
+      <SEMICOLON>
+      v=value() {kv.add(v);}   
+   )*
+   (
+      <EOL> | <EOF>
+   )
+   {return kv;}
+}
+String value():
+{StringBuilder v = new StringBuilder();Token t = null;}
+{  
+   (
+      <ESCAPEDSEMICOLON> {v.append(';');}
+      |
+      t=<VALUE> {v.append(t.image);}
+   )*
+   {return v.toString();}
 }
 SKIP:
 {
-    "=": VALUESTATE
-|   "\n"
+   "\n"
 |   "\r"
 |   "\r\n"
 |   " "
@@ -153,6 +198,8 @@ TOKEN :
          "."
       ]
   >
+|   <EQ: "="    >: VALUESTATE
+
 }
 
 <VALUESTATE>
@@ -164,6 +211,8 @@ SKIP:
 <VALUESTATE>
 TOKEN:
 {
-    <VALUE: ( ~["\n","\r"])* ~["\\","\n","\r"]>
+    <SEMICOLON: ";">
+|   <ESCAPEDSEMICOLON: "\\;" >
 |   <EOL: ("\n"|"\r"|"\r\n")>: DEFAULT
+|   <VALUE: ( ~[";","\r","\n"] )* ~["\\",";","\r","\n"] >
 }

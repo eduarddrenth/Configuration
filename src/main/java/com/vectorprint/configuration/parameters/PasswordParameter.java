@@ -26,7 +26,6 @@ package com.vectorprint.configuration.parameters;
  */
 
 import com.vectorprint.ArrayHelper;
-import com.vectorprint.VectorPrintRuntimeException;
 import java.util.Arrays;
 
 /**
@@ -48,11 +47,6 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
    public PasswordParameter(String key, String help, boolean clearAfterGet) {
       super(key, help);
       this.clearAfterGet=clearAfterGet;
-   }
-
-   @Override
-   public byte[] unMarshall(String value) throws VectorPrintRuntimeException {
-      return value.getBytes();
    }
 
    public boolean isClearAfterGet() {

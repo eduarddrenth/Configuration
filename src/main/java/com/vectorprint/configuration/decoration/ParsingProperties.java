@@ -17,11 +17,9 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.Settings;
-import static com.vectorprint.configuration.Settings.EOL;
-import com.vectorprint.configuration.parameters.MultipleValueParser;
-import com.vectorprint.configuration.parser.ParseException;
-import com.vectorprint.configuration.parser.PropertiesParser;
+import com.vectorprint.configuration.binding.StringConversion;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,8 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This decorator supports loading properties from streams, urls or files and saving to a url. A 
- * {@link PropertiesParser} will be used for parsing the properties.
+ * This decorator supports loading properties from streams, urls or files and saving to a url.
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParsingProperties extends AbstractPropertiesDecorator {
@@ -49,8 +47,10 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private List<URL> propertyUrls = new ArrayList<URL>(3);
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
+   
+   private static final EnhancedMapBindingFactory BINDING_FACTORY = new EnhancedMapBindingFactoryImpl();
 
-   private ParsingProperties(EnhancedMap properties) throws IOException, ParseException {
+   private ParsingProperties(EnhancedMap properties) throws IOException {
       super(properties);
    }
 
@@ -59,9 +59,8 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @param properties
     * @param in
     * @throws IOException
-    * @throws ParseException 
     */
-   public ParsingProperties(EnhancedMap properties, Reader... in) throws IOException, ParseException {
+   public ParsingProperties(EnhancedMap properties, Reader... in) throws IOException {
       super(properties);
       for (Reader r : in) {
          loadFromReader(r);
@@ -73,9 +72,8 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @param properties
     * @param in
     * @throws IOException
-    * @throws ParseException 
     */
-   public ParsingProperties(EnhancedMap properties, URL... in) throws IOException, ParseException {
+   public ParsingProperties(EnhancedMap properties, URL... in) throws IOException {
       super(properties);
       for (URL u : in) {
          propertyUrls.add(u);
@@ -85,40 +83,25 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    }
 
    /**
-    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL) } with {@link
-    * MultipleValueParser.URLParser#parseString(java.lang.String) }
+    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL...) }
     * @param properties
     * @param url
     * @throws IOException
-    * @throws ParseException 
     */
-   public ParsingProperties(EnhancedMap properties, String... url) throws IOException, ParseException {
-      this(properties, toURL(url));
+   public ParsingProperties(EnhancedMap properties, String... url) throws IOException {
+      this(properties, StringConversion.getStringConversion().parseURLValues(url));
    }
 
    /**
-    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL) }
+    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL...)) }
     * @param properties
     * @param inFile
     * @throws IOException
-    * @throws ParseException 
     */
-   public ParsingProperties(EnhancedMap properties, File... inFile) throws IOException, ParseException {
+   public ParsingProperties(EnhancedMap properties, File... inFile) throws IOException {
       this(properties, toURL(inFile));
    }
    
-   /**
-    * @see MultipleValueParser.URLParser
-    * @param urls
-    * @return 
-    */
-   public static URL[] toURL(String... urls) {
-      URL[] u = new URL[urls.length];
-      for (int i = 0; i < urls.length; i++) {
-         u[i] = MultipleValueParser.URL_PARSER.parseString(urls[i]);
-      }
-      return u;
-   }
    public static URL[] toURL(File... urls) {
       URL[] u = new URL[urls.length];
       for (int i = 0; i < urls.length; i++) {
@@ -131,16 +114,14 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
       return u;
    }
    /**
-    * loads properties (overwrites) from the stream determined at construction. If you put a \ at the end of a line in a
-    * settings file the next line will be concatenated. If there is no \ at the end and the next line contains no "="
-    * the next line will be concatenated with line.separator as glue.
+    * loads properties (overwrites) from the Reader using {@link EnhancedMapBindingFactory#getParser(java.io.Reader) }.
     *
     * @throws IOException
     */
-   protected void loadFromReader(Reader in) throws IOException, ParseException {
+   protected void loadFromReader(Reader in) throws IOException {
       BufferedReader bi = new BufferedReader(in);
       try {
-         new PropertiesParser(bi).parse(this);
+         BINDING_FACTORY.getParser(bi).parse(this);
       } finally {
          bi.close();
       }
@@ -148,48 +129,43 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    
    /**
     * calls {@link #addFromURL(java.net.URL) }.
-    * @see MultipleValueParser.URLParser#parseString(java.lang.String) 
+    * @see StringConversion#parseURLValues(java.lang.String[]) 
     * @param url
     * @throws IOException
-    * @throws ParseException 
     */
-   public void addFromURL(String url) throws IOException, ParseException {
-      addFromURL(MultipleValueParser.URL_PARSER.parseString(url));
+   public void addFromURL(String url) throws IOException {
+      addFromURL(StringConversion.getStringConversion().parse(url, URL.class));
    }
 
    /**
     * adds properties from a URL, calls {@link #setId(java.lang.String) }.
     * @param url
     * @throws IOException
-    * @throws ParseException 
     */
-   public void addFromURL(URL u) throws IOException, ParseException {
+   public void addFromURL(URL u) throws IOException {
       loadFromReader(new InputStreamReader(u.openStream()));
       propertyUrls.add(u);
       setId(propertyUrls.toString());
    }
 
    /**
-    * loads properties (overwrites) from the urls determined at construction. If you put a \ at the end of a line in a
-    * settings file the next line will be concatenated. If there is no \ at the end and the next line contains no "="
-    * the next line will be concatenated with line.separator as glue.
+    * loads properties (overwrites) from the urls determined at construction.
     *
-    * @see #loadFromReader(java.io.Reader)
     * @throws IOException
     */
-   protected void loadFromUrls() throws IOException, ParseException {
+   protected void loadFromUrls() throws IOException {
       for (URL u : propertyUrls) {
          loadFromReader(new InputStreamReader(u.openStream()));
       }
    }
 
    /**
-    * save the properties to a url, including those set by {@link #addFromArguments(String[])}.
+    * save the properties to a url, using a {@link EnhancedMapBindingFactory#getSerializer() }.
     *
     * @throws IOException
     */
    public void saveToUrl(URL url) throws IOException {
-      BufferedOutputStream bo = null;
+      OutputStreamWriter osw = null;
       try {
          OutputStream o;
          if ("file".equals(url.getProtocol())) {
@@ -200,21 +176,11 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
             conn.setDoInput(false);
             o = conn.getOutputStream();
          }
-         bo = new BufferedOutputStream(o);
-         for (Map.Entry<String, String> entry : super.entrySet()) {
-            for (String s : getCommentBeforeKey(entry.getKey())) {
-               bo.write(s.getBytes());
-            }
-            bo.write((entry.getKey() + "=" + entry.getValue() + EOL).getBytes());
-         }
-         if (!trailingComment.isEmpty()) {
-            for (String s : trailingComment) {
-               bo.write(s.getBytes());
-            }
-         }
+         osw  = new OutputStreamWriter(new BufferedOutputStream(o));
+         BINDING_FACTORY.getSerializer().serialize(this, osw);
       } finally {
-         if (bo != null) {
-            bo.close();
+         if (osw != null) {
+            osw.close();
          }
       }
    }

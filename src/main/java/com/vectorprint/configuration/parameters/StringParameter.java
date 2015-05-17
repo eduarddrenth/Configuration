@@ -35,12 +35,4 @@ public class StringParameter extends ParameterImpl<String>{
       super(key, help);
    }
 
-   /**
-    *
-    */
-   @Override
-   public String unMarshall(String value) {
-      return value;
-   }
-
 }

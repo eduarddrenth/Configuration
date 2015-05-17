@@ -51,13 +51,21 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public String put(String key, String value) {
+   public String[] put(String key, String value) {
+      checkThread("put");
+      return super.put(key, value);
+   }
+   
+   
+
+   @Override
+   public String[] put(String key, String[] value) {
       checkThread("put");
       return super.put(key, value);
    }
 
    @Override
-   public String get(Object key) {
+   public String[] get(Object key) {
       checkThread("get");
       return super.get(key);
    }
@@ -75,7 +83,7 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public String remove(Object key) {
+   public String[] remove(Object key) {
       checkThread("remove");
       return super.remove(key);
    }
@@ -89,7 +97,7 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public Set<Entry<String, String>> entrySet() {
+   public Set<Entry<String, String[]>> entrySet() {
       checkThread("entrySet");
       return super.entrySet();
    }
@@ -116,12 +124,6 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
    public boolean containsKey(Object key) {
       checkThread("containsKey");
       return super.containsKey(key);
-   }
-
-   @Override
-   public void addFromArguments(String[] args) {
-      checkThread("addFromArguments");
-      super.addFromArguments(args);
    }
 
    @Override

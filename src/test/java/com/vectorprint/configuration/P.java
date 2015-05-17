@@ -21,6 +21,7 @@ import com.vectorprint.configuration.parameters.BooleanParameter;
 import com.vectorprint.configuration.parameters.ColorParameter;
 import com.vectorprint.configuration.parameters.IntArrayParameter;
 import com.vectorprint.configuration.parameters.ParameterizableImpl;
+import com.vectorprint.configuration.parameters.StringParameter;
 import com.vectorprint.configuration.parameters.annotation.Param;
 import com.vectorprint.configuration.parameters.annotation.Parameters;
 
@@ -41,6 +42,10 @@ import com.vectorprint.configuration.parameters.annotation.Parameters;
           @Param(
               clazz = IntArrayParameter.class,
               key = "a"
+          ),
+          @Param(
+              clazz = EnumParam.class,
+              key = "e"
           )
        }
    )
@@ -48,6 +53,10 @@ public class P extends ParameterizableImpl {
       
       @Setting(keys = "staticBoolean")
       private static boolean ff;
+
+   public P() {
+      addParameter(new StringParameter("s", "help").setDefault("v"),P.class);
+   }
 
    public static boolean isFf() {
       return ff;

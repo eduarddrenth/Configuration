@@ -25,7 +25,6 @@ package com.vectorprint.configuration.decoration;
  */
 import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.ArgumentParser;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.Settings;
@@ -39,6 +38,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Base class for all decorators that add functionality to properties. All implemented methods just call the embedded
@@ -53,10 +53,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    /**
     * Will call {@link ApplicationSettings#addDecorator(java.lang.Class) } and 
     * {@link ApplicationSettings#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }.
-    * 
+    *
     * @param settings may not be null
-    * @throws VectorPrintRuntimeException when a decorator of this type is already there or when this decorator {@link HiddenBy hides}
-    * another decorator or when the argument is not an instance of {@link Settings} or {@link AbstractPropertiesDecorator}.
+    * @throws VectorPrintRuntimeException when a decorator of this type is already there or when this decorator
+    * {@link HiddenBy hides} another decorator or when the argument is not an instance of {@link Settings} or
+    * {@link AbstractPropertiesDecorator}.
     */
    public AbstractPropertiesDecorator(EnhancedMap settings) {
       if (settings == null) {
@@ -66,7 +67,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
          throw new VectorPrintRuntimeException(String.format("settings already in the stack: %s", settings.getClass().getName()));
       }
       if (!(settings instanceof Settings || settings instanceof AbstractPropertiesDecorator)) {
-         throw new VectorPrintRuntimeException(String.format("%s is not an instance of %s or %s", 
+         throw new VectorPrintRuntimeException(String.format("%s is not an instance of %s or %s",
              settings.getClass().getName(),
              Settings.class.getName(),
              AbstractPropertiesDecorator.class.getName()));
@@ -177,14 +178,6 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
-   public void addFromArguments(String[] args) {
-      Map<String, String> props = ArgumentParser.parseArgs(args);
-      if (props != null) {
-         putAll(props);
-      }
-   }
-
-   @Override
    public int size() {
       return settings.size();
    }
@@ -205,22 +198,22 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
-   public String get(Object key) {
+   public String[] get(Object key) {
       return settings.get(key);
    }
 
    @Override
-   public String put(String key, String value) {
+   public String[] put(String key, String[] value) {
       return settings.put(key, value);
    }
 
    @Override
-   public String remove(Object key) {
+   public String[] remove(Object key) {
       return settings.remove(key);
    }
 
    @Override
-   public void putAll(Map<? extends String, ? extends String> m) {
+   public void putAll(Map<? extends String, ? extends String[]> m) {
       settings.putAll(m);
    }
 
@@ -240,7 +233,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
-   public Set<Entry<String, String>> entrySet() {
+   public Set<Entry<String, String[]>> entrySet() {
       return settings.entrySet();
    }
 
@@ -395,8 +388,23 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
+   public Pattern getRegexProperty(String key, Pattern defaultValue) {
+      return settings.getRegexProperty(key, defaultValue);
+   }
+
+   @Override
+   public Pattern[] getRegexProperties(String key, Pattern[] defaultValue) {
+      return settings.getRegexProperties(key, defaultValue);
+   }
+
+   @Override
    public void setId(String id) {
       settings.setId(id);
+   }
+
+   @Override
+   public String[] put(String key, String value) {
+      return settings.put(key, value);
    }
 
    /**
@@ -452,6 +460,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       }
 
    }
+
    private static class Hiding implements DecoratorVisitor<EnhancedMap> {
 
       private final AbstractPropertiesDecorator settings;
@@ -468,9 +477,9 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       @Override
       public void visit(EnhancedMap e) {
          if (e instanceof HiddenBy) {
-            if (((HiddenBy)e).hiddenBy(settings.getClass())) {
+            if (((HiddenBy) e).hiddenBy(settings.getClass())) {
                throw new VectorPrintRuntimeException(String.format("%s hides %s",
-                   settings.getClass().getName(),e.getClass().getName()));
+                   settings.getClass().getName(), e.getClass().getName()));
             }
          }
       }

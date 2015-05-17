@@ -49,5 +49,6 @@ public @interface Param {
    public String key();
    public Class<? extends ParameterImpl> clazz();
    public String defaultValue() default NULL;
+   public String[] defaultArray() default NULL;
 
 }

@@ -25,8 +25,6 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import com.vectorprint.VectorPrintRuntimeException;
-
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
@@ -37,15 +35,5 @@ public class BooleanParameter extends ParameterImpl<Boolean>{
       super(key, help);
       setDefault(Boolean.FALSE);
    }
-
-   /**
-    *
-    * @throws VectorPrintRuntimeException
-    */
-   @Override
-   public Boolean unMarshall(String value) throws VectorPrintRuntimeException {
-      return Boolean.parseBoolean(value);
-   }
-   
 
 }

@@ -25,11 +25,11 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-import com.vectorprint.configuration.parser.MultiValueParamParserConstants;
+import com.vectorprint.configuration.binding.StringConversion;
+import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import java.io.Serializable;
-import java.net.URL;
+import java.util.Arrays;
 import java.util.Arrays;
 import java.util.Observable;
 
@@ -44,9 +44,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private TYPE value;
    private TYPE def;
    private Class<? extends Parameterizable> declaringClass;
-   private Class<? extends Serializable> valueClass;
-   @Setting(keys = "useJsonParser")
-   private static boolean useJsonParser = false;
+   private Class<TYPE> valueClass;
 
    /**
     * @param key the value of key
@@ -55,7 +53,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    public ParameterImpl(String key, String help) {
       this.key = key;
       this.help = help;
-      valueClass = (Class<? extends Serializable>) ClassHelper.findParameterClass(0, getClass(), ParameterImpl.class);
+      valueClass = (Class<TYPE>) ClassHelper.findParameterClass(0, getClass(), ParameterImpl.class);
    }
 
    @Override
@@ -77,7 +75,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    *
+    * NB! used in {@link #equals(java.lang.Object) }
     *
     * @return the TYPE
     */
@@ -117,85 +115,25 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    @Override
    public String toString() {
-      return getClass().getSimpleName()+"{" + "key=" + key + ", value=" + marshall(value) + ", def=" + marshall(def) + ", help=" + help + ", declaringClass=" + declaringClass + '}';
+      return getClass().getSimpleName()+"{" + "key=" + key + ", value=" + valueToString(value) + ", def=" + valueToString(def) + ", help=" + help + ", declaringClass=" + declaringClass + '}';
    }
 
 
    /**
-    * used by {@link #marshall(java.io.Serializable) }, calls String.valueOf, give subclasses a chance to do something other than
-    * String.valueOf if needed.
-    *
+    * Uses {@link StringConversion#getStringConversion()#serializeValue(java.lang.Object, java.lang.StringBuilder, java.lang.String) }.
     * @param value
     * @return
     */
-   protected String valueToString(Object value) {
-      return String.valueOf(value);
-   }
-
-   /**
-    * uses {@link #valueToString(java.lang.Object) } and {@link MultiValueParamParserConstants#PIPE} to append values in arrays.
-    * @see MultipleValueParser
-    * @param o
-    * @param sb 
-    */
-   protected final void append(Object o, StringBuilder sb) {
-      sb.append(valueToString(o)).append(MultiValueParamParserConstants.tokenImage[MultiValueParamParserConstants.PIPE].substring(1, 2));
-   }
-
-   /**
-    * supports arrays of Float, Double, Integer, Boolean, URL and String, calls {@link #append(java.lang.Object, java.lang.StringBuilder) }
-    *
-    * @param array
-    * @param clazz
-    * @return
-    */
-   protected String serializeArray(Object array, Class clazz) {
-      StringBuilder sb = new StringBuilder(20);
-      if (Float[].class.isAssignableFrom(clazz)) {
-         for (Object o : (Float[]) value) {
-            append(o, sb);
-         }
-      } else if (Integer[].class.isAssignableFrom(clazz)) {
-         for (Object o : (Integer[]) value) {
-            append(o, sb);
-         }
-      } else if (Double[].class.isAssignableFrom(clazz)) {
-         for (Object o : (Double[]) value) {
-            append(o, sb);
-         }
-      } else if (Boolean[].class.isAssignableFrom(clazz)) {
-         for (Object o : (Boolean[]) value) {
-            append(o, sb);
-         }
-      } else if (URL[].class.isAssignableFrom(clazz)) {
-         for (Object o : (URL[]) value) {
-            append(o, sb);
-         }
-      } else if (String[].class.isAssignableFrom(clazz)) {
-         for (Object o : (String[]) value) {
-            append(o, sb);
-         }
+   protected String valueToString(TYPE value) {
+      StringBuilder sb = new StringBuilder(15);
+      if (valueClass.isArray()) {
+         sb.append('[');
       }
-      return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
-   }
-
-   /**
-    * Calls {@link #valueToString(java.lang.Object) } or {@link #serializeArray(java.lang.Object, java.lang.Class) }.
-    * Supports arrays of Float, Integer and String in {@link #serializeArray(java.lang.Object, java.lang.Class) }
-    * 
-    */
-   @Override
-   public final String marshall(TYPE value) {
-      if (value != null) {
-         Class clazz = ClassHelper.findParameterClass(0, this.getClass(), Parameter.class);
-         if (clazz.isArray()) {
-            return serializeArray(value, clazz);
-         } else {
-            return valueToString(value);
-         }
-      } else {
-         return null;
+      StringConversion.getStringConversion().serializeValue(value, sb, ",");
+      if (valueClass.isArray()) {
+         sb.append(']');
       }
+      return sb.toString();
    }
 
    @Override
@@ -237,7 +175,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    @Override
-   public Class<? extends Serializable> getValueClass() {
+   public Class<TYPE> getValueClass() {
       return valueClass;
    }
 
@@ -247,6 +185,12 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       return hash;
    }
 
+   /**
+    * NB! calls {@link #getValue() }, 
+    * @see ParameterHelper#isArrayEqual(java.lang.Class, java.lang.Object, java.lang.Object) 
+    * @param obj
+    * @return 
+    */
    @Override
    public boolean equals(Object obj) {
       if (obj == null) {
@@ -262,45 +206,29 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if ((this.help == null) ? (other.help != null) : !this.help.equals(other.help)) {
          return false;
       }
-      if (valueClass.isArray()) {
-         if (this.value != other.value && (this.value == null || !Arrays.equals((Object[])this.value,(Object[])other.value))) {
-            return false;
-         }
-         if (this.def != other.def && (this.def == null || !!Arrays.equals((Object[])this.def,(Object[])other.def))) {
-            return false;
-         }
-      } else {
-         if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
-            return false;
-         }
-         if (this.def != other.def && (this.def == null || !this.def.equals(other.def))) {
-            return false;
-         }
-      }
       if (this.declaringClass != other.declaringClass && (this.declaringClass == null || !this.declaringClass.equals(other.declaringClass))) {
          return false;
       }
       if (this.valueClass != other.valueClass && (this.valueClass == null || !this.valueClass.equals(other.valueClass))) {
          return false;
       }
+      // compare getValue, not value, if it equals its ok, wether it originates from default or not
+      if (valueClass.isArray()) {
+         if (this.getValue() != other.getValue() && (this.getValue() == null || !ParameterHelper.isArrayEqual(valueClass,getValue(), other.getValue()))) {
+            return false;
+         }
+         if (this.def != other.def && (this.def == null || !ParameterHelper.isArrayEqual(valueClass,this.def, other.def))) {
+            return false;
+         }
+      } else {
+         if (this.getValue() != other.getValue() && (this.getValue() == null || !this.getValue().equals(other.getValue()))) {
+            return false;
+         }
+         if (this.def != other.def && (this.def == null || !this.def.equals(other.def))) {
+            return false;
+         }
+      }
       return true;
    }
-
-   /**
-    * used in {@link #unMarshall(java.lang.String) } when the value type is an array.
-    * @see MultipleValueParser#getArrayInstance(boolean) 
-    * @return 
-    */
-   public static boolean isUseJsonParser() {
-      return useJsonParser;
-   }
-
-   /**
-    * @see ParameterizableImpl#setUseJsonParser(boolean) 
-    * @param useJsonParser 
-    */
-   public static void setUseJsonParser(boolean useJsonParser) {
-      ParameterImpl.useJsonParser = useJsonParser;
-   }
-
+   
 }

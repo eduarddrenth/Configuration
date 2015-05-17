@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * A Caching {@link EnhancedMap}.
@@ -112,13 +113,18 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public String remove(Object key) {
+   public String[] remove(Object key) {
       cache.remove(key);
       return super.remove(key);
    }
 
    @Override
-   public String put(String key, String value) {
+   public String[] put(String key, String value) {
+      return put(key,new String[] {value});
+   }
+
+   @Override
+   public String[] put(String key, String[] value) {
       cache.remove(key);
       return super.put(key, value);
    }
@@ -221,6 +227,16 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    @Override
    public int getIntegerProperty(String key, Integer defaultValue) {
       return fromCache(key, defaultValue, int.class);
+   }
+
+   @Override
+   public Pattern getRegexProperty(String key, Pattern defaultValue) {
+      return fromCache(key, defaultValue, Pattern.class);
+   }
+
+   @Override
+   public Pattern[] getRegexProperties(String key, Pattern[] defaultValue) {
+      return fromCache(key, defaultValue, Pattern[].class);
    }
 
 }

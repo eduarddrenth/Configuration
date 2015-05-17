@@ -17,6 +17,7 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.EnhancedMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -60,13 +61,20 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    private boolean notified;
 
    @Override
-   public String put(String key, String value) {
+   public String[] put(String key, String value) {
+      return put(key,new String[] {value});
+   }
+   
+   
+
+   @Override
+   public String[] put(String key, String[] value) {
       boolean exists = containsKey(key);
-      String v1 = value;
-      String v2 = get(key);
-      String s = super.put(key, value);
+      String[] v1 = value;
+      String[] v2 = get(key);
+      String[] s = super.put(key, value);
       if (exists) {
-         if ((v1 == null && v2 != null) || (v1 != null && !v1.equals(v2))) {
+         if ((v1 == null && v2 != null) || (v1 != null && !Arrays.equals(v1, v2))) {
             notifyObservers(new Changes(null, Changes.fromKeys(key), null));
          }
       } else {
@@ -76,14 +84,14 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public void putAll(Map<? extends String, ? extends String> m) {
+   public void putAll(Map<? extends String, ? extends String[]> m) {
       List<String> added = new ArrayList<String>(m.size());
       List<String> changed = new ArrayList<String>(m.size());
-      for (Map.Entry<? extends String, ? extends String> e : m.entrySet()) {
+      for (Map.Entry<? extends String, ? extends String[]> e : m.entrySet()) {
          if (containsKey(e.getKey())) {
-            String v1 = e.getValue();
-            String v2 = get(e.getKey());
-            if ((v1 == null && v2 != null) || (v1 != null && !v1.equals(v2))) {
+            String[] v1 = e.getValue();
+            String[] v2 = get(e.getKey());
+            if ((v1 == null && v2 != null) || (v1 != null && !Arrays.equals(v1, v2))) {
                changed.add(e.getKey());
             }
          } else {
@@ -95,8 +103,8 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public String remove(Object key) {
-      String s = super.remove(key);
+   public String[] remove(Object key) {
+      String[] s = super.remove(key);
       notifyObservers(new Changes(null, null, Changes.fromKeys((String) key)));
       return s;
    }

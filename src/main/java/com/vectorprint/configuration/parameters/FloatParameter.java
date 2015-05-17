@@ -37,14 +37,5 @@ public class FloatParameter extends ParameterImpl<Float>{
       setDefault(0f);
    }
 
-   /**
-    *
-    */
-   @Override
-   public Float unMarshall(String value) {
-      return Float.parseFloat(value);
-   }
-   
-   
 
 }

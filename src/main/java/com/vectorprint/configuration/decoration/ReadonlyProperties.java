@@ -39,17 +39,21 @@ public class ReadonlyProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public String put(String key, String value) {
+   public String[] put(String key, String value) {
+      throw new VectorPrintRuntimeException("Properties are readonly");
+   }
+   @Override
+   public String[] put(String key, String[] value) {
       throw new VectorPrintRuntimeException("Properties are readonly");
    }
 
    @Override
-   public String remove(Object key) {
+   public String[] remove(Object key) {
       throw new VectorPrintRuntimeException("Properties are readonly");
    }
 
    @Override
-   public void putAll(Map<? extends String, ? extends String> m) {
+   public void putAll(Map<? extends String, ? extends String[]> m) {
       throw new VectorPrintRuntimeException("Properties are readonly");
    }
 

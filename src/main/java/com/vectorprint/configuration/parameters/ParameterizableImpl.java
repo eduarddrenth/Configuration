@@ -25,9 +25,9 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.annotation.SettingsField;
-import static com.vectorprint.configuration.parameters.ParameterHelper.findDefaultKey;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
@@ -36,7 +36,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -90,7 +89,8 @@ public class ParameterizableImpl implements Parameterizable {
 
    /**
     * Adds the parameter to this Parameterizable and registers this Parameterizable with the Parameter as Observer.
-    *
+    * Calls {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) }
+    * on the parameter class and the parameter object. Sets the {@link Parameter#getDeclaringClass() declaring class}
     * @param parameter
     */
    @Override
@@ -134,21 +134,6 @@ public class ParameterizableImpl implements Parameterizable {
     * @param settings the value of settings
     */
    @Override
-   public void initDefaults(EnhancedMap settings) {
-      if (settings != null) {
-         for (Parameter parameter : parameters.values()) {
-            String key = findDefaultKey(parameter.getKey(), getClass(), settings);
-            if (key != null) {
-               if (logger.isLoggable(Level.FINE)) {
-                  logger.fine(String.format("found default %s for key %s and class %s", key, parameter.getKey(), getClass().getName()));
-               }
-               parameter.setDefault(parameter.unMarshall(settings.get(key)));
-            }
-         }
-      }
-   }
-
-   @Override
    public Parameterizable clone() {
       try {
          Constructor con = getClass().getConstructor();
@@ -179,18 +164,55 @@ public class ParameterizableImpl implements Parameterizable {
    }
 
    /**
-    * When the argument Observable is a Parameter, this method clears the cache for the parameter key. Overriders must call this method to
-    * keep cache up to date.
+    * When the argument Observable is a Parameter, this method clears the cache for the parameter key. Calls 
+    * {@link #parameterChanged(com.vectorprint.configuration.parameters.Parameter) }.
     *
     * @param o
     * @param arg
     */
    @Override
-   public void update(Observable o, Object arg) {
+   public final void update(Observable o, Object arg) {
       if (o instanceof Parameter) {
          Parameter p = (Parameter) o;
          cache.remove(p.getKey());
+         parameterChanged(p);
       }
    }
+   
+   /**
+    * Called when a Parameter changed (value or default changed), does nothing
+    * @param o 
+    */
+   protected void parameterChanged(Parameter o) {
+      
+   }
 
+   @Override
+   public int hashCode() {
+      int hash = 7;
+      hash = 79 * hash + (this.parameters != null ? this.parameters.hashCode() : 0);
+      return hash;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      final ParameterizableImpl other = (ParameterizableImpl) obj;
+      if (this.parameters != other.parameters && (this.parameters == null || !this.parameters.equals(other.parameters))) {
+         return false;
+      }
+      return true;
+   }
+
+   @Override
+   public String toString() {
+      return "ParameterizableImpl{" + "parameters=" + parameters + '}';
+   }
+
+   
 }

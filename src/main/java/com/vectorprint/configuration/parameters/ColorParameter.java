@@ -23,7 +23,6 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.VectorPrintRuntimeException;
 import java.awt.Color;
 
 /**
@@ -35,19 +34,10 @@ public class ColorParameter extends ParameterImpl<Color> {
    public ColorParameter(String key, String help) {
       super(key, help);
    }
-
-   /**
-    *
-    * @throws VectorPrintRuntimeException
-    */
+   
    @Override
-   public Color unMarshall(String value) throws VectorPrintRuntimeException {
-      return ParameterHelper.getColorFromString(value);
-   }
-
-   @Override
-   protected String valueToString(Object value) {
-      return value!=null?'#' + Integer.toHexString(((Color) value).getRGB()).substring(2):"";
+   protected String valueToString(Color value) {
+      return value != null ? '#' + Integer.toHexString(value.getRGB()).substring(2) : "";
    }
 
 }
