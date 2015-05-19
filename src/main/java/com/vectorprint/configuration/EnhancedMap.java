@@ -24,7 +24,6 @@ package com.vectorprint.configuration;
  * #L%
  */
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
-import com.vectorprint.configuration.binding.StringConversion;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
 import java.io.PrintStream;
@@ -43,7 +42,6 @@ import java.util.regex.Pattern;
  * @see Settings
  * @see AbstractPropertiesDecorator
  * @see EnhancedMapBindingFactory
- * @see StringConversion
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializable {

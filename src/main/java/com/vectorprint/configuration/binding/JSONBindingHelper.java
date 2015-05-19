@@ -21,10 +21,21 @@ import java.awt.Color;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class JSONStringConversion extends StringConversion {
+public class JSONBindingHelper extends BindingHelperImpl {
 
    /**
-    * quote all but (B)boolean and (N)numeric, use "null" for null values
+    * no escaping
+    * @param value
+    * @return 
+    */
+   @Override
+   public String escape(String value) {
+      return value;
+   }
+
+   
+   /**
+    * quote (single) all but (B)boolean and (N)numeric, use "null" for null values
     *
     * @param value
     * @param sb
@@ -39,7 +50,7 @@ public class JSONStringConversion extends StringConversion {
       Class clazz = value.getClass();
       if (!clazz.isArray()) {
          if (value instanceof Color) {
-            sb.append('\'').append(colorToHex((Color) value)).append('\'');
+            sb.append('\'').append(AbstractBindingHelperDecorator.colorToHex((Color) value)).append('\'');
          } else {
             // parameter clazz is never primitive
             if (Number.class.isAssignableFrom(clazz) || Boolean.class.equals(clazz)) {
@@ -65,7 +76,7 @@ public class JSONStringConversion extends StringConversion {
             String v = "null";
             if (O[i]!=null) {
                if (O[i] instanceof Color) {
-                  v = colorToHex((Color) O[i]);
+                  v = AbstractBindingHelperDecorator.colorToHex((Color) O[i]);
                } else {
                   v = String.valueOf(O[i]);
                }

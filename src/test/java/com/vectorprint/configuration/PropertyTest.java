@@ -29,6 +29,8 @@ import com.vectorprint.testing.ThreadTester;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
+import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.Changes;
@@ -54,8 +56,9 @@ import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parser.ParseException;
-import com.vectorprint.configuration.binding.StringConversion;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.parameters.JSONSupport;
+import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
@@ -68,6 +71,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -84,6 +88,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -667,9 +672,12 @@ public class PropertyTest {
       }
    }
 
-   private void setVal(Parameter parameter, EnhancedMap settings) {
-      ParameterizableParser objectParser = new ParameterizableBindingFactoryImpl().getParser(new StringReader(parameter.getKey() + "=" + settings.getProperty(parameter.getKey())));
-      objectParser.setValueOrDefault(parameter, objectParser.parseAsParameterValue(settings.getProperty(parameter.getClass().getSimpleName()), parameter.getKey()), false);
+   private <TYPE extends Serializable> void setVal(Parameter<TYPE> parameter, EnhancedMap settings) {
+      ParameterizableParser objectParser = new ParameterizableBindingFactoryImpl().getParser(new StringReader(""));
+      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().setValueOrDefault(
+          parameter,
+          (TYPE) objectParser.parseAsParameterValue(settings.getProperty(parameter.getKey()), parameter),
+          false);
    }
 
    @Test
@@ -715,11 +723,20 @@ public class PropertyTest {
                      String conf = sw.toString();
                      
                      if (conf != null && !"".equals(conf)) {
-                        StringConversion stringConversion = StringConversion.getStringConversion();
+                        BindingHelper stringConversion = BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper();
                         StringBuilder sb = new StringBuilder();
                         stringConversion.serializeValue(p.getValue(), sb, "|");
                         assertEquals(sb.toString(), conf.substring(conf.indexOf('=') + 1));
-                        new ParameterizableBindingFactoryImpl().getParser(new StringReader("")).parseAsParameterValue(sb.toString(), c.getSimpleName());
+                        
+                        Serializable parseAsParameterValue = new ParameterizableBindingFactoryImpl().getParser(new StringReader("")).parseAsParameterValue(sb.toString(), p);
+                        if (p.getValueClass().isArray()) {
+                           if (!ParameterHelper.isArrayEqual(p.getValueClass(), p.getValue(), parseAsParameterValue)) {
+                              System.out.println("");
+                           }
+                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(),p.getValue(),parseAsParameterValue),ParameterHelper.isArrayEqual(p.getValueClass(), p.getValue(), parseAsParameterValue));
+                        } else {
+                              assertEquals(String.valueOf(p.getValue()), String.valueOf(parseAsParameterValue));
+                        }
                      }
                   } catch (NumberFormatException runtimeException) {
                      runtimeException.printStackTrace();

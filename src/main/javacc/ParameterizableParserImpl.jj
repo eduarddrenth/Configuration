@@ -37,7 +37,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
     import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
-    import com.vectorprint.configuration.binding.StringConversion;
+    import com.vectorprint.configuration.binding.BindingHelper;
     import com.vectorprint.configuration.binding.parameters.ParameterHelper;
     import com.vectorprint.configuration.parameters.Parameterizable;
     import com.vectorprint.configuration.parameters.Parameter;
@@ -79,10 +79,9 @@ PARSER_BEGIN(ParameterizableParserImpl)
             throw new VectorPrintRuntimeException(e);
          }
       }
-
       @Override
-      public List<String> parseAsParameterValue(String valueToParse, String key) {
-         ParameterizableParserImpl parser = new ParameterizableParserImpl(new StringReader(key+"="+valueToParse));
+      public <TYPE extends Serializable> TYPE parseAsParameterValue(String valueToParse, Parameter<TYPE> parameter) {
+         ParameterizableParserImpl parser = new ParameterizableParserImpl(new StringReader(parameter.getKey()+"="+valueToParse));
          parser.token_source.SwitchTo(ParameterizableParserImplTokenManager.PARAMMODE);
          List<String> kv;
          try {
@@ -91,38 +90,44 @@ PARSER_BEGIN(ParameterizableParserImpl)
             throw new VectorPrintRuntimeException(ex);
          }
          kv.remove(0);
-         return kv;
+         return (TYPE)convert(kv, parameter);
       }
 
-      @Override
-      public void setValueOrDefault(Parameter parameter, List<String> values, boolean setDefault) {
+   @Override
+   public void initParameter(Parameter parameter, List<String> values) {
+      if (values != null) {
+         convertAndSet(parameter, values, false);
+      }
+
+   }
+   
+   protected <TYPE extends Serializable> TYPE convert(List<String> values, Parameter<TYPE> parameter) {
          if (values.isEmpty()) {
-            return;
+            return null;
          }
          if (parameter.getValueClass().isArray()) {
             if (String[].class.equals(parameter.getValueClass())) {
-                if (setDefault) parameter.setDefault(values.toArray()); else parameter.setValue(values.toArray());
+               return (TYPE) ArrayHelper.toArray(values);
             } else {
-               Serializable o = (Serializable)getStringConversion().parse(ArrayHelper.toArray(values),parameter.getValueClass());
-               if (setDefault) parameter.setDefault(o); else parameter.setValue(o);
+               Serializable o = (Serializable) getBindingHelper().convert(ArrayHelper.toArray(values), parameter.getValueClass());
+               return (TYPE) o;
             }
          } else {
             if (String.class.equals(parameter.getValueClass())) {
-                if (setDefault) parameter.setDefault(values.get(0)); else parameter.setValue(values.get(0));
+               return (TYPE) values.get(0);
             } else {
-               Serializable o = (Serializable)getStringConversion().parse(values.get(0),parameter.getValueClass());
-               if (setDefault) parameter.setDefault(o); else parameter.setValue(o);
+               Serializable o = (Serializable) getBindingHelper().convert(values.get(0), parameter.getValueClass());
+               return (TYPE) o;
             }
          }
-      }
+   }
+   
 
-      @Override
-      public void initParameter(Parameter parameter, List<String> o) {
-         if (o!=null) {
-            setValueOrDefault(parameter, o, false);
-         }
+   protected void convertAndSet(Parameter parameter, List<String> values, boolean setDefault) {
+      Serializable o = convert(values, parameter);
+      getBindingHelper().setValueOrDefault(parameter, o, setDefault);
+   }
 
-      }
       @Override
       public void serialize(Parameterizable parameterizable, Writer writer) throws IOException {
          writer.write(toConfig(parameterizable).toString());
@@ -204,7 +209,9 @@ PARSER_BEGIN(ParameterizableParserImpl)
       private void toConfig(Parameter p, StringBuilder sb) {
          if (include(p)) {
             sb.append(p.getKey()).append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.EQ].substring(1, 2));
-            getStringConversion().serializeValue(p.getValue(), sb,ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.PIPE].substring(1, 2));
+            getBindingHelper().serializeValue(getBindingHelper().getValueToSerialize(p, false),
+            sb,
+            ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.PIPE].substring(1, 2));
          }
       }
 
@@ -310,8 +317,8 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
       for (Parameter pa : parameterizable.getParameters().values()) {
          String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
          if (key!=null) {
-            List<String> values = parseAsParameterValue(getSettings().getProperty(key), pa.getKey());
-            setValueOrDefault(pa, values, true);
+            Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
+            getBindingHelper().setValueOrDefault(pa, values, true);
          }
       }
       return parameterizable;

@@ -19,7 +19,8 @@ import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-import com.vectorprint.configuration.binding.JSONStringConversion;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
+import com.vectorprint.configuration.binding.JSONBindingHelper;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parser.JSONParser;
@@ -34,10 +35,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Parser / serializer to support JSON syntax. This parser is less efficient than {@link ParameterizableParserImpl} which
- * instantiates and initializes a Parameterizable object during parsing. Robert Fischer's JSON parser is used under the hood.
- * This parser yields a generic Java datamodel (Map, List, String, BigDecimal, etc.) which is translated into a Parameterizable
- * object.
+ * Parser / serializer to support JSON syntax. This parser is less efficient than {@link ParameterizableParserImpl}
+ * which instantiates and initializes a Parameterizable object during parsing. Robert Fischer's JSON parser is used
+ * under the hood. This parser yields a generic Java datamodel (Map, List, String, BigDecimal, etc.) which is translated
+ * into a Parameterizable object.
+ *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class JSONSupport extends AbstractParameterizableParser<Object> {
@@ -45,31 +47,28 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
    private Reader reader;
 
    {
-      setStringConversion(new JSONStringConversion());
+      setBindingHelper(new JSONBindingHelper());
    }
 
    public JSONSupport(Reader reader) {
       this.reader = reader;
    }
 
+   /**
+    * first do conversion to a value for the parameter than call {@link BindingHelper#setValueOrDefault(com.vectorprint.configuration.parameters.Parameter, java.io.Serializable, boolean)
+    * }
+    *
+    * @param parameter
+    * @param values
+    */
    @Override
-   public void initParameter(Parameter parameter, Object value) {
-      if (value!=null) {
-         setValueOrDefault(parameter, value, false);
+   public void initParameter(Parameter parameter, Object values) {
+      if (values != null) {
+         convertAndSet(parameter, values, false);
       }
    }
 
-   @Override
-   public Object parseAsParameterValue(String valueToParse, String key) {
-      try {
-         return new JSONParser(valueToParse).parse();
-      } catch (ParseException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
-   }
-
-   @Override
-   public void setValueOrDefault(Parameter parameter, Object values, boolean setDefault) {
+   protected <TYPE extends Serializable> TYPE convert(Object values, Parameter<TYPE> parameter) {
       if (parameter.getValueClass().isArray()) {
          if (!(values instanceof List)) {
             throw new VectorPrintRuntimeException(EXAMPLE_SUPPORTED_JSON_SYNTAX);
@@ -80,35 +79,34 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
             sl.add(String.valueOf(o));
          }
          if (String[].class.equals(parameter.getValueClass())) {
-            if (setDefault) {
-               parameter.setDefault(sl.toArray());
-            } else {
-               parameter.setValue(sl.toArray());
-            }
+               return (TYPE) ArrayHelper.toArray(sl);
          } else {
-            Serializable o = (Serializable) getStringConversion().parse(ArrayHelper.toArray(sl), parameter.getValueClass());
-            if (setDefault) {
-               parameter.setDefault(o);
-            } else {
-               parameter.setValue(o);
-            }
+            Serializable o = (Serializable) getBindingHelper().convert(ArrayHelper.toArray(sl), parameter.getValueClass());
+            return (TYPE) o;
          }
       } else {
          String s = String.valueOf(values);
          if (String.class.equals(parameter.getValueClass())) {
-            if (setDefault) {
-               parameter.setDefault(s);
-            } else {
-               parameter.setValue(s);
-            }
+            return (TYPE) s;
          } else {
-            Serializable o = (Serializable) getStringConversion().parse(s, parameter.getValueClass());
-            if (setDefault) {
-               parameter.setDefault(o);
-            } else {
-               parameter.setValue(o);
-            }
+            Serializable o = (Serializable) getBindingHelper().convert(s, parameter.getValueClass());
+            return (TYPE) o;
          }
+      }
+   }
+   
+   protected void convertAndSet(Parameter parameter, Object values, boolean setDefault) {
+      Serializable convert = convert(values, parameter);
+      getBindingHelper().setValueOrDefault(parameter, convert, setDefault);
+   }
+
+   @Override
+   public <TYPE extends Serializable> TYPE parseAsParameterValue(String valueToParse, Parameter<TYPE> parameter) {
+      try {
+         Object parse = new JSONParser(valueToParse).parse();
+         return convert(parse, parameter);
+      } catch (ParseException ex) {
+         throw new VectorPrintRuntimeException(ex);
       }
    }
 
@@ -117,7 +115,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
       if (par.getValueClass().isArray()) {
          sb.append('[');
       }
-      getStringConversion().serializeValue(par.getValue(), sb, ",");
+      getBindingHelper().serializeValue(getBindingHelper().getValueToSerialize(par, false), sb, ",");
       if (par.getValueClass().isArray()) {
          sb.append(']');
       }
@@ -227,8 +225,8 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
             for (Parameter pa : parameterizable.getParameters().values()) {
                String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
                if (key != null) {
-                  Object values = parseAsParameterValue(getSettings().getProperty(key), pa.getKey());
-                  setValueOrDefault(pa, values, true);
+                  Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
+                  getBindingHelper().setValueOrDefault(pa, values, true);
                }
             }
          } else {

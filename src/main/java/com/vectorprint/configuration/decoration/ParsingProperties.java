@@ -17,7 +17,8 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.binding.StringConversion;
+import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
+import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import java.io.BufferedOutputStream;
@@ -89,7 +90,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws IOException
     */
    public ParsingProperties(EnhancedMap properties, String... url) throws IOException {
-      this(properties, StringConversion.getStringConversion().parseURLValues(url));
+      this(properties, AbstractBindingHelperDecorator.parseURLValues(url));
    }
 
    /**
@@ -129,12 +130,12 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    
    /**
     * calls {@link #addFromURL(java.net.URL) }.
-    * @see StringConversion#parseURLValues(java.lang.String[]) 
+    * @see BindingHelper#parseURLValues(java.lang.String[]) 
     * @param url
     * @throws IOException
     */
    public void addFromURL(String url) throws IOException {
-      addFromURL(StringConversion.getStringConversion().parse(url, URL.class));
+      addFromURL(BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(url, URL.class));
    }
 
    /**
