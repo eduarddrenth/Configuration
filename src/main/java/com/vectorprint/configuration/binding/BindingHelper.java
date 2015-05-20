@@ -41,12 +41,19 @@ public interface BindingHelper {
 
    /**
     * use this from {@link #serializeValue(java.lang.Object, java.lang.StringBuilder, java.lang.String) } if you need
-    * to escape syntax specific characters.
+    * to escape syntax specific characters. Note that overriding only this method when extending {@link AbstractBindingHelperDecorator}
+    * will not work, because the overridden method will not be called by the encapsulated {@link BindingHelper}.
+    * @see #setEscapeChars(char[]) 
     * @param value
     * @return 
     */
    public String escape(String value);
 
+   /**
+    * set characters to be escaped, do this from the constructors when extending {@link AbstractBindingHelperDecorator}.
+    * @param chars 
+    */
+   public void setEscapeChars(char[] chars);
    /**
     * supports arrays of primitives and their wrappers, enums, URL, Color, Date, Pattern and String
     *

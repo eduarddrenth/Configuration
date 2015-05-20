@@ -64,6 +64,11 @@ public abstract class AbstractBindingHelperDecorator implements BindingHelper {
    }
 
    @Override
+   public void setEscapeChars(char[] chars) {
+      bindingHelper.setEscapeChars(chars);
+   }
+
+   @Override
    public <T> T convert(String[] values, Class<T> clazz) {
       return bindingHelper.convert(values, clazz);
    }

@@ -39,14 +39,15 @@ import java.util.regex.Pattern;
 /**
  * Responsible for converting Strings into (atomic) values and vise versa, for manipulating values and defaults of
  * parameters during or after parsing and serialization and for escaping meaningful characters for a certain syntax.
- *
+ * Use this default implementation in {@link AbstractBindingHelperDecorator#AbstractBindingHelperDecorator(com.vectorprint.configuration.binding.BindingHelper) } when extending it.
+ * 
  * Threadsafe: it is safe to call the available methods from different threads at the same time on one instance of this
  * class.
  *
  * @see StringConverter
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class BindingHelperImpl implements BindingHelper {
+public final class BindingHelperImpl implements BindingHelper {
 
    /**
     * preferably use {@link #getBindingHelper() }
@@ -209,15 +210,16 @@ public class BindingHelperImpl implements BindingHelper {
       return useDefault ? p.getDefault() : p.getValue();
    }
 
-   private static final char[] chars = new char[]{',', '|', ')'};
-
    /**
-    * escapes "|", "," and ")"
+    * Escapes {@link #setEscapeChars(char[]) characters} to be escaped.
     *
     * @param value
     * @return
     */
    public String escape(String value) {
+      if (chars==null) {
+         return value;
+      }
       String s = value;
       StringBuilder sb = new StringBuilder(s.length() + chars.length);
       for (char c : chars) {
@@ -236,6 +238,13 @@ public class BindingHelperImpl implements BindingHelper {
          sb = new StringBuilder(s.length() + chars.length);
       }
       return s;
+   }
+
+   private char[] chars = null;
+
+   @Override
+   public void setEscapeChars(char[] chars) {
+      this.chars = chars;
    }
 
    /**

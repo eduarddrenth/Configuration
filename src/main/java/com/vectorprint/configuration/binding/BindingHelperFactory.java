@@ -22,6 +22,11 @@ package com.vectorprint.configuration.binding;
  */
 public interface BindingHelperFactory {
 
+   /**
+    * BindingHelper is Threadsafe, the same instance is returned for a certain class.
+    * @return 
+    */
    BindingHelper getBindingHelper();
+   BindingHelperFactory setBindingHelperClass(Class<? extends BindingHelper> bindingHelperClass);
 
 }

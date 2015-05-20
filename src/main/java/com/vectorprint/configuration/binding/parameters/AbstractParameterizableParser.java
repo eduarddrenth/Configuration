@@ -20,13 +20,10 @@ import com.vectorprint.configuration.Configurable;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
-import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.ParameterizableImpl;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
 
@@ -41,7 +38,6 @@ public abstract class AbstractParameterizableParser<T> implements Parameterizabl
    private static final Logger logger = Logger.getLogger(AbstractParameterizableParser.class.getName());
    private String packageName;
    private EnhancedMap settings;
-   private BindingHelper bindingHelper = BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper();
 
    @Override
    public ParameterizableSerializer setPrintOnlyNonDefault(boolean printOnlyNonDefault) {
@@ -97,17 +93,6 @@ public abstract class AbstractParameterizableParser<T> implements Parameterizabl
    @Override
    public ParameterizableParser setSettings(EnhancedMap settings) {
       this.settings = settings;
-      return this;
-   }
-
-   @Override
-   public BindingHelper getBindingHelper() {
-      return bindingHelper;
-   }
-
-   @Override
-   public ParameterizableParser setBindingHelper(BindingHelper bindingHelper) {
-      this.bindingHelper = bindingHelper;
       return this;
    }
 

@@ -19,6 +19,7 @@ import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperFactory;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
@@ -27,9 +28,11 @@ import java.io.Serializable;
 /**
  * Interface describing how to get from a syntax to a Parameterizable. You can for example generate a (javacc) parser that
  * implements this interface, or implement this interface and use a (javacc) parser under the hood. You are recommended to
- * extend {@link AbstractParameterizableParser} and use a {@link BindingHelperImpl}. The BindingHelperImpl will be responsible for
+ * extend {@link AbstractParameterizableParser} and use a {@link BindingHelper}. The BindingHelper will be responsible for
  converting Strings into (atomic) values and vise versa, for setting values and defaults of parameters during or after parsing
  and for escaping meaningful characters for a certain syntax.
+ * @see BindingHelper
+ * @see BindingHelperFactory
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface ParameterizableParser<T> {
@@ -73,15 +76,6 @@ public interface ParameterizableParser<T> {
     * @return
     */
    Parameterizable parseParameterizable();
-
-   /**
-    * set the BindingHelper to use, you can override its methods if you need for example to further manipulate a value for a parameter
-    * @param bindingHelper
-    * @return 
-    */
-   ParameterizableParser setBindingHelper(BindingHelper bindingHelper);
-
-   BindingHelper getBindingHelper();
 
    /**
     * Call this when the parsing process instantiated a Parameterizable

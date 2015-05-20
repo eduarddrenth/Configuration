@@ -57,6 +57,7 @@ import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parser.ParseException;
 import com.vectorprint.configuration.binding.BindingHelperImpl;
+import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
 import com.vectorprint.configuration.binding.parameters.JSONSupport;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
@@ -787,6 +788,7 @@ public class PropertyTest {
    @Before
    public void setup() {
       try {
+         BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.setBindingHelperClass(EscapingBindingHelper.class);
          ParameterizableBindingFactoryImpl.setParserClass(ParameterizableParserImpl.class);
          ParameterizableBindingFactoryImpl.setSerializerClass(ParameterizableParserImpl.class);
       } catch (NoSuchMethodException ex) {

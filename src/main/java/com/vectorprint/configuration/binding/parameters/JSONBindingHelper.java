@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vectorprint.configuration.binding;
+package com.vectorprint.configuration.binding.parameters;
 
+import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
+import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
 import java.awt.Color;
 
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class JSONBindingHelper extends BindingHelperImpl {
+public class JSONBindingHelper extends AbstractBindingHelperDecorator {
 
-   /**
-    * no escaping
-    * @param value
-    * @return 
-    */
-   @Override
-   public String escape(String value) {
-      return value;
+   public JSONBindingHelper(BindingHelper bindingHelper) {
+      super(bindingHelper);
    }
 
+   public JSONBindingHelper() {
+      super(new BindingHelperImpl());
+   }
    
    /**
     * quote (single) all but (B)boolean and (N)numeric, use "null" for null values

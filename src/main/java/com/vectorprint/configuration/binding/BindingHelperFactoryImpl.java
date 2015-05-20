@@ -16,6 +16,9 @@
 package com.vectorprint.configuration.binding;
 
 import com.vectorprint.VectorPrintRuntimeException;
+import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -23,31 +26,33 @@ import com.vectorprint.VectorPrintRuntimeException;
  */
 public class BindingHelperFactoryImpl implements BindingHelperFactory {
    
+   
    public static final BindingHelperFactory BINDING_HELPER_FACTORY = new BindingHelperFactoryImpl();
 
-   public static final Class<? extends BindingHelper> DEFAULTCLASS = BindingHelperImpl.class;
+   public static final Class<? extends BindingHelper> DEFAULTCLASS = EscapingBindingHelper.class;
 
    private Class<? extends BindingHelper> bindingHelperClass = DEFAULTCLASS;
 
-   public void setBindeingHelperClass(Class<? extends BindingHelper> bindingHelperClass) {
+   @Override
+   public BindingHelperFactory setBindingHelperClass(Class<? extends BindingHelper> bindingHelperClass) {
       this.bindingHelperClass = bindingHelperClass;
-      bindingHelper = null;
+      return this;
    }
 
-   private volatile BindingHelper bindingHelper = new BindingHelperImpl();
+   private final Map<Class<? extends BindingHelper>,BindingHelper> bindingHelpers = new HashMap<Class<? extends BindingHelper>, BindingHelper>(2);
 
    @Override
    public BindingHelper getBindingHelper() {
-      if (bindingHelper == null) {
+      if (!bindingHelpers.containsKey(bindingHelperClass)) {
          try {
-            bindingHelper = bindingHelperClass.newInstance();
+            bindingHelpers.put(bindingHelperClass, bindingHelperClass.newInstance());
          } catch (InstantiationException ex) {
             throw new VectorPrintRuntimeException(ex);
          } catch (IllegalAccessException ex) {
             throw new VectorPrintRuntimeException(ex);
          }
       }
-      return bindingHelper;
+      return bindingHelpers.get(bindingHelperClass);
    }
 
 }

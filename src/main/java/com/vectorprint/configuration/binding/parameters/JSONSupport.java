@@ -19,8 +19,7 @@ import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
-import com.vectorprint.configuration.binding.JSONBindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parser.JSONParser;
@@ -47,7 +46,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
    private Reader reader;
 
    {
-      setBindingHelper(new JSONBindingHelper());
+      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.setBindingHelperClass(JSONBindingHelper.class);
    }
 
    public JSONSupport(Reader reader) {
@@ -81,7 +80,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
          if (String[].class.equals(parameter.getValueClass())) {
                return (TYPE) ArrayHelper.toArray(sl);
          } else {
-            Serializable o = (Serializable) getBindingHelper().convert(ArrayHelper.toArray(sl), parameter.getValueClass());
+            Serializable o = (Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(ArrayHelper.toArray(sl), parameter.getValueClass());
             return (TYPE) o;
          }
       } else {
@@ -89,7 +88,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
          if (String.class.equals(parameter.getValueClass())) {
             return (TYPE) s;
          } else {
-            Serializable o = (Serializable) getBindingHelper().convert(s, parameter.getValueClass());
+            Serializable o = (Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(s, parameter.getValueClass());
             return (TYPE) o;
          }
       }
@@ -97,7 +96,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
    
    protected void convertAndSet(Parameter parameter, Object values, boolean setDefault) {
       Serializable convert = convert(values, parameter);
-      getBindingHelper().setValueOrDefault(parameter, convert, setDefault);
+      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().setValueOrDefault(parameter, convert, setDefault);
    }
 
    @Override
@@ -115,7 +114,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
       if (par.getValueClass().isArray()) {
          sb.append('[');
       }
-      getBindingHelper().serializeValue(getBindingHelper().getValueToSerialize(par, false), sb, ",");
+      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().serializeValue(BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().getValueToSerialize(par, false), sb, ",");
       if (par.getValueClass().isArray()) {
          sb.append(']');
       }
@@ -226,7 +225,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
                String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
                if (key != null) {
                   Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
-                  getBindingHelper().setValueOrDefault(pa, values, true);
+                  BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().setValueOrDefault(pa, values, true);
                }
             }
          } else {

@@ -47,8 +47,4 @@ public interface ParameterizableSerializer {
 
    boolean getPrintOnlyNonDefault();
 
-   ParameterizableParser setBindingHelper(BindingHelper bindingHelper);
-
-   BindingHelper getBindingHelper();
-
 }

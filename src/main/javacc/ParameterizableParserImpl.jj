@@ -38,6 +38,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
     import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
     import com.vectorprint.configuration.binding.BindingHelper;
+    import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
     import com.vectorprint.configuration.binding.parameters.ParameterHelper;
     import com.vectorprint.configuration.parameters.Parameterizable;
     import com.vectorprint.configuration.parameters.Parameter;
@@ -109,14 +110,14 @@ PARSER_BEGIN(ParameterizableParserImpl)
             if (String[].class.equals(parameter.getValueClass())) {
                return (TYPE) ArrayHelper.toArray(values);
             } else {
-               Serializable o = (Serializable) getBindingHelper().convert(ArrayHelper.toArray(values), parameter.getValueClass());
+               Serializable o = (Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(ArrayHelper.toArray(values), parameter.getValueClass());
                return (TYPE) o;
             }
          } else {
             if (String.class.equals(parameter.getValueClass())) {
                return (TYPE) values.get(0);
             } else {
-               Serializable o = (Serializable) getBindingHelper().convert(values.get(0), parameter.getValueClass());
+               Serializable o = (Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(values.get(0), parameter.getValueClass());
                return (TYPE) o;
             }
          }
@@ -125,7 +126,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
 
    protected void convertAndSet(Parameter parameter, List<String> values, boolean setDefault) {
       Serializable o = convert(values, parameter);
-      getBindingHelper().setValueOrDefault(parameter, o, setDefault);
+      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().setValueOrDefault(parameter, o, setDefault);
    }
 
       @Override
@@ -209,7 +210,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
       private void toConfig(Parameter p, StringBuilder sb) {
          if (include(p)) {
             sb.append(p.getKey()).append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.EQ].substring(1, 2));
-            getBindingHelper().serializeValue(getBindingHelper().getValueToSerialize(p, false),
+            BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().serializeValue(BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().getValueToSerialize(p, false),
             sb,
             ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.PIPE].substring(1, 2));
          }
@@ -318,7 +319,7 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
          String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
          if (key!=null) {
             Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
-            getBindingHelper().setValueOrDefault(pa, values, true);
+            BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().setValueOrDefault(pa, values, true);
          }
       }
       return parameterizable;
