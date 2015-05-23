@@ -55,7 +55,6 @@ import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parser.ParseException;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
 import com.vectorprint.configuration.binding.parameters.json.JSONSupport;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
@@ -63,6 +62,7 @@ import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFa
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
+import com.vectorprint.configuration.binding.parameters.json.JSONBindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
 import java.awt.Color;
@@ -89,7 +89,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -765,7 +764,7 @@ public class PropertyTest {
 
       EnhancedMap vp = new Settings();
       vp.put("ParameterizableImpl.s", "w");
-      ParameterizableParser parser = new ParameterizableParserImpl(new StringReader("P")).setSettings(vp).setPackageName(P.class.getPackage().getName());
+      ParameterizableParser parser = ParameterizableBindingFactoryImpl.getFactory().getParser(new StringReader("P")).setSettings(vp).setPackageName(P.class.getPackage().getName());
       Parameterizable parse = parser.parseParameterizable();
 
       assertEquals("w", parse.getValue("s", String.class));
@@ -775,7 +774,7 @@ public class PropertyTest {
       String sp = sw.toString();
 
       StringReader sr = new StringReader(sp);
-      parse = new ParameterizableParserImpl(sr).setSettings(vp).setPackageName(P.class.getPackage().getName()).parseParameterizable();
+      parse = ParameterizableBindingFactoryImpl.getFactory().getParser(sr).setSettings(vp).setPackageName(P.class.getPackage().getName()).parseParameterizable();
 
       sw = new StringWriter();
       ParameterizableBindingFactoryImpl.getFactory().getSerializer().serialize(parse, sw);
@@ -787,13 +786,13 @@ public class PropertyTest {
 
    @Before
    public void setup() {
-      ParameterizableBindingFactoryImpl.getFactory(ParameterizableParserImpl.class, ParameterizableParserImpl.class);
+      ParameterizableBindingFactoryImpl.getFactory(ParameterizableParserImpl.class, ParameterizableParserImpl.class, new EscapingBindingHelper());
    }
 
    @Test
    public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
-      ParameterizableBindingFactory factoryImpl = ParameterizableBindingFactoryImpl.getFactory(JSONSupport.class, JSONSupport.class);
+      ParameterizableBindingFactory factoryImpl = ParameterizableBindingFactoryImpl.getFactory(JSONSupport.class, JSONSupport.class, new JSONBindingHelper());
       EnhancedMap settings = new Settings();
       settings.put("staticBoolean", "true");
       settings.put("P.c", "'red'");

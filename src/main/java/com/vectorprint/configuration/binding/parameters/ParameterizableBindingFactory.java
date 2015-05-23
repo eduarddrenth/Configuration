@@ -32,6 +32,4 @@ public interface ParameterizableBindingFactory {
    
    BindingHelper getBindingHelper();
    
-   void setBindingHelper(BindingHelper bindingHelper);
-
 }

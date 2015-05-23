@@ -36,11 +36,10 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
    private ParameterizableBindingFactoryImpl() {
    }
 
-   private static final Map<CacheKey, ParameterizableBindingFactory> cache = new HashMap<CacheKey, ParameterizableBindingFactory>(2);
+   private static final Map<CacheKey, ParameterizableBindingFactoryImpl> cache = new HashMap<CacheKey, ParameterizableBindingFactoryImpl>(2);
 
    /**
-    * initializes parser, serializer and bindingHelper (from 
-    * {@link ParameterizableParser#initBindingHelper(com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory)}.
+    * initializes parser, serializer and bindingHelper.
     * The next call to {@link #getFactory() } will return the same factory.
     *
     * @param parserClass
@@ -48,10 +47,11 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
     * @return
     */
    public static synchronized ParameterizableBindingFactory getFactory(Class<? extends ParameterizableParser> parserClass,
-       Class<? extends ParameterizableSerializer> serializerClass) {
+       Class<? extends ParameterizableSerializer> serializerClass, BindingHelper bindingHelper) {
       CacheKey ck = new CacheKey(parserClass, parserClass);
       if (cache.containsKey(ck)) {
          ParameterizableBindingFactoryImpl.factory=cache.get(ck);
+         cache.get(ck).bindingHelper = bindingHelper;
          return cache.get(ck);
       } else {
          ParameterizableBindingFactoryImpl factory = new ParameterizableBindingFactoryImpl();
@@ -68,20 +68,15 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
          } catch (SecurityException ex) {
             throw new VectorPrintRuntimeException(ex);
          }
-         ParameterizableBindingFactory prev = ParameterizableBindingFactoryImpl.factory;
-         ParameterizableBindingFactoryImpl.factory = factory;
-         factory.getParser(r).initBindingHelper(factory);
-         if (factory.bindingHelper == null) {
-            ParameterizableBindingFactoryImpl.factory  =prev;
-            throw new VectorPrintRuntimeException("Parser did not initialize BindingHelper");
-         }
+         ParameterizableBindingFactoryImpl.factory=factory;
+         factory.bindingHelper = bindingHelper;
          cache.put(ck, factory);
          return factory;
       }
    }
 
    /**
-    * return the factory last requested by {@link #getFactory(java.lang.Class, java.lang.Class) }
+    * return the factory last requested by {@link #getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.BindingHelper) }
     * @return 
     */
    public static ParameterizableBindingFactory getFactory() {
@@ -104,10 +99,17 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
 
    private static ParameterizableBindingFactory factory = null;
 
+   /**
+    * instantiate parser, call {@link ParameterizableParser#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) } and return the parser.
+    * @param input
+    * @return 
+    */
    @Override
    public ParameterizableParser getParser(Reader input) {
       try {
-         return constructor.newInstance(input);
+         ParameterizableParser newInstance = constructor.newInstance(input);
+         newInstance.setBindingHelper(bindingHelper);
+         return newInstance;
       } catch (InstantiationException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (IllegalAccessException ex) {
@@ -123,14 +125,21 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
 
    private static final Reader r = new StringReader("");
 
+   /**
+    * instantiate serializer, call {@link ParameterizableSerializer#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) } and return the serializer.
+    * @return 
+    */
    @Override
    public ParameterizableSerializer getSerializer() {
       try {
+         ParameterizableSerializer ps = null;
          if (ParameterizableParserImpl.class.equals(serializerClass) && ParameterizableParserImpl.class.equals(parserClass)) {
-            return (ParameterizableSerializer) constructor.newInstance(r);
+            ps = (ParameterizableSerializer) constructor.newInstance(r);
          } else {
-            return serializerClass.newInstance();
+            ps = serializerClass.newInstance();
          }
+         ps.setBindingHelper(bindingHelper);
+         return ps;
       } catch (InstantiationException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (IllegalAccessException ex) {
@@ -147,11 +156,6 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
    @Override
    public BindingHelper getBindingHelper() {
       return bindingHelper;
-   }
-
-   @Override
-   public void setBindingHelper(BindingHelper bindingHelper) {
-      this.bindingHelper = bindingHelper;
    }
 
    private static class CacheKey {

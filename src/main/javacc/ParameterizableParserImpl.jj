@@ -38,9 +38,6 @@ PARSER_BEGIN(ParameterizableParserImpl)
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
     import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
     import com.vectorprint.configuration.binding.BindingHelper;
-    import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
-    import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
-    import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
     import com.vectorprint.configuration.binding.parameters.ParameterHelper;
     import com.vectorprint.configuration.parameters.Parameterizable;
     import com.vectorprint.configuration.parameters.Parameter;
@@ -74,17 +71,11 @@ PARSER_BEGIN(ParameterizableParserImpl)
 
       private Parameterizable parameterizable = null;
 
-      private ParameterizableBindingFactory parameterizableBindingFactory;
-
-   private void initFactory() {
-      if (parameterizableBindingFactory==null) {
-         parameterizableBindingFactory = ParameterizableBindingFactoryImpl.getFactory(getClass(), getClass());      
-      }
-   }
+      private BindingHelper bindingHelper;
 
    @Override
-   public void initBindingHelper(ParameterizableBindingFactory bindingFactory) {
-      bindingFactory.setBindingHelper(new EscapingBindingHelper());
+   public void setBindingHelper(BindingHelper bindingHelper) {
+      this.bindingHelper = bindingHelper ;
    }
 
       @Override
@@ -125,16 +116,14 @@ PARSER_BEGIN(ParameterizableParserImpl)
             if (String[].class.equals(parameter.getValueClass())) {
                return (TYPE) ArrayHelper.toArray(values);
             } else {
-               initFactory();
-               Serializable o = (Serializable) parameterizableBindingFactory.getBindingHelper().convert(ArrayHelper.toArray(values), parameter.getValueClass());
+               Serializable o = (Serializable) bindingHelper.convert(ArrayHelper.toArray(values), parameter.getValueClass());
                return (TYPE) o;
             }
          } else {
             if (String.class.equals(parameter.getValueClass())) {
                return (TYPE) values.get(0);
             } else {
-               initFactory();
-               Serializable o = (Serializable) parameterizableBindingFactory.getBindingHelper().convert(values.get(0), parameter.getValueClass());
+               Serializable o = (Serializable) bindingHelper.convert(values.get(0), parameter.getValueClass());
                return (TYPE) o;
             }
          }
@@ -143,8 +132,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
 
    protected void convertAndSet(Parameter parameter, List<String> values, boolean setDefault) {
       Serializable o = convert(values, parameter);
-               initFactory();
-      parameterizableBindingFactory.getBindingHelper().setValueOrDefault(parameter, o, setDefault);
+      bindingHelper.setValueOrDefault(parameter, o, setDefault);
    }
 
       @Override
@@ -228,8 +216,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
       private void toConfig(Parameter p, StringBuilder sb) {
          if (include(p)) {
             sb.append(p.getKey()).append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.EQ].substring(1, 2));
-               initFactory();
-            parameterizableBindingFactory.getBindingHelper().serializeValue(parameterizableBindingFactory.getBindingHelper().getValueToSerialize(p, false),
+            bindingHelper.serializeValue(bindingHelper.getValueToSerialize(p, false),
             sb);
          }
       }
@@ -337,8 +324,7 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
          String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
          if (key!=null) {
             Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
-               initFactory();
-            parameterizableBindingFactory.getBindingHelper().setValueOrDefault(pa, values, true);
+            bindingHelper.setValueOrDefault(pa, values, true);
          }
       }
       return parameterizable;

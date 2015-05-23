@@ -97,9 +97,5 @@ public interface ParameterizableParser<T> {
     */
    <TYPE extends Serializable> TYPE parseAsParameterValue(String valueToParse, Parameter<TYPE> parameter);
 
-   /**
-    * instantiate syntax specific bindingHelper and call {@link ParameterizableBindingFactory#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) }
-    * @param bindingFactory 
-    */
-   void initBindingHelper(ParameterizableBindingFactory bindingFactory);
+   void setBindingHelper(BindingHelper bindingHelper);
 }
