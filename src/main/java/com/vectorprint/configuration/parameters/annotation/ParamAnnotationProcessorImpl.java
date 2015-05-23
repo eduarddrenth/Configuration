@@ -23,10 +23,9 @@ package com.vectorprint.configuration.parameters.annotation;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -89,9 +88,9 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
             Constructor con = pic.getConstructor(String.class, String.class);
             ParameterImpl pi = (ParameterImpl) con.newInstance(key, help);
             if (def != null) {
-               pi.setDefault((Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(def, pi.getValueClass()));
+               pi.setDefault((Serializable) ParameterizableBindingFactoryImpl.getFactory().getBindingHelper().convert(def, pi.getValueClass()));
             } else if (defArray!=null) {
-               pi.setDefault((Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(defArray, pi.getValueClass()));
+               pi.setDefault((Serializable) ParameterizableBindingFactoryImpl.getFactory().getBindingHelper().convert(defArray, pi.getValueClass()));
             }
             parameterizable.addParameter(pi,c);
          }

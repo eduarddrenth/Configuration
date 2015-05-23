@@ -133,9 +133,9 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public String getProperty(String key) {
+   public String getPropertyNoDefault(String... keys) {
       checkThread("getProperty");
-      return super.getProperty(key);
+      return super.getPropertyNoDefault(keys);
    }
 
    private void writeObject(java.io.ObjectOutputStream s)

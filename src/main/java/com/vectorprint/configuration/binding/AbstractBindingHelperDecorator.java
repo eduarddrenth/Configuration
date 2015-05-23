@@ -29,8 +29,6 @@ import static com.vectorprint.configuration.binding.BindingHelper.LONG_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.REGEX_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.SHORT_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.URL_PARSER;
-import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
-import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
 import com.vectorprint.configuration.parameters.Parameter;
 import java.awt.Color;
 import java.io.Serializable;
@@ -42,8 +40,7 @@ import java.util.regex.Pattern;
 /**
  * The decoration pattern is advised if you need different behaviour on top of the two implementaions
  * of the BindingHelper interface offered by this library.
- * @see ParameterizableParser#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) 
- * @see ParameterizableSerializer#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) 
+ * @see BindingHelperFactory
  * @author Eduard Drenth at VectorPrint.nl
  */
 public abstract class AbstractBindingHelperDecorator implements BindingHelper {
@@ -84,8 +81,18 @@ public abstract class AbstractBindingHelperDecorator implements BindingHelper {
    }
 
    @Override
-   public void serializeValue(Object value, StringBuilder sb, String arrayValueSeparator) {
-      bindingHelper.serializeValue(value, sb, arrayValueSeparator);
+   public void setArrayValueSeparator(char separator) {
+      bindingHelper.setArrayValueSeparator(separator);
+   }
+
+   @Override
+   public char getArrayValueSeparator() {
+      return bindingHelper.getArrayValueSeparator();
+   }
+
+   @Override
+   public void serializeValue(Object value, StringBuilder sb) {
+      bindingHelper.serializeValue(value, sb);
    }
 
    @Override

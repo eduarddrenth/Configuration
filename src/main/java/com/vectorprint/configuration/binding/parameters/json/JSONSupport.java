@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vectorprint.configuration.binding.parameters;
+package com.vectorprint.configuration.binding.parameters.json;
 
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
+import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
+import com.vectorprint.configuration.binding.parameters.ParameterHelper;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parser.JSONParser;
@@ -44,9 +47,13 @@ import java.util.Map;
 public class JSONSupport extends AbstractParameterizableParser<Object> {
 
    private Reader reader;
-
-   {
-      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.setBindingHelperClass(JSONBindingHelper.class);
+   
+   private ParameterizableBindingFactory parameterizableBindingFactory;
+   
+   private void initFactory() {
+      if (parameterizableBindingFactory==null) {
+         parameterizableBindingFactory = ParameterizableBindingFactoryImpl.getFactory(getClass(), getClass());      
+      }
    }
 
    public JSONSupport(Reader reader) {
@@ -80,7 +87,8 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
          if (String[].class.equals(parameter.getValueClass())) {
                return (TYPE) ArrayHelper.toArray(sl);
          } else {
-            Serializable o = (Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(ArrayHelper.toArray(sl), parameter.getValueClass());
+            initFactory();
+            Serializable o = (Serializable) parameterizableBindingFactory.getBindingHelper().convert(ArrayHelper.toArray(sl), parameter.getValueClass());
             return (TYPE) o;
          }
       } else {
@@ -88,7 +96,8 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
          if (String.class.equals(parameter.getValueClass())) {
             return (TYPE) s;
          } else {
-            Serializable o = (Serializable) BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(s, parameter.getValueClass());
+            initFactory();
+            Serializable o = (Serializable) parameterizableBindingFactory.getBindingHelper().convert(s, parameter.getValueClass());
             return (TYPE) o;
          }
       }
@@ -96,7 +105,8 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
    
    protected void convertAndSet(Parameter parameter, Object values, boolean setDefault) {
       Serializable convert = convert(values, parameter);
-      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().setValueOrDefault(parameter, convert, setDefault);
+      initFactory();
+      parameterizableBindingFactory.getBindingHelper().setValueOrDefault(parameter, convert, setDefault);
    }
 
    @Override
@@ -111,13 +121,8 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
 
    private void serializeParam(Parameter par, StringBuilder sb) {
       sb.append("{'").append(par.getKey()).append("': ");
-      if (par.getValueClass().isArray()) {
-         sb.append('[');
-      }
-      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().serializeValue(BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().getValueToSerialize(par, false), sb, ",");
-      if (par.getValueClass().isArray()) {
-         sb.append(']');
-      }
+      initFactory();
+      parameterizableBindingFactory.getBindingHelper().serializeValue(parameterizableBindingFactory.getBindingHelper().getValueToSerialize(par, false), sb);
       sb.append('}');
    }
 
@@ -224,8 +229,9 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
             for (Parameter pa : parameterizable.getParameters().values()) {
                String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
                if (key != null) {
-                  Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
-                  BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().setValueOrDefault(pa, values, true);
+                  Serializable values = parseAsParameterValue(getSettings().getPropertyNoDefault(key), pa);
+                  initFactory();
+                  parameterizableBindingFactory.getBindingHelper().setValueOrDefault(pa, values, true);
                }
             }
          } else {
@@ -243,6 +249,11 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
     */
    public JSONSupport() {
       // not for parsing
+   }
+
+   @Override
+   public void initBindingHelper(ParameterizableBindingFactory bindingFactory) {
+      bindingFactory.setBindingHelper(new JSONBindingHelper());
    }
 
 }

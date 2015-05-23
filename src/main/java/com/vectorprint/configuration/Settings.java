@@ -25,9 +25,7 @@ import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
 import java.awt.Color;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,7 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.annotation.PreDestroy;
-import static com.vectorprint.configuration.binding.BindingHelperFactoryImpl.BINDING_HELPER_FACTORY;
+import static com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl.getFactory;
 
 /**
  * Enhances Java Map with support for data types, debugging info, overriding properties from command line arguments,
@@ -55,11 +53,11 @@ public final class Settings extends HashMap<String, String[]>
 
    private static final long serialVersionUID = 1;
    private static final Logger log = Logger.getLogger(Settings.class.getName());
-   public static final String EOL = System.getProperty("line.separator", "\n");
 
    @Override
    public void listProperties(PrintStream ps) {
-      ps.println("settings with id " + getId() + ":" + EOL);
+      ps.println("settings with id " + getId() + ":");
+      ps.println();
       for (Map.Entry<String, String[]> entry : super.entrySet()) {
          ps.println(entry.getKey() + "=" + Arrays.asList(entry.getValue()));
       }
@@ -104,11 +102,11 @@ public final class Settings extends HashMap<String, String[]>
       super(map);
    }
 
-   private void debug(String key, Object val) {
-      debug(key, val, true);
+   private void debug(Object val, String... keys) {
+      debug(val, true, keys);
    }
 
-   private void debug(String key, Object val, boolean defaultVal) {
+   private void debug(Object val, boolean defaultVal, String... keys) {
       if (log.isLoggable(Level.FINE)) {
          StringBuilder s = new StringBuilder(String.valueOf(val));
          if (val != null && val.getClass().isArray()) {
@@ -154,7 +152,7 @@ public final class Settings extends HashMap<String, String[]>
                }
             }
          }
-         log.fine(String.format("looking for property %s in %s, using value %s", key, getId(), s.append((defaultVal) ? " (default)" : "").toString()));
+         log.fine(String.format("looking for property %s in %s, using value %s", Arrays.asList(keys), getId(), s.append((defaultVal) ? " (default)" : "").toString()));
       }
    }
 
@@ -165,15 +163,39 @@ public final class Settings extends HashMap<String, String[]>
    }
 
    @Override
-   public String getProperty(String key) {
+   public String getPropertyNoDefault(String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (log.isLoggable(Level.FINE)) {
-         debug(key, (containsKey(key)) ? super.get(key) : null, false);
+         debug((key!=null) ? super.get(key) : null, false, key);
       }
       return getFirst(key);
    }
 
+   private String getFirstKeyPresent(String... keys) {
+      if (keys==null||keys.length==0||keys[0]==null) {
+         throw new VectorPrintRuntimeException("You should provide at least one key");
+      }
+      if (keys.length==1) {
+         if (containsKey(keys[0])) {
+            return keys[0];
+         } else {
+            notPresent.add(keys[0]);
+            return null;
+         }
+      }
+      for (String k : keys) {
+         if (containsKey(k)) {
+            return k;
+         } else {
+            notPresent.add(k);
+         }
+         
+      }
+      return null;
+   }
+   
    private String getFirst(String key) {
-      if (!containsKey(key)) {
+      if (key==null) {
          return null;
       }
       String[] l = get(key);
@@ -181,53 +203,63 @@ public final class Settings extends HashMap<String, String[]>
    }
 
    @Override
-   public String getProperty(String key, String defaultValue) {
-      if (!containsKey(key)) {
+   public String getProperty(String defaultValue, String... keys) {
+      if (defaultValue!=null&&keys==null||keys.length==0) {
+         // assume defaultValue is key
+         return getPropertyNoDefault(defaultValue);
+      }
+      String key = getFirstKeyPresent(keys);
+      if (key==null) {
          shouldUseDefault(key, defaultValue);
          return defaultValue;
       }
-      return getProperty(key);
+      return getPropertyNoDefault(key);
    }
 
    @Override
-   public URL getURLProperty(String key, URL defaultValue) throws MalformedURLException {
-      if (shouldUseDefault(key, defaultValue)) {
+   public URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException {
+      String key = getFirstKeyPresent(keys);
+      if (shouldUseDefault( key,defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), URL.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), URL.class);
    }
 
    @Override
-   public float getFloatProperty(String key, Float defaultValue) {
+   public float getFloatProperty(Float defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Float.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(keys), Float.class);
    }
 
    @Override
-   public boolean getBooleanProperty(String key, Boolean defaultValue) {
+   public boolean getBooleanProperty(Boolean defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Boolean.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Boolean.class);
    }
 
    /**
     * determine if the default value should be used, check if it is set.
     *
-    * @param key the value of key
     * @param defaultVal the value of defaultVal
-    * @return true when the default value should be used
+    * @param keys the value of key
     * @throws VectorPrintRuntimeException when defaultVal should be used and is null
+    * @return the boolean
     */
    private boolean shouldUseDefault(String key, Object defaultVal) throws VectorPrintRuntimeException {
-      if (!containsKey(key)) {
+      if (key==null||!containsKey(key)) {
          if (defaultVal == null) {
             throw new VectorPrintRuntimeException(key + " not found and default is null");
          } else {
-            debug(key, defaultVal);
-            notPresent.add(key);
+            debug( defaultVal, key);
+            if (!notPresent.contains(key)) {
+               notPresent.add(key);
+            }
             return true;
          }
       } else {
@@ -236,63 +268,71 @@ public final class Settings extends HashMap<String, String[]>
    }
 
    @Override
-   public double getDoubleProperty(String key, Double defaultValue) {
+   public double getDoubleProperty(Double defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Double.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Double.class);
    }
 
    @Override
-   public int getIntegerProperty(String key, Integer defaultValue) {
+   public int getIntegerProperty(Integer defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Integer.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Integer.class);
    }
 
    @Override
-   public short getShortProperty(String key, Short defaultValue) {
+   public short getShortProperty(Short defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Short.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Short.class);
    }
 
    @Override
-   public char getCharProperty(String key, Character defaultValue) {
+   public char getCharProperty(Character defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Character.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Character.class);
    }
 
    @Override
-   public byte getByteProperty(String key, Byte defaultValue) {
+   public byte getByteProperty(Byte defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Byte.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Byte.class);
    }
 
    @Override
-   public long getLongProperty(String key, Long defaultValue) {
+   public long getLongProperty(Long defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Long.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Long.class);
    }
 
    @Override
-   public Color getColorProperty(String key, Color defaultValue) {
+   public Color getColorProperty(Color defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Color.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Color.class);
    }
 
    @Override
-   public String[] getStringProperties(String key, String[] defaultValue) {
+   public String[] getStringProperties(String[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
@@ -300,76 +340,85 @@ public final class Settings extends HashMap<String, String[]>
    }
 
    @Override
-   public URL[] getURLProperties(String key, URL[] defaultValue) throws MalformedURLException {
+   public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseURLValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseURLValues(getStringProperties(null, key));
    }
 
    @Override
-   public float[] getFloatProperties(String key, float[] defaultValue) {
+   public float[] getFloatProperties(float[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseFloatValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseFloatValues(getStringProperties(null, key));
    }
 
    @Override
-   public char[] getCharProperties(String key, char[] defaultValue) {
+   public char[] getCharProperties(char[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseCharValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseCharValues(getStringProperties(keys, null));
 
    }
 
    @Override
-   public short[] getShortProperties(String key, short[] defaultValue) {
+   public short[] getShortProperties(short[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseShortValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseShortValues(getStringProperties(keys, null));
    }
 
    @Override
-   public byte[] getByteProperties(String key, byte[] defaultValue) {
+   public byte[] getByteProperties(byte[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseByteValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseByteValues(getStringProperties(keys, null));
    }
 
    @Override
-   public double[] getDoubleProperties(String key, double[] defaultValue) {
+   public double[] getDoubleProperties(double[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseDoubleValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseDoubleValues(getStringProperties(null, key));
    }
 
    @Override
-   public int[] getIntegerProperties(String key, int[] defaultValue) {
+   public int[] getIntegerProperties(int[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseIntValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseIntValues(getStringProperties(null, key));
    }
 
    @Override
-   public boolean[] getBooleanProperties(String key, boolean[] defaultValue) {
+   public boolean[] getBooleanProperties(boolean[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseBooleanValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseBooleanValues(getStringProperties(null, key));
    }
 
    @Override
-   public Color[] getColorProperties(String key, Color[] defaultValue) {
+   public Color[] getColorProperties(Color[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseColorValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseColorValues(getStringProperties(null, key));
    }
 
    @Override
@@ -445,11 +494,12 @@ public final class Settings extends HashMap<String, String[]>
    }
 
    @Override
-   public long[] getLongProperties(String key, long[] defaultValue) {
+   public long[] getLongProperties(long[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseLongValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseLongValues(getStringProperties(null, key));
    }
 
    @Override
@@ -514,15 +564,8 @@ public final class Settings extends HashMap<String, String[]>
     * @throws VectorPrintRuntimeException when no value is found and defaultValue is null
     */
    public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
-      for (String key : keys) {
-         if (containsKey(key)) {
-            return getGenericProperty(key, defaultValue, clazz);
-         }
-      }
-      if (defaultValue == null) {
-         throw new VectorPrintRuntimeException(Arrays.asList(keys).toString() + " not found and default is null");
-      }
-      return defaultValue;
+      String key = getFirstKeyPresent(keys);
+      return getGenericProperty(key, defaultValue, clazz);
    }
 
    /**
@@ -536,37 +579,39 @@ public final class Settings extends HashMap<String, String[]>
     * @throws VectorPrintRuntimeException when no value is found and defaultValue is null
     */
    private <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
-      if (shouldUseDefault(key, defaultValue)) {
+      if (shouldUseDefault(key,defaultValue)) {
          return defaultValue;
       } else {
          if (clazz.isArray()) {
             if (String[].class.equals(clazz)) {
                return (T) get(key);
             }
-            return BINDING_HELPER_FACTORY.getBindingHelper().convert(get(key), clazz);
+            return getFactory().getBindingHelper().convert(get(key), clazz);
          } else {
             if (String.class.equals(clazz)) {
-               return (T) getProperty(key);
+               return (T) getPropertyNoDefault(key);
             }
-            return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), clazz);
+            return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), clazz);
          }
       }
    }
 
    @Override
-   public Date getDateProperty(String key, Date defaultValue) {
+   public Date getDateProperty(Date defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Date.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Date.class);
    }
 
    @Override
-   public Date[] getDateProperties(String key, Date[] defaultValue) {
+   public Date[] getDateProperties(Date[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseDateValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseDateValues(getStringProperties(null, key));
    }
 
    private final Collection<String> unused = new HashSet<String>(25);
@@ -598,51 +643,51 @@ public final class Settings extends HashMap<String, String[]>
    }
 
    /**
-    * uses {@link BindingHelperImpl}
     *
-    * @param key
-    * @param defaultValue
-    * @return
+    * @param defaultValue the value of defaultValue
+    * @param keys the value of keys
     * @throws ClassNotFoundException
     */
    @Override
-   public Class getClassProperty(String key, Class defaultValue) throws ClassNotFoundException {
+   public Class getClassProperty(Class defaultValue, String... keys) throws ClassNotFoundException {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Class.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Class.class);
    }
 
    @Override
-   public Pattern getRegexProperty(String key, Pattern defaultValue) {
+   public Pattern getRegexProperty(Pattern defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return BINDING_HELPER_FACTORY.getBindingHelper().convert(getProperty(key), Pattern.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Pattern.class);
    }
 
    @Override
-   public Pattern[] getRegexProperties(String key, Pattern[] defaultValue) {
+   public Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseRegexValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseRegexValues(getStringProperties(keys, null));
    }
 
    /**
-    * uses {@link BindingHelper#parseClassValues(java.lang.String[])  }
     *
-    * @param key
-    * @param defaultValue
-    * @return
+    * @param defaultValue the value of defaultValue
+    * @param keys the value of keys
     * @throws ClassNotFoundException
     */
    @Override
-   public Class[] getClassProperties(String key, Class[] defaultValue) throws ClassNotFoundException {
+   public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
+      String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return AbstractBindingHelperDecorator.parseClassValues(getStringProperties(key, null));
+      return AbstractBindingHelperDecorator.parseClassValues(getStringProperties(keys, null));
    }
 
    /**

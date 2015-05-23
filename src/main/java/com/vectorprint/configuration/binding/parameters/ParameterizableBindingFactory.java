@@ -16,10 +16,12 @@
 
 package com.vectorprint.configuration.binding.parameters;
 
+import com.vectorprint.configuration.binding.BindingHelper;
 import java.io.Reader;
 
 /**
  *
+ * @see ParameterizableBindingFactoryImpl#getFactory(java.lang.Class, java.lang.Class) 
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface ParameterizableBindingFactory {
@@ -27,5 +29,9 @@ public interface ParameterizableBindingFactory {
    ParameterizableParser getParser(Reader input);
    
    ParameterizableSerializer getSerializer();
+   
+   BindingHelper getBindingHelper();
+   
+   void setBindingHelper(BindingHelper bindingHelper);
 
 }

@@ -15,24 +15,23 @@
  */
 package com.vectorprint.configuration.binding.parameters;
 
-import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.BindingHelperFactory;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import java.io.Serializable;
 
 /**
- * Interface describing how to get from a syntax to a Parameterizable. You can for example generate a (javacc) parser that
+ * Interface describing how to get from a syntax to a Parameterizable and vise versa. You can for example generate a (javacc) parser that
  * implements this interface, or implement this interface and use a (javacc) parser under the hood. You are recommended to
  * extend {@link AbstractParameterizableParser} and use a {@link BindingHelper}. The BindingHelper will be responsible for
  converting Strings into (atomic) values and vise versa, for setting values and defaults of parameters during or after parsing
  and for escaping meaningful characters for a certain syntax.
  * @see BindingHelper
- * @see BindingHelperFactory
+ * @see ParameterizableBindingFactory
+ * @see ParameterizableBindingFactoryImpl
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface ParameterizableParser<T> {
@@ -98,4 +97,9 @@ public interface ParameterizableParser<T> {
     */
    <TYPE extends Serializable> TYPE parseAsParameterValue(String valueToParse, Parameter<TYPE> parameter);
 
+   /**
+    * instantiate syntax specific bindingHelper and call {@link ParameterizableBindingFactory#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) }
+    * @param bindingFactory 
+    */
+   void initBindingHelper(ParameterizableBindingFactory bindingFactory);
 }

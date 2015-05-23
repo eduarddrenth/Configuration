@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vectorprint.configuration.binding.parameters;
+package com.vectorprint.configuration.binding.parameters.json;
 
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
@@ -39,10 +39,9 @@ public class JSONBindingHelper extends AbstractBindingHelperDecorator {
     *
     * @param value
     * @param sb
-    * @param arrayValueSeparator
     */
    @Override
-   public void serializeValue(Object value, StringBuilder sb, String arrayValueSeparator) {
+   public void serializeValue(Object value, StringBuilder sb) {
       if (value == null) {
          sb.append("null");
          return;
@@ -61,14 +60,15 @@ public class JSONBindingHelper extends AbstractBindingHelperDecorator {
          }
          return;
       }
+      sb.append('[');
       if (!clazz.getComponentType().isPrimitive()) {
          if (Number.class.isAssignableFrom(clazz.getComponentType()) || Boolean.class.equals(clazz.getComponentType())) {
-            super.serializeValue(value, sb, arrayValueSeparator);
+            super.serializeValue(value, sb);
             return;
          }
          Object[] O = (Object[]) value;
          if (O.length == 0) {
-            sb.append("null");
+            sb.append("null]");
             return;
          }
          int l = O.length;
@@ -85,7 +85,7 @@ public class JSONBindingHelper extends AbstractBindingHelperDecorator {
                sb.append('\'').append(v).append('\'');
                break;
             }
-            sb.append('\'').append(v).append('\'').append(arrayValueSeparator);
+            sb.append('\'').append(v).append('\'').append(getArrayValueSeparator());
          }
       } else {
          if (char[].class.isAssignableFrom(clazz)) {
@@ -99,12 +99,13 @@ public class JSONBindingHelper extends AbstractBindingHelperDecorator {
                   sb.append('\'').append(String.valueOf(s[i])).append('\'');
                   break;
                }
-               sb.append('\'').append(String.valueOf(s[i])).append('\'').append(arrayValueSeparator);
+               sb.append('\'').append(String.valueOf(s[i])).append('\'').append(getArrayValueSeparator());
             }
          } else {
-            super.serializeValue(value, sb, arrayValueSeparator);
+            super.serializeValue(value, sb);
          }
       }
+      sb.append(']');
    }
 
 }

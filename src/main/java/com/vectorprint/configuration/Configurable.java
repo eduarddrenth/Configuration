@@ -32,7 +32,7 @@ import java.util.Map;
  * {@link Setting}, {@link SettingsField} and {@link SettingsAnnotationProcessor}.
  *
  * @param <P> a Map holding settings for the Configurable Object
- * @see FindableProperties#find(java.lang.String)
+ * @see FindableProperties
  * @see SettingsField
  * @author Eduard Drenth at VectorPrint.nl
  */

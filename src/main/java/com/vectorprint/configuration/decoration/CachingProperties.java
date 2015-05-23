@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -52,11 +53,20 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    private Map<String, Object> cache = new HashMap<String, Object>();
 
    @Override
-   public Date[] getDateProperties(String key, Date[] defaultValue) {
-      return fromCache(key, defaultValue, Date[].class);
+   public Date[] getDateProperties(Date[] defaultValue, String... keys) {
+      return fromCache( defaultValue, Date[].class, keys);
+   }
+   
+   private String cacheKey(String... keys) {
+      String s = keys[0];
+      for (int i = 1; i < keys.length; i++) {
+         s += keys[i];
+      }
+      return s;
    }
 
-   private <T> T fromCache(String key, T defaultValue, Class<T> clazz) {
+   private <T> T fromCache(T defaultValue, Class<T> clazz, String... keys) {
+      String key = cacheKey(keys);
       if (!cache.containsKey(key)) {
          cache.put(key, super.getGenericProperty(defaultValue, clazz, key));
       } else if (null != cache.get(key)) {
@@ -88,33 +98,38 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public Date getDateProperty(String key, Date defaultValue) {
-      return fromCache(key, defaultValue, Date.class);
+   public Date getDateProperty(Date defaultValue, String... keys) {
+      return fromCache( defaultValue, Date.class, keys);
    }
 
    @Override
-   public byte[] getByteProperties(String key, byte[] defaultValue) {
-      return fromCache(key, defaultValue, byte[].class);
+   public byte[] getByteProperties(byte[] defaultValue, String... keys) {
+      return fromCache(defaultValue, byte[].class, keys);
    }
 
    @Override
-   public char[] getCharProperties(String key, char[] defaultValue) {
-      return fromCache(key, defaultValue, char[].class);
+   public char[] getCharProperties(char[] defaultValue, String... keys) {
+      return fromCache(defaultValue, char[].class, keys);
    }
 
    @Override
-   public byte getByteProperty(String key, Byte defaultValue) {
-      return fromCache(key, defaultValue, byte.class);
+   public byte getByteProperty(Byte defaultValue, String... keys) {
+      return fromCache(defaultValue, byte.class, keys);
    }
 
    @Override
-   public char getCharProperty(String key, Character defaultValue) {
-      return fromCache(key, defaultValue, char.class);
+   public char getCharProperty(Character defaultValue, String... keys) {
+      return fromCache(defaultValue, char.class, keys);
    }
 
    @Override
    public String[] remove(Object key) {
-      cache.remove(key);
+      for (Iterator<Entry<String, Object>> it = cache.entrySet().iterator(); it.hasNext();) {
+         Entry<String, Object> next = it.next();
+         if (next.getKey().contains(String.valueOf(key))) {
+            it.remove();
+         }
+      }
       return super.remove(key);
    }
 
@@ -125,118 +140,141 @@ public class CachingProperties extends AbstractPropertiesDecorator {
 
    @Override
    public String[] put(String key, String[] value) {
-      cache.remove(key);
+      for (Iterator<Entry<String, Object>> it = cache.entrySet().iterator(); it.hasNext();) {
+         Entry<String, Object> next = it.next();
+         if (next.getKey().contains(String.valueOf(key))) {
+            it.remove();
+         }
+      }
       return super.put(key, value);
    }
 
    @Override
-   public Color[] getColorProperties(String key, Color[] defaultValue) {
-      return fromCache(key, defaultValue, Color[].class);
+   public Color[] getColorProperties(Color[] defaultValue, String... keys) {
+      return fromCache(defaultValue, Color[].class, keys);
    }
 
    @Override
-   public boolean[] getBooleanProperties(String key, boolean[] defaultValue) {
-      return fromCache(key, defaultValue, boolean[].class);
+   public boolean[] getBooleanProperties(boolean[] defaultValue, String... keys) {
+      return fromCache(defaultValue, boolean[].class, keys);
    }
 
    @Override
-   public double[] getDoubleProperties(String key, double[] defaultValue) {
-      return fromCache(key, defaultValue, double[].class);
+   public double[] getDoubleProperties(double[] defaultValue, String... keys) {
+      return fromCache(defaultValue, double[].class, keys);
    }
 
    @Override
-   public float[] getFloatProperties(String key, float[] defaultValue) {
-      return fromCache(key, defaultValue, float[].class);
+   public float[] getFloatProperties(float[] defaultValue, String... keys) {
+      return fromCache(defaultValue, float[].class, keys);
    }
 
    @Override
-   public float getFloatProperty(String key, Float defaultValue) {
-      return fromCache(key, defaultValue, float.class);
+   public float getFloatProperty(Float defaultValue, String... keys) {
+      return fromCache(defaultValue, float.class, keys);
    }
 
    @Override
-   public double getDoubleProperty(String key, Double defaultValue) {
-      return fromCache(key, defaultValue, double.class);
+   public double getDoubleProperty(Double defaultValue, String... keys) {
+      return fromCache(defaultValue, double.class, keys);
    }
 
    @Override
-   public Color getColorProperty(String key, Color defaultValue) {
-      return fromCache(key, defaultValue, Color.class);
+   public Color getColorProperty(Color defaultValue, String... keys) {
+      return fromCache(defaultValue, Color.class, keys);
+   }
+
+   /**
+    *
+    * @param defaultValue the value of defaultValue
+    * @param key the value of key
+    * @return the boolean
+    */
+   @Override
+   public boolean getBooleanProperty(Boolean defaultValue, String... keys) {
+      return fromCache(defaultValue, boolean.class, keys);
+   }
+
+   /**
+    *
+    * @param defaultValue the value of defaultValue
+    * @param keys the value of keys
+    * @throws ClassNotFoundException
+    */
+   @Override
+   public Class getClassProperty(Class defaultValue, String... keys) throws ClassNotFoundException {
+      return fromCache(defaultValue, Class.class, keys);
+   }
+
+   /**
+    *
+    * @param defaultValue the value of defaultValue
+    * @param keys the value of keys
+    * @throws ClassNotFoundException
+    */
+   @Override
+   public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
+      return fromCache(defaultValue, Class[].class, keys);
    }
 
    @Override
-   public boolean getBooleanProperty(String key, Boolean defaultValue) {
-      return fromCache(key, defaultValue, boolean.class);
+   public short[] getShortProperties(short[] defaultValue, String... keys) {
+      return fromCache(defaultValue, short[].class, keys);
    }
 
    @Override
-   public Class getClassProperty(String key, Class defaultValue) throws ClassNotFoundException {
-      return fromCache(key, defaultValue, Class.class);
+   public short getShortProperty(Short defaultValue, String... keys) {
+      return fromCache(defaultValue, short.class, keys);
    }
 
    @Override
-   public Class[] getClassProperties(String key, Class[] defaultValue) throws ClassNotFoundException {
-      return fromCache(key, defaultValue, Class[].class);
+   public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
+      return fromCache(defaultValue, URL[].class, keys);
    }
 
    @Override
-   public short[] getShortProperties(String key, short[] defaultValue) {
-      return fromCache(key, defaultValue, short[].class);
+   public URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException {
+      return fromCache(defaultValue, URL.class, keys);
    }
 
    @Override
-   public short getShortProperty(String key, Short defaultValue) {
-      return fromCache(key, defaultValue, short.class);
+   public long[] getLongProperties(long[] defaultValue, String... keys) {
+      return fromCache(defaultValue, long[].class, keys);
    }
 
    @Override
-   public URL[] getURLProperties(String key, URL[] defaultValue) throws MalformedURLException {
-      return fromCache(key, defaultValue, URL[].class);
+   public int[] getIntegerProperties(int[] defaultValue, String... keys) {
+      return fromCache(defaultValue, int[].class, keys);
    }
 
    @Override
-   public URL getURLProperty(String key, URL defaultValue) throws MalformedURLException {
-      return fromCache(key, defaultValue, URL.class);
+   public String[] getStringProperties(String[] defaultValue, String... keys) {
+      return fromCache(defaultValue, String[].class, keys);
    }
 
    @Override
-   public long[] getLongProperties(String key, long[] defaultValue) {
-      return fromCache(key, defaultValue, long[].class);
+   public String getPropertyNoDefault(String... keys) {
+      return fromCache(null, String.class, keys);
    }
 
    @Override
-   public int[] getIntegerProperties(String key, int[] defaultValue) {
-      return fromCache(key, defaultValue, int[].class);
+   public long getLongProperty(Long defaultValue, String... keys) {
+      return fromCache(defaultValue, long.class, keys);
    }
 
    @Override
-   public String[] getStringProperties(String key, String[] defaultValue) {
-      return fromCache(key, defaultValue, String[].class);
+   public int getIntegerProperty(Integer defaultValue, String... keys) {
+      return fromCache(defaultValue, int.class, keys);
    }
 
    @Override
-   public String getProperty(String key) {
-      return fromCache(key, null, String.class);
+   public Pattern getRegexProperty(Pattern defaultValue, String... keys) {
+      return fromCache(defaultValue, Pattern.class, keys);
    }
 
    @Override
-   public long getLongProperty(String key, Long defaultValue) {
-      return fromCache(key, defaultValue, long.class);
-   }
-
-   @Override
-   public int getIntegerProperty(String key, Integer defaultValue) {
-      return fromCache(key, defaultValue, int.class);
-   }
-
-   @Override
-   public Pattern getRegexProperty(String key, Pattern defaultValue) {
-      return fromCache(key, defaultValue, Pattern.class);
-   }
-
-   @Override
-   public Pattern[] getRegexProperties(String key, Pattern[] defaultValue) {
-      return fromCache(key, defaultValue, Pattern[].class);
+   public Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys) {
+      return fromCache(defaultValue, Pattern[].class, keys);
    }
 
 }

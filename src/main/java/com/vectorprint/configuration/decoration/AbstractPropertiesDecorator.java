@@ -77,79 +77,85 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       accept(new WrapperOveriew(getApplicationSettings()));
    }
 
+   /**
+    *
+    * @param defaultValue the value of defaultValue
+    * @param key the value of key
+    * @return the boolean
+    */
    @Override
-   public boolean getBooleanProperty(String key, Boolean defaultValue) {
-      return settings.getBooleanProperty(key, defaultValue);
+   public boolean getBooleanProperty(Boolean defaultValue, String... keys) {
+      return settings.getBooleanProperty( defaultValue,keys);
    }
 
    @Override
-   public Color getColorProperty(String key, Color defaultValue) {
-      return settings.getColorProperty(key, defaultValue);
+   public Color getColorProperty(Color defaultValue, String... keys) {
+      return settings.getColorProperty(defaultValue,keys);
    }
 
    @Override
-   public double getDoubleProperty(String key, Double defaultValue) {
-      return settings.getDoubleProperty(key, defaultValue);
+   public double getDoubleProperty(Double defaultValue, String... keys) {
+      return settings.getDoubleProperty(defaultValue, keys);
    }
 
    @Override
-   public float getFloatProperty(String key, Float defaultValue) {
-      return settings.getFloatProperty(key, defaultValue);
+   public float getFloatProperty(Float defaultValue, String... keys) {
+      return settings.getFloatProperty(defaultValue, keys);
    }
 
    @Override
-   public int getIntegerProperty(String key, Integer defaultValue) {
-      return settings.getIntegerProperty(key, defaultValue);
+   public int getIntegerProperty(Integer defaultValue, String... keys) {
+      return settings.getIntegerProperty(defaultValue, keys);
    }
 
    @Override
-   public long getLongProperty(String key, Long defaultValue) {
-      return settings.getLongProperty(key, defaultValue);
+   public long getLongProperty(Long defaultValue, String... keys) {
+      return settings.getLongProperty(defaultValue, keys);
    }
 
    @Override
-   public String getProperty(String key) {
-      return settings.getProperty(key);
+   public String getPropertyNoDefault(String... keys) {
+      return settings.getPropertyNoDefault(keys);
    }
 
    @Override
-   public String getProperty(String key, String defaultValue) {
-      return settings.getProperty(key, defaultValue);
+   public String getProperty(String defaultValue, String... keys) {
+      return settings.getProperty(defaultValue, keys);
    }
 
    @Override
-   public String[] getStringProperties(String key, String[] defaultValue) {
-      return settings.getStringProperties(key, defaultValue);
+   public String[] getStringProperties(String[] defaultValue, String... keys) {
+      return settings.getStringProperties(defaultValue, keys);
    }
 
    @Override
-   public float[] getFloatProperties(String key, float[] defaultValue) {
-      return settings.getFloatProperties(key, defaultValue);
+   public float[] getFloatProperties(float[] defaultValue, String... keys) {
+      return settings.getFloatProperties(defaultValue, keys);
    }
 
    @Override
-   public double[] getDoubleProperties(String key, double[] defaultValue) {
-      return settings.getDoubleProperties(key, defaultValue);
+   public double[] getDoubleProperties(double[] defaultValue, String... keys) {
+      return settings.getDoubleProperties(defaultValue, keys);
    }
 
    @Override
-   public int[] getIntegerProperties(String key, int[] defaultValue) {
-      return settings.getIntegerProperties(key, defaultValue);
+   public int[] getIntegerProperties(int[] defaultValue, String... keys) {
+      return settings.getIntegerProperties(defaultValue, keys);
    }
 
    @Override
-   public long[] getLongProperties(String key, long[] defaultValue) {
-      return settings.getLongProperties(key, defaultValue);
+   public long[] getLongProperties(long[] defaultValue, String... keys) {
+      return settings.getLongProperties(defaultValue, keys);
    }
 
    @Override
-   public boolean[] getBooleanProperties(String key, boolean[] defaultValue) {
-      return settings.getBooleanProperties(key, defaultValue);
+   public boolean[] getBooleanProperties(boolean[] defaultValue, String... keys) {
+      return settings.getBooleanProperties(defaultValue, keys);
    }
 
    @Override
-   public Color[] getColorProperties(String key, Color[] defaultValue) {
-      return settings.getColorProperties(key, defaultValue);
+   public Color[] getColorProperties(Color[] defaultValue, String... keys) {
+      return settings.getColorProperties(defaultValue, keys);
    }
 
    @Override
@@ -311,13 +317,13 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
-   public URL getURLProperty(String key, URL defaultValue) throws MalformedURLException {
-      return settings.getURLProperty(key, defaultValue);
+   public URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException {
+      return settings.getURLProperty(defaultValue, keys);
    }
 
    @Override
-   public URL[] getURLProperties(String key, URL[] defaultValue) throws MalformedURLException {
-      return settings.getURLProperties(key, defaultValue);
+   public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
+      return settings.getURLProperties(defaultValue, keys);
    }
 
    @Override
@@ -326,45 +332,45 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    @Override
-   public short getShortProperty(String key, Short defaultValue) {
-      return settings.getShortProperty(key, defaultValue);
+   public short getShortProperty(Short defaultValue, String... keys) {
+      return settings.getShortProperty(defaultValue, keys);
    }
 
    @Override
-   public char getCharProperty(String key, Character defaultValue) {
-      return settings.getCharProperty(key, defaultValue);
+   public char getCharProperty(Character defaultValue, String... keys) {
+      return settings.getCharProperty(defaultValue, keys);
    }
 
    @Override
-   public byte getByteProperty(String key, Byte defaultValue) {
-      return settings.getByteProperty(key, defaultValue);
+   public byte getByteProperty(Byte defaultValue, String... keys) {
+      return settings.getByteProperty(defaultValue, keys);
    }
 
    @Override
-   public short[] getShortProperties(String key, short[] defaultValue) {
-      return settings.getShortProperties(key, defaultValue);
+   public short[] getShortProperties(short[] defaultValue, String... keys) {
+      return settings.getShortProperties(defaultValue, keys);
    }
 
    @Override
-   public char[] getCharProperties(String key, char[] defaultValue) {
-      return settings.getCharProperties(key, defaultValue);
-
-   }
-
-   @Override
-   public byte[] getByteProperties(String key, byte[] defaultValue) {
-      return settings.getByteProperties(key, defaultValue);
+   public char[] getCharProperties(char[] defaultValue, String... keys) {
+      return settings.getCharProperties(defaultValue, keys);
 
    }
 
    @Override
-   public Date getDateProperty(String key, Date defaultValue) {
-      return settings.getDateProperty(key, defaultValue);
+   public byte[] getByteProperties(byte[] defaultValue, String... keys) {
+      return settings.getByteProperties(defaultValue, keys);
+
    }
 
    @Override
-   public Date[] getDateProperties(String key, Date[] defaultValue) {
-      return settings.getDateProperties(key, defaultValue);
+   public Date getDateProperty(Date defaultValue, String... keys) {
+      return settings.getDateProperty(defaultValue, keys);
+   }
+
+   @Override
+   public Date[] getDateProperties(Date[] defaultValue, String... keys) {
+      return settings.getDateProperties(defaultValue, keys);
    }
 
    @Override
@@ -377,24 +383,36 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       return settings.getKeysNotPresent();
    }
 
+   /**
+    *
+    * @param defaultValue the value of defaultValue
+    * @param keys the value of keys
+    * @throws ClassNotFoundException
+    */
    @Override
-   public Class getClassProperty(String key, Class defaultValue) throws ClassNotFoundException {
-      return settings.getClassProperty(key, defaultValue);
+   public Class getClassProperty(Class defaultValue, String... keys) throws ClassNotFoundException {
+      return settings.getClassProperty(defaultValue, keys);
+   }
+
+   /**
+    *
+    * @param defaultValue the value of defaultValue
+    * @param keys the value of keys
+    * @throws ClassNotFoundException
+    */
+   @Override
+   public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
+      return settings.getClassProperties(defaultValue, keys);
    }
 
    @Override
-   public Class[] getClassProperties(String key, Class[] defaultValue) throws ClassNotFoundException {
-      return settings.getClassProperties(key, defaultValue);
+   public Pattern getRegexProperty(Pattern defaultValue, String... keys) {
+      return settings.getRegexProperty(defaultValue, keys);
    }
 
    @Override
-   public Pattern getRegexProperty(String key, Pattern defaultValue) {
-      return settings.getRegexProperty(key, defaultValue);
-   }
-
-   @Override
-   public Pattern[] getRegexProperties(String key, Pattern[] defaultValue) {
-      return settings.getRegexProperties(key, defaultValue);
+   public Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys) {
+      return settings.getRegexProperties(defaultValue, keys);
    }
 
    @Override

@@ -46,64 +46,72 @@ import java.util.regex.Pattern;
  */
 public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializable {
 
-   boolean getBooleanProperty(String key, Boolean defaultValue);
+   boolean getBooleanProperty(Boolean defaultValue, String... keys);
 
-   Class getClassProperty(String key, Class defaultValue) throws ClassNotFoundException;
+   Class getClassProperty(Class defaultValue, String... keys) throws ClassNotFoundException;
    
-   Class[] getClassProperties(String key, Class[] defaultValue) throws ClassNotFoundException;
+   Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException;
 
-   Pattern getRegexProperty(String key, Pattern defaultValue);
+   Pattern getRegexProperty(Pattern defaultValue, String... keys);
    
-   Pattern[] getRegexProperties(String key, Pattern[] defaultValue);
+   Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys);
 
-   Color getColorProperty(String key, Color defaultValue);
+   Color getColorProperty(Color defaultValue, String... keys);
 
-   double getDoubleProperty(String key, Double defaultValue);
+   double getDoubleProperty(Double defaultValue, String... keys);
 
-   short getShortProperty(String key, Short defaultValue);
+   short getShortProperty(Short defaultValue, String... keys);
 
-   char getCharProperty(String key, Character defaultValue);
+   char getCharProperty(Character defaultValue, String... keys);
 
-   byte getByteProperty(String key, Byte defaultValue);
+   byte getByteProperty(Byte defaultValue, String... keys);
 
-   short[] getShortProperties(String key, short[] defaultValue);
+   short[] getShortProperties(short[] defaultValue, String... keys);
 
-   char[] getCharProperties(String key, char[] defaultValue);
+   char[] getCharProperties(char[] defaultValue, String... keys);
 
-   byte[] getByteProperties(String key, byte[] defaultValue);
+   byte[] getByteProperties(byte[] defaultValue, String... keys);
 
-   float getFloatProperty(String key, Float defaultValue);
+   float getFloatProperty(Float defaultValue, String... keys);
 
-   int getIntegerProperty(String key, Integer defaultValue);
+   int getIntegerProperty(Integer defaultValue, String... keys);
 
-   long getLongProperty(String key, Long defaultValue);
+   long getLongProperty(Long defaultValue, String... keys);
 
-   String getProperty(String key);
+   String getPropertyNoDefault(String... keys);
 
-   String getProperty(String key, String defaultValue);
+   String getProperty(String defaultValue, String... keys);
 
-   URL getURLProperty(String key, URL defaultValue) throws MalformedURLException;
+   URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException;
 
-   String[] getStringProperties(String key, String[] defaultValue);
+   String[] getStringProperties(String[] defaultValue, String... keys);
 
-   URL[] getURLProperties(String key, URL[] defaultValue) throws MalformedURLException;
+   URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException;
 
-   float[] getFloatProperties(String key, float[] defaultValue);
+   float[] getFloatProperties(float[] defaultValue, String... keys);
 
-   double[] getDoubleProperties(String key, double[] defaultValue);
+   double[] getDoubleProperties(double[] defaultValue, String... keys);
 
-   int[] getIntegerProperties(String key, int[] defaultValue);
+   int[] getIntegerProperties(int[] defaultValue, String... keys);
 
-   long[] getLongProperties(String key, long[] defaultValue);
+   long[] getLongProperties(long[] defaultValue, String... keys);
 
-   boolean[] getBooleanProperties(String key, boolean[] defaultValue);
+   boolean[] getBooleanProperties(boolean[] defaultValue, String... keys);
 
-   Color[] getColorProperties(String key, Color[] defaultValue);
+   Color[] getColorProperties(Color[] defaultValue, String... keys);
 
-   Date getDateProperty(String key, Date defaultValue);
+   Date getDateProperty(Date defaultValue, String... keys);
 
-   Date[] getDateProperties(String key, Date[] defaultValue);
+   Date[] getDateProperties(Date[] defaultValue, String... keys);
    
+   /**
+    * look for a setting, if one of the keys is found return its value.
+    * @param <T>
+    * @param defaultValue
+    * @param clazz
+    * @param keys
+    * @return 
+    */
    <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys);
 
    PropertyHelp getHelp(String key);

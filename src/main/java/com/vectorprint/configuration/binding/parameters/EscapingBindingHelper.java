@@ -43,11 +43,13 @@ public final class EscapingBindingHelper extends AbstractBindingHelperDecorator 
    public EscapingBindingHelper(BindingHelper bindingHelper) {
       super(bindingHelper);
       setEscapeChars(new char[]{',','|',')'});
+      setArrayValueSeparator('|');
    }
 
    public EscapingBindingHelper() {
       super(new BindingHelperImpl());
       setEscapeChars(new char[]{',','|',')'});
+      setArrayValueSeparator('|');
    }
 
 }

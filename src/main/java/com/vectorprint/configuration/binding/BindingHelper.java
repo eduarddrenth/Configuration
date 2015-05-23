@@ -82,14 +82,19 @@ public interface BindingHelper {
    <TYPE extends Serializable> TYPE getValueToSerialize(Parameter<TYPE> p, boolean useDefault);
 
    /**
-    * supports Objects and arrays of Objects and primitives, uses String.valueOf. Array values will be separated by the
-    * argument separator, they will NOT be enclosed in '[]'.
+    * set separator to be used for array values, do this from the constructors when extending {@link AbstractBindingHelperDecorator}.
+    * @param chars 
+    */
+   public void setArrayValueSeparator(char separator);
+   char getArrayValueSeparator();
+   /**
+    * Serialize Objects and arrays of Objects and primitives in a specific syntax. Array values will be separated by the
+    * {@link #setArrayValueSeparator(char) separator}.
     *
     * @param value
     * @param sb
-    * @param arrayValueSeparator
     */
-   void serializeValue(Object value, StringBuilder sb, String arrayValueSeparator);
+   void serializeValue(Object value, StringBuilder sb);
 
    /**
     *

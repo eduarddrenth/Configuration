@@ -25,9 +25,10 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
+import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import java.io.Serializable;
 import java.util.Observable;
 
@@ -118,16 +119,15 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
 
    /**
-    * Uses {@link StringConversion#getStringConversion()#serializeValue(java.lang.Object, java.lang.StringBuilder, java.lang.String) }.
+    * Uses {@link BindingHelper#serializeValue(java.lang.Object, java.lang.StringBuilder, java.lang.String) }.
     * @param value
-    * @return
     */
    protected String valueToString(TYPE value) {
       StringBuilder sb = new StringBuilder(15);
       if (valueClass.isArray()) {
          sb.append('[');
       }
-      BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().serializeValue(value, sb, ",");
+      ParameterizableBindingFactoryImpl.getFactory().getBindingHelper().serializeValue(value, sb);
       if (valueClass.isArray()) {
          sb.append(']');
       }

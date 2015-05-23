@@ -216,8 +216,8 @@ public final class BindingHelperImpl implements BindingHelper {
     * @param value
     * @return
     */
-   public String escape(String value) {
-      if (chars==null) {
+   public final String escape(String value) {
+      if (chars==null||chars.length==0) {
          return value;
       }
       String s = value;
@@ -246,17 +246,31 @@ public final class BindingHelperImpl implements BindingHelper {
    public void setEscapeChars(char[] chars) {
       this.chars = chars;
    }
+   
+   private char separator = ',';
+   
+   /**
+    * default is ","
+    * @param separator 
+    */
+   @Override
+   public void setArrayValueSeparator(char separator) {
+      this.separator = separator;
+   }
+
+   @Override
+   public char getArrayValueSeparator() {
+      return separator;
+   }
 
    /**
-    * supports Objects and arrays of Objects and primitives, uses String.valueOf. Array values will be separated by the
-    * argument separator, they will NOT be enclosed in '[]'.
     *
     * @param value
     * @param sb
     * @param arrayValueSeparator
     */
    @Override
-   public void serializeValue(Object value, StringBuilder sb, String arrayValueSeparator) {
+   public void serializeValue(Object value, StringBuilder sb) {
       if (value == null) {
          return;
       }
@@ -289,7 +303,7 @@ public final class BindingHelperImpl implements BindingHelper {
                sb.append(v);
                break;
             }
-            sb.append(v).append(arrayValueSeparator);
+            sb.append(v).append(separator);
          }
       } else {
          if (short[].class.isAssignableFrom(clazz)) {
@@ -303,7 +317,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          } else if (int[].class.isAssignableFrom(clazz)) {
             int[] s = (int[]) value;
@@ -316,7 +330,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          } else if (long[].class.isAssignableFrom(clazz)) {
             long[] s = (long[]) value;
@@ -329,7 +343,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          } else if (float[].class.isAssignableFrom(clazz)) {
             float[] s = (float[]) value;
@@ -342,7 +356,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          } else if (double[].class.isAssignableFrom(clazz)) {
             double[] s = (double[]) value;
@@ -355,7 +369,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          } else if (byte[].class.isAssignableFrom(clazz)) {
             byte[] s = (byte[]) value;
@@ -368,7 +382,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          } else if (boolean[].class.isAssignableFrom(clazz)) {
             boolean[] s = (boolean[]) value;
@@ -381,7 +395,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          } else if (char[].class.isAssignableFrom(clazz)) {
             char[] s = (char[]) value;
@@ -394,7 +408,7 @@ public final class BindingHelperImpl implements BindingHelper {
                   sb.append(String.valueOf(s[i]));
                   break;
                }
-               sb.append(String.valueOf(s[i])).append(arrayValueSeparator);
+               sb.append(String.valueOf(s[i])).append(separator);
             }
          }
       }

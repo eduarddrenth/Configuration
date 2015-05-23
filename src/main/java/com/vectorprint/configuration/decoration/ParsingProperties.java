@@ -18,7 +18,7 @@ package com.vectorprint.configuration.decoration;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
-import com.vectorprint.configuration.binding.BindingHelperFactoryImpl;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import java.io.BufferedOutputStream;
@@ -135,7 +135,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws IOException
     */
    public void addFromURL(String url) throws IOException {
-      addFromURL(BindingHelperFactoryImpl.BINDING_HELPER_FACTORY.getBindingHelper().convert(url, URL.class));
+      addFromURL(ParameterizableBindingFactoryImpl.getFactory().getBindingHelper().convert(url, URL.class));
    }
 
    /**

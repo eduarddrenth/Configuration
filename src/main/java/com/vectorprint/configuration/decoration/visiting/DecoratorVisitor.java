@@ -25,7 +25,7 @@ import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
  * You can define a visitor that allows you to access a certain type of {@link EnhancedMap} in the stack and
  * call its methods. This way you can for example add properties from a url or add observables
  * after the stack of properties is defined.
- * @see AbstractPropertiesDecorator#visit(com.vectorprint.configuration.decoration.DecoratorVisitor) 
+ * @see AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) 
  * @see SettingsField
  * @see SettingsAnnotationProcessor
  * @author Eduard Drenth at VectorPrint.nl
