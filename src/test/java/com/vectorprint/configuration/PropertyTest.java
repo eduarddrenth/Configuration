@@ -30,6 +30,7 @@ import com.vectorprint.VectorPrintException;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.Changes;
@@ -65,6 +66,7 @@ import com.vectorprint.configuration.binding.parameters.ParameterizableSerialize
 import com.vectorprint.configuration.binding.parameters.json.JSONBindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
+import com.vectorprint.configuration.parser.PropertiesParser;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -278,7 +280,7 @@ public class PropertyTest {
 
       EnhancedMap mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
-      EnhancedMapParser parser = new EnhancedMapBindingFactoryImpl().getParser(new StringReader("a=c;d\nb=c\\;d"));
+      EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl()).getParser(new StringReader("a=c;d\nb=c\\;d"));
       parser.parse(mtp);
       assertEquals(2, mtp.getStringProperties(null, "a").length);
       assertEquals(1, mtp.getStringProperties(null, "b").length);
@@ -705,7 +707,7 @@ public class PropertyTest {
                for (String init : testStrings) {
                   try {
                      settings.clear();
-                     EnhancedMapParser parser = new EnhancedMapBindingFactoryImpl().getParser(new StringReader(c.getSimpleName() + "=" + init));
+                     EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl()).getParser(new StringReader(c.getSimpleName() + "=" + init));
                      parser.parse(settings);
                      setVal(p, settings);
                      assertNotNull(p.toString(), p.getValue());

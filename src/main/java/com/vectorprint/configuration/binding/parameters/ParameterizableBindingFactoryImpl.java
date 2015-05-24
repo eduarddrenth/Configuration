@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * This implementation gives you full control over the syntax used to get to and from Parameterizables.
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParameterizableBindingFactoryImpl implements ParameterizableBindingFactory {
@@ -39,7 +39,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
    private static final Map<CacheKey, ParameterizableBindingFactoryImpl> cache = new HashMap<CacheKey, ParameterizableBindingFactoryImpl>(2);
 
    /**
-    * initializes parser, serializer and bindingHelper.
+    * initializes parser class, serializer class and bindingHelper.
     * The next call to {@link #getFactory() } will return the same factory.
     *
     * @param parserClass
@@ -83,19 +83,10 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
       return factory;
    }
 
-   /**
-    * The default parser returned by instances of this factory.
-    */
-   public static final Class<? extends ParameterizableParser> DEFAULTPARSER = ParameterizableParserImpl.class;
-   private Class<? extends ParameterizableParser> parserClass = DEFAULTPARSER;
+   private Class<? extends ParameterizableParser> parserClass;
    private Constructor<? extends ParameterizableParser> constructor;
 
-   /**
-    * The default serializer returned by instances of this factory.
-    */
-   public static final Class<? extends ParameterizableSerializer> DEFAULTSERIALIZER = ParameterizableParserImpl.class;
-
-   private Class<? extends ParameterizableSerializer> serializerClass = DEFAULTSERIALIZER;
+   private Class<? extends ParameterizableSerializer> serializerClass;
 
    private static ParameterizableBindingFactory factory = null;
 
@@ -158,38 +149,4 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
       return bindingHelper;
    }
 
-   private static class CacheKey {
-
-      final Class a, b;
-
-      public CacheKey(Class a, Class b) {
-         this.a = a;
-         this.b = b;
-      }
-
-      @Override
-      public int hashCode() {
-         int hash = 5;
-         return hash;
-      }
-
-      @Override
-      public boolean equals(Object obj) {
-         if (obj == null) {
-            return false;
-         }
-         if (getClass() != obj.getClass()) {
-            return false;
-         }
-         final CacheKey other = (CacheKey) obj;
-         if (this.a != other.a && (this.a == null || !this.a.equals(other.a))) {
-            return false;
-         }
-         if (this.b != other.b && (this.b == null || !this.b.equals(other.b))) {
-            return false;
-         }
-         return true;
-      }
-
-   }
 }

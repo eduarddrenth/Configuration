@@ -18,6 +18,8 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
@@ -141,6 +143,12 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
                         settings = constructor.newInstance(settings, u);
+                        if (ParsingProperties.class.isAssignableFrom(dec)) {
+                           ParsingProperties pp = (ParsingProperties) settings;
+                           EnhancedMapBindingFactory factory =
+                               EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance());
+                           pp.setFactory(factory);
+                        }
                      }
                   } else {
                      if (!hasProps(settings, dec)) {

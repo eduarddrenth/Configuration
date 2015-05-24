@@ -9,8 +9,11 @@
          a specialized syntax and JSON. You can also develop your own syntax:
          <ul>
             <li>extend the provided abstract classes for parsing and serialization</li>
-            <li>set these classes in the provided factories (or use -D properties)</li>
-            <li>optionally extend the AbstractBindingHelperDecorator and set its class in the BindingHelperFactoryImpl</li>
+            <li>extend the AbstractBindingHelperDecorator</li>
+            <li>your BindingHelper must be Threadsafe and provide a no argument constructor</li>
+            <li>Your parser should provide a constructor accepting a Reader as argument</li>
+            <li>Your serializer should provide a no argument constructor</li>
+            <li>use the provided factory implementations in your applications to get hold of a parser, serializer or bindinghelper</li>
          </ul>
       </div>
    </body>

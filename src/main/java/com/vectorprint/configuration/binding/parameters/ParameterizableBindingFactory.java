@@ -17,6 +17,7 @@
 package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.CachingFactory;
 import java.io.Reader;
 
 /**
@@ -24,7 +25,7 @@ import java.io.Reader;
  * @see ParameterizableBindingFactoryImpl#getFactory(java.lang.Class, java.lang.Class) 
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface ParameterizableBindingFactory {
+public interface ParameterizableBindingFactory extends CachingFactory {
          
    ParameterizableParser getParser(Reader input);
    

@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * Responsible for converting Strings into (atomic) values and vise versa, for manipulating values and defaults of
  * parameters during or after parsing and serialization and for escaping meaningful characters for a certain syntax.
  * 
- * BindingHelpers should be implemented Threadsafe
+ * BindingHelpers are Threadsafe.
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface BindingHelper {

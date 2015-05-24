@@ -18,9 +18,11 @@ package com.vectorprint.configuration.decoration;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
-import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
+import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
+import com.vectorprint.configuration.parser.PropertiesParser;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,7 +51,11 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
    
-   private static final EnhancedMapBindingFactory BINDING_FACTORY = new EnhancedMapBindingFactoryImpl();
+   private transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class, new BindingHelperImpl());
+
+   public void setFactory(EnhancedMapBindingFactory factory) {
+      this.factory = factory;
+   }
 
    private ParsingProperties(EnhancedMap properties) throws IOException {
       super(properties);
@@ -122,7 +128,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    protected void loadFromReader(Reader in) throws IOException {
       BufferedReader bi = new BufferedReader(in);
       try {
-         BINDING_FACTORY.getParser(bi).parse(this);
+         factory.getParser(bi).parse(this);
       } finally {
          bi.close();
       }
@@ -135,9 +141,9 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws IOException
     */
    public void addFromURL(String url) throws IOException {
-      addFromURL(ParameterizableBindingFactoryImpl.getFactory().getBindingHelper().convert(url, URL.class));
+      addFromURL(factory.getBindingHelper().convert(url, URL.class));
    }
-
+   
    /**
     * adds properties from a URL, calls {@link #setId(java.lang.String) }.
     * @param url
@@ -178,7 +184,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
             o = conn.getOutputStream();
          }
          osw  = new OutputStreamWriter(new BufferedOutputStream(o));
-         BINDING_FACTORY.getSerializer().serialize(this, osw);
+         factory.getSerializer().serialize(this, osw);
       } finally {
          if (osw != null) {
             osw.close();
@@ -232,6 +238,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
       parsingProperties.commentBeforeKeys.putAll(commentBeforeKeys);
       parsingProperties.propertyUrls = propertyUrls;
       parsingProperties.trailingComment.addAll(trailingComment);
+      parsingProperties.factory = factory;
       return parsingProperties;
    }
 }

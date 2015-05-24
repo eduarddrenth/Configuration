@@ -16,9 +16,13 @@
 package com.vectorprint.configuration.annotation;
 
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
+import com.vectorprint.configuration.binding.settings.EnhancedMapSerializer;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
+import com.vectorprint.configuration.parser.PropertiesParser;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -49,5 +53,21 @@ public @interface Feature {
     * @return 
     */
    public String url() default "";
+   
+   /**
+    * @see ParsingProperties
+    * @return 
+    */
+   public Class<? extends EnhancedMapParser> parserClass() default PropertiesParser.class;
+   /**
+    * @see ParsingProperties
+    * @return 
+    */
+   public Class<? extends EnhancedMapSerializer> serializerClass() default PropertiesParser.class;
+   /**
+    * @see ParsingProperties
+    * @return 
+    */
+   public Class<? extends BindingHelper> bindingHelperClass() default BindingHelper.class;
    
 }

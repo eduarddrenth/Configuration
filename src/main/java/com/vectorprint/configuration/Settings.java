@@ -34,7 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.annotation.PreDestroy;
-import static com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl.getFactory;
+import static com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl.getFactory;
 
 /**
  * Enhances Java Map with support for data types, debugging info, overriding properties from command line arguments,
