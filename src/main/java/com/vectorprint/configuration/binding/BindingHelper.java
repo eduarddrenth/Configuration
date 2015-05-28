@@ -17,12 +17,8 @@
 package com.vectorprint.configuration.binding;
 
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
-import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
-import com.vectorprint.configuration.parameters.Parameter;
 import java.awt.Color;
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,8 +27,7 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 /**
- * Responsible for converting Strings into (atomic) values and vise versa, for manipulating values and defaults of
- * parameters during or after parsing and serialization and for escaping meaningful characters for a certain syntax.
+ * Responsible for converting Strings into (atomic) values and vise versa.
  * 
  * BindingHelpers are Threadsafe.
  * @author Eduard Drenth at VectorPrint.nl
@@ -40,7 +35,7 @@ import java.util.regex.Pattern;
 public interface BindingHelper {
 
    /**
-    * use this from {@link #serializeValue(java.lang.Object, java.lang.StringBuilder, java.lang.String) } if you need
+    * use this from {@link #serializeValue(java.lang.Object)  } if you need
     * to escape syntax specific characters. Note that overriding only this method when extending {@link AbstractBindingHelperDecorator}
     * will not work, because the overridden method will not be called by the encapsulated {@link BindingHelper}.
     * @see #setEscapeChars(char[]) 
@@ -74,16 +69,11 @@ public interface BindingHelper {
     */
    <T> T convert(String value, Class<T> clazz);
 
-   /**
-    * call this from {@link ParameterizableSerializer} to give applications a chance to manipulate values before serialization
-    * @param p
-    * @return
-    */
-   <TYPE extends Serializable> TYPE getValueToSerialize(Parameter<TYPE> p, boolean useDefault);
 
    /**
     * set separator to be used for array values, do this from the constructors when extending {@link AbstractBindingHelperDecorator}.
-    * @param chars 
+    * @param separator
+    * @param char
     */
    public void setArrayValueSeparator(char separator);
    char getArrayValueSeparator();
@@ -92,20 +82,10 @@ public interface BindingHelper {
     * {@link #setArrayValueSeparator(char) separator}.
     *
     * @param value
-    * @param sb
+    * @return the String
     */
-   void serializeValue(Object value, StringBuilder sb);
+   String serializeValue(Object value);
 
-   /**
-    *
-    * Call this from {@link ParameterizableParser#initParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Object)
-    * } and when a default is found to give applications a chance to manipulate values before setting it in a Parameter.
-    *
-    * @param parameter
-    * @param value
-    * @param setDefault
-    */
-   <TYPE extends Serializable> void setValueOrDefault(Parameter<TYPE> parameter, TYPE value, boolean setDefault);
 
    public static class FloatParser implements StringConverter<Float> {
 
@@ -190,9 +170,6 @@ public interface BindingHelper {
       }
    }
 
-   /**
-    * calls {@link #classFromKey(java.lang.String) }
-    */
    public static class ClassParser implements StringConverter<Class> {
 
       @Override
@@ -218,6 +195,11 @@ public interface BindingHelper {
 
       @Override
       public Character convert(String val) {
+         if (val==null||val.length()==0) {
+            return null;
+         } else if (val.length() > 1) {
+            throw new VectorPrintRuntimeException(String.format("cannot turn %s into one Character", val));
+         }
          return val.charAt(0);
       }
    }

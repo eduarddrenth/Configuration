@@ -187,7 +187,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    /**
     *
     * @param defaultValue the value of defaultValue
-    * @param key the value of key
+    * @param keys
     * @return the boolean
     */
    @Override
@@ -199,6 +199,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
     *
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
+    * @return 
     * @throws ClassNotFoundException
     */
    @Override
@@ -210,6 +211,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
     *
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
+    * @return 
     * @throws ClassNotFoundException
     */
    @Override

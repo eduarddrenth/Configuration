@@ -37,7 +37,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
     import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
-    import com.vectorprint.configuration.binding.BindingHelper;
+    import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
     import com.vectorprint.configuration.binding.parameters.ParameterHelper;
     import com.vectorprint.configuration.parameters.Parameterizable;
     import com.vectorprint.configuration.parameters.Parameter;
@@ -65,16 +65,16 @@ PARSER_BEGIN(ParameterizableParserImpl)
       *
       * Annotations will be processed, {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)} will be called on the class.
       * Parameterizables and Parameters will be initialized and default values for parameters will initialized from settings, see
-      * {@link ParameterHelper#findDefaultKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap)}
+      * {@link ParameterHelper#findKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap, com.vectorprint.configuration.binding.parameters.ParameterHelper.SUFFIX)}
       */
     public class ParameterizableParserImpl extends AbstractParameterizableParser<List<String>> {
 
       private Parameterizable parameterizable = null;
 
-      private BindingHelper bindingHelper;
+      private ParamBindingHelper bindingHelper;
 
    @Override
-   public void setBindingHelper(BindingHelper bindingHelper) {
+   public void setBindingHelper(ParamBindingHelper bindingHelper) {
       this.bindingHelper = bindingHelper ;
    }
 
@@ -215,9 +215,8 @@ PARSER_BEGIN(ParameterizableParserImpl)
        */
       private void toConfig(Parameter p, StringBuilder sb) {
          if (include(p)) {
-            sb.append(p.getKey()).append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.EQ].substring(1, 2));
-            bindingHelper.serializeValue(bindingHelper.getValueToSerialize(p, false),
-            sb);
+            sb.append(p.getKey()).append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.EQ].substring(1, 2))
+            .append(bindingHelper.serializeValue(bindingHelper.getValueToSerialize(p, false)));
          }
       }
 
@@ -276,7 +275,6 @@ TOKEN:
 }
 /** stuf like this should be parsed
 Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
-      * @param pkg the name of the package without trailing dot or null. When pkg is null a full className is expected for the object
 */
 Parameterizable parseAsObject()
 throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException:
@@ -321,7 +319,12 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
    )?
    {
       for (Parameter pa : parameterizable.getParameters().values()) {
-         String key = ParameterHelper.findDefaultKey(pa.getKey(), parameterizable.getClass(), getSettings());
+         String key = ParameterHelper.findKey(pa.getKey(), parameterizable.getClass(), getSettings(),ParameterHelper.SUFFIX.set_default);
+         if (key!=null) {
+            Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
+            bindingHelper.setValueOrDefault(pa, values, true);
+         }
+         key = ParameterHelper.findKey(pa.getKey(), parameterizable.getClass(), getSettings(), ParameterHelper.SUFFIX.set_value);
          if (key!=null) {
             Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
             bindingHelper.setValueOrDefault(pa, values, true);

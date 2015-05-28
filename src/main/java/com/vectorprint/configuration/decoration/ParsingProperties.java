@@ -51,7 +51,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
    
-   private transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class, new BindingHelperImpl());
+   private transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class, new BindingHelperImpl(), false);
 
    public void setFactory(EnhancedMapBindingFactory factory) {
       this.factory = factory;
@@ -100,7 +100,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    }
 
    /**
-    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL...)) }
+    * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL...) }
     * @param properties
     * @param inFile
     * @throws IOException
@@ -123,6 +123,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    /**
     * loads properties (overwrites) from the Reader using {@link EnhancedMapBindingFactory#getParser(java.io.Reader) }.
     *
+    * @param in
     * @throws IOException
     */
    protected void loadFromReader(Reader in) throws IOException {
@@ -136,7 +137,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    
    /**
     * calls {@link #addFromURL(java.net.URL) }.
-    * @see BindingHelper#parseURLValues(java.lang.String[]) 
+    * @see BindingHelper#convert(java.lang.String, java.lang.Class) 
     * @param url
     * @throws IOException
     */
@@ -146,7 +147,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    
    /**
     * adds properties from a URL, calls {@link #setId(java.lang.String) }.
-    * @param url
+    * @param u
     * @throws IOException
     */
    public void addFromURL(URL u) throws IOException {
@@ -169,6 +170,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    /**
     * save the properties to a url, using a {@link EnhancedMapBindingFactory#getSerializer() }.
     *
+    * @param url
     * @throws IOException
     */
    public void saveToUrl(URL url) throws IOException {

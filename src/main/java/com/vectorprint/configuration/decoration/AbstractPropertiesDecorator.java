@@ -51,8 +51,8 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    private EnhancedMap settings;
 
    /**
-    * Will call {@link ApplicationSettings#addDecorator(java.lang.Class) } and 
-    * {@link ApplicationSettings#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }.
+    * Will call {@link Settings#addDecorator(java.lang.Class) } and 
+    * {@link Settings#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }
     *
     * @param settings may not be null
     * @throws VectorPrintRuntimeException when a decorator of this type is already there or when this decorator
@@ -80,7 +80,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    /**
     *
     * @param defaultValue the value of defaultValue
-    * @param key the value of key
+    * @param keys
     * @return the boolean
     */
    @Override
@@ -292,7 +292,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    /**
     * traverse the stack of settings decorators and visit all that are instances of {@link DecoratorVisitor#getClazzToVisit()
-    * }. {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap, java.lang.Object) } will be called
+    * }. {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap) } will be called
     *
     * @param dv
     * @see SettingsAnnotationProcessorImpl
@@ -387,6 +387,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
     *
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
+    * @return 
     * @throws ClassNotFoundException
     */
    @Override
@@ -398,6 +399,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
     *
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
+    * @return 
     * @throws ClassNotFoundException
     */
    @Override
@@ -451,6 +453,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
     * own serialization
     *
     * @param s
+    * @throws java.io.IOException
     */
    protected void writeEmbeddedSettings(java.io.ObjectOutputStream s) throws IOException {
       s.writeObject(settings);

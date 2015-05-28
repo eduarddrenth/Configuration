@@ -29,6 +29,8 @@ import java.io.Serializable;
  * An object to prepare key value pairs
  *
  * @author Eduard Drenth at VectorPrint.nl
+ * @param <K>
+ * @param <V>
  */
 public interface PrepareKeyValue<K extends Serializable, V extends Serializable> extends Serializable {
 

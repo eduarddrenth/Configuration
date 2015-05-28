@@ -17,36 +17,35 @@ package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.Parameter;
-import com.vectorprint.configuration.parameters.Parameterizable;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.Serializable;
 
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface ParameterizableSerializer {
+public interface ParamBindingHelper extends BindingHelper {
 
    /**
-    * Build syntax for a certain Parameterizable
+    * call this from {@link ParameterizableSerializer} to give applications a chance to manipulate values before
+    * serialization
+    *
+    * @param <TYPE>
     * @param p
-    * @param w
-    * @throws IOException 
+    * @param useDefault
+    * @return
     */
-   void serialize(Parameterizable p, Writer w) throws IOException;
-   
+   <TYPE extends Serializable> TYPE getValueToSerialize(Parameter<TYPE> p, boolean useDefault);
+
    /**
-    * Build syntax for a certain Parameter
-    * @param p
-    * @param w
-    * @throws IOException 
+    *
+    * Call this from {@link ParameterizableParser#initParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Object)
+    * } and when a default is found to give applications a chance to manipulate values before setting it in a Parameter.
+    *
+    * @param <TYPE>
+    * @param parameter
+    * @param value
+    * @param setDefault
     */
-   void serialize(Parameter p, Writer w) throws IOException;
+   <TYPE extends Serializable> void setValueOrDefault(Parameter<TYPE> parameter, TYPE value, boolean setDefault);
 
-   ParameterizableSerializer setPrintOnlyNonDefault(boolean printOnlyNonDefault);
-
-   boolean getPrintOnlyNonDefault();
-
-   void setBindingHelper(ParamBindingHelper bindingHelper);
-   
 }

@@ -30,6 +30,8 @@ import java.util.Set;
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
+ * @param <K>
+ * @param <V>
  */
 public abstract class AbstractPrepareKeyValue<K extends Serializable, V extends Serializable> implements PrepareKeyValue<K, V> {
 
@@ -39,7 +41,7 @@ public abstract class AbstractPrepareKeyValue<K extends Serializable, V extends 
    /**
     * returns true when the key should not be skipped
     *
-    * @see #addKeyToSkip(java.lang.Object)
+    * @see #addKeyToSkip(java.io.Serializable) 
     * @param keyValue 
     * @return
     */

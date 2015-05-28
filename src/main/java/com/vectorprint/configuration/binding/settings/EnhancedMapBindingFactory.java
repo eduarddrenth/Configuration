@@ -17,14 +17,13 @@
 package com.vectorprint.configuration.binding.settings;
 
 import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.CachingFactory;
 import java.io.Reader;
 
 /**
- * 
+ * @see EnhancedMapBindingFactoryImpl#getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.BindingHelper, boolean) 
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface EnhancedMapBindingFactory extends CachingFactory {
+public interface EnhancedMapBindingFactory {
          
    EnhancedMapParser getParser(Reader input);
    

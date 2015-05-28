@@ -19,7 +19,6 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
@@ -27,9 +26,9 @@ import com.vectorprint.configuration.decoration.FindableProperties;
 import java.util.Map;
 
 /**
- * A Configurable object should be initialized by a {@link SettingsProvider}.
- * Instead of implementing this interface to provide settings to your objects you could also make use of
- * {@link Setting}, {@link SettingsField} and {@link SettingsAnnotationProcessor}.
+ * A Configurable object should be initialized by a {@link SettingsProvider}. Instead of implementing this interface to
+ * provide settings to your objects you could also make use of {@link Setting}, {@link SettingsField} and
+ * {@link SettingsAnnotationProcessor}.
  *
  * @param <P> a Map holding settings for the Configurable Object
  * @see FindableProperties
@@ -38,29 +37,28 @@ import java.util.Map;
  */
 public interface Configurable<P extends Map> {
 
-        /**
-         * return properties
-         *
-         * @return the properties found or null
-         */
-        P getSettings();
-        
-        /**
-         * A settingsprovider can provide settings to a Configurable by calling this method.
-         *
-         * @param settings
-         */
-        
-        void initSettings(P settings);
-        
-        /**
-         * return a setting of a certain type
-         * @see EnhancedMap#getGenericProperty(java.lang.String, java.lang.Object, java.lang.Class) 
-         * @param <TYPE>
-         * @param key
-         * @param defaultValue 
-         * @param clazz
-         * @return 
-         */
-        <TYPE> TYPE getSetting(TYPE defaultValue, Class<TYPE> clazz, Object... keys);
+   /**
+    * return properties
+    *
+    * @return the properties found or null
+    */
+   P getSettings();
+
+   /**
+    * A settingsprovider can provide settings to a Configurable by calling this method.
+    *
+    * @param settings
+    */
+   void initSettings(P settings);
+
+   /**
+    * return a setting of a certain type
+    *
+    * @param keys
+    * @see EnhancedMap#getGenericProperty(java.lang.Object, java.lang.Class, java.lang.String...)
+    * @param defaultValue
+    * @param clazz
+    * @return
+    */
+   <TYPE> TYPE getSetting(TYPE defaultValue, Class<TYPE> clazz, Object... keys);
 }

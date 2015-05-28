@@ -39,16 +39,19 @@ public class ParameterHelper {
    private static final Logger log = Logger.getLogger(ParameterHelper.class.getName());
 
 
+   public enum SUFFIX {set_default, set_value}
+   
    /**
-    * looks for a default value for a key based on the simpleName of a class suffixed by .key. This method
+    * looks for a default value for a key based on the simpleName of a class suffixed by .key and .suffix. This method
     * will traverse all Parameterizable superclasses in search of a default.
     * @param key the key to find
     * @param clazz
     * @param settings
+    * @param suffix 
     * @return the key pointing to default setting or null
     */
-   public static String findDefaultKey(String key, Class<? extends Parameterizable> clazz, EnhancedMap settings) {
-      String simpleName = clazz.getSimpleName() + "." + key;
+   public static String findKey(String key, Class<? extends Parameterizable> clazz, EnhancedMap settings, SUFFIX suffix) {
+      String simpleName = clazz.getSimpleName() + "." + key + "." + suffix;
       while (!settings.containsKey(simpleName)) {
          Class c = clazz.getSuperclass();
          if (!Parameterizable.class.isAssignableFrom(c)) {
@@ -58,7 +61,7 @@ public class ParameterHelper {
          if (clazz == null) {
             return null;
          }
-         simpleName = clazz.getSimpleName() + "." + key;
+         simpleName = clazz.getSimpleName() + "." + key + "." + suffix;
       }
       if (log.isLoggable(Level.FINE)) {
          log.fine("found default " + simpleName + ": " + settings.get(simpleName));

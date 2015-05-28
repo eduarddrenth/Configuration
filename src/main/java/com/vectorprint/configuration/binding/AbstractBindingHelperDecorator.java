@@ -16,6 +16,8 @@
 
 package com.vectorprint.configuration.binding;
 
+import com.vectorprint.ArrayHelper;
+import com.vectorprint.VectorPrintRuntimeException;
 import static com.vectorprint.configuration.binding.BindingHelper.BOOLEAN_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.BYTE_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.CHAR_PARSER;
@@ -29,9 +31,9 @@ import static com.vectorprint.configuration.binding.BindingHelper.LONG_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.REGEX_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.SHORT_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.URL_PARSER;
-import com.vectorprint.configuration.parameters.Parameter;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
-import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.Date;
@@ -40,14 +42,16 @@ import java.util.regex.Pattern;
 /**
  * The decoration pattern is advised if you need different behaviour on top of the two implementaions
  * of the BindingHelper interface offered by this library.
- * @see BindingHelperFactory
+ * @param <T>
+ * @see ParameterizableBindingFactory
+ * @see EnhancedMapBindingFactory
  * @author Eduard Drenth at VectorPrint.nl
  */
-public abstract class AbstractBindingHelperDecorator implements BindingHelper {
+public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> implements BindingHelper {
    
-   private final BindingHelper bindingHelper;
+   protected final T bindingHelper;
 
-   public AbstractBindingHelperDecorator(BindingHelper bindingHelper) {
+   public AbstractBindingHelperDecorator(T bindingHelper) {
       this.bindingHelper = bindingHelper;
    }
 
@@ -76,11 +80,6 @@ public abstract class AbstractBindingHelperDecorator implements BindingHelper {
    }
 
    @Override
-   public <TYPE extends Serializable> TYPE getValueToSerialize(Parameter<TYPE> p, boolean useDefault) {
-      return bindingHelper.getValueToSerialize(p, useDefault);
-   }
-
-   @Override
    public void setArrayValueSeparator(char separator) {
       bindingHelper.setArrayValueSeparator(separator);
    }
@@ -91,14 +90,10 @@ public abstract class AbstractBindingHelperDecorator implements BindingHelper {
    }
 
    @Override
-   public void serializeValue(Object value, StringBuilder sb) {
-      bindingHelper.serializeValue(value, sb);
+   public String serializeValue(Object value) {
+      return bindingHelper.serializeValue(value);
    }
 
-   @Override
-   public <TYPE extends Serializable> void setValueOrDefault(Parameter<TYPE> parameter, TYPE value, boolean setDefault) {
-      bindingHelper.setValueOrDefault(parameter, value, setDefault);
-   }
    
    public static float[] parseFloatValues(String[] values) {
       if (values == null || values.length == 0) {
@@ -161,25 +156,29 @@ public abstract class AbstractBindingHelperDecorator implements BindingHelper {
    }
 
    public static char[] parseCharValues(String[] values) {
-      if (values == null || values.length == 0) {
+      if (values == null || values.length == 0 || values[0] == null) {
          return null;
       }
-      char[] rv = new char[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = s.charAt(0);
+      if (values.length > 1) {
+         throw new VectorPrintRuntimeException(String.format("cannot turn mutliple strings (%s) into a char[]",values.length));
+      }
+      char[] rv = new char[values[0].length()];
+      for (int i = 0; i < values[0].length(); i++) {
+         rv[i] = values[0].charAt(i);
       }
       return rv;
    }
 
    public static Character[] parseCharObjects(String[] values) {
-      if (values == null || values.length == 0) {
+      if (values == null || values.length == 0 || values[0] == null) {
          return null;
       }
-      Character[] rv = new Character[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = CHAR_PARSER.convert(s);
+      if (values.length > 1) {
+         throw new VectorPrintRuntimeException(String.format("cannot turn mutliple strings (%s) into a Character[]",values.length));
+      }
+      Character[] rv = new Character[values[0].length()];
+      for (int i = 0; i < values[0].length(); i++) {
+         rv[i] = values[0].charAt(i);
       }
       return rv;
    }
@@ -209,27 +208,23 @@ public abstract class AbstractBindingHelperDecorator implements BindingHelper {
    }
 
    public static byte[] parseByteValues(String[] values) {
-      if (values == null || values.length == 0) {
+      if (values == null || values.length == 0 || values[0] == null) {
          return null;
       }
-      byte[] rv = new byte[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = Byte.parseByte(s);
+      if (values.length > 1) {
+         throw new VectorPrintRuntimeException(String.format("cannot turn mutliple strings (%s) into a byte[]",values.length));
       }
-      return rv;
+      return values[0].getBytes();
    }
 
    public static Byte[] parseByteObjects(String[] values) {
-      if (values == null || values.length == 0) {
+      if (values == null || values.length == 0 || values[0] == null) {
          return null;
       }
-      Byte[] rv = new Byte[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = BYTE_PARSER.convert(s);
+      if (values.length > 1) {
+         throw new VectorPrintRuntimeException(String.format("cannot turn mutliple strings (%s) into a Byte[]",values.length));
       }
-      return rv;
+      return ArrayHelper.wrap(values[0].getBytes());
    }
 
    public static double[] parseDoubleValues(String[] values) {
@@ -323,7 +318,11 @@ public abstract class AbstractBindingHelperDecorator implements BindingHelper {
       T[] t = (T[]) Array.newInstance(clazz, values.length);
       int i = 0;
       for (String s : values) {
-         t[i++] = (T) Enum.valueOf(clazz, s);
+         try {
+            t[i++] = (T) Enum.valueOf(clazz, s);
+         } catch (IllegalArgumentException e) {
+            t[i++] = (T) Enum.valueOf(clazz, s.toUpperCase());
+         }
       }
       return t;
    }

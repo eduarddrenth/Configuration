@@ -35,6 +35,7 @@ import java.util.Observable;
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
+ * @param <TYPE>
  */
 public abstract class ParameterImpl<TYPE extends Serializable> extends Observable implements Parameter<TYPE> {
 
@@ -91,6 +92,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    /**
     * Sets the value and notifies Observers
     * @param value the value
+    * @return 
     */
    @Override
    public Parameter<TYPE> setValue(TYPE value) {
@@ -103,6 +105,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    /**
     * Sets the value and notifies Observers
     * @param value the default value
+    * @return 
     */
    @Override
    public Parameter<TYPE> setDefault(TYPE value) {
@@ -119,15 +122,16 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
 
    /**
-    * Uses {@link BindingHelper#serializeValue(java.lang.Object, java.lang.StringBuilder, java.lang.String) }.
+    * Uses {@link BindingHelper#serializeValue(java.lang.Object) }.
     * @param value
+    * @return 
     */
    protected String valueToString(TYPE value) {
       StringBuilder sb = new StringBuilder(15);
       if (valueClass.isArray()) {
          sb.append('[');
       }
-      ParameterizableBindingFactoryImpl.getFactory().getBindingHelper().serializeValue(value, sb);
+      sb.append(ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper().serializeValue(value));
       if (valueClass.isArray()) {
          sb.append(']');
       }

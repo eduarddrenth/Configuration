@@ -5,15 +5,16 @@
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    </head>
    <body>
-      <div>Bind your settings and / or Parameterizable objects to a syntax of your choice. For Parameterizables two syntaxes are supported:
-         a specialized syntax and JSON. You can also develop your own syntax:
+      <div>Bind your settings and / or Parameterizable objects to a syntax of your choice. Syntax support is provided by three types of objects:
+         a parser, a serializer and a helper. For Parameterizables two syntaxes are supported:
+         a specialized syntax and JSON. You can also develop your own syntax:<br/>
          <ul>
-            <li>extend the provided abstract classes for parsing and serialization</li>
-            <li>extend the AbstractBindingHelperDecorator</li>
-            <li>your BindingHelper must be Threadsafe and provide a no argument constructor</li>
-            <li>Your parser should provide a constructor accepting a Reader as argument</li>
-            <li>Your serializer should provide a no argument constructor</li>
-            <li>use the provided factory implementations in your applications to get hold of a parser, serializer or bindinghelper</li>
+            <li>- extend the provided abstract classes for parsing and serialization</li>
+            <li>- extend the AbstractBindingHelperDecorator or AbstractParamBindingHelperDecorator</li>
+            <li>- your BindingHelper must be Threadsafe and provide a no argument constructor</li>
+            <li>- your parser should provide a constructor accepting a Reader as argument</li>
+            <li>- your serializer should provide a no argument constructor</li>
+            <li>- use the provided factory implementations in your applications to get hold of your parser, serializer and bindinghelper</li>
          </ul>
       </div>
    </body>

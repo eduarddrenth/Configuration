@@ -13,40 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.vectorprint.configuration.binding.parameters;
 
+import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.Parameter;
-import com.vectorprint.configuration.parameters.Parameterizable;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.Serializable;
 
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface ParameterizableSerializer {
+public class AbstractParamBindingHelperDecorator extends AbstractBindingHelperDecorator<ParamBindingHelper> implements ParamBindingHelper {
 
-   /**
-    * Build syntax for a certain Parameterizable
-    * @param p
-    * @param w
-    * @throws IOException 
-    */
-   void serialize(Parameterizable p, Writer w) throws IOException;
+   public AbstractParamBindingHelperDecorator(ParamBindingHelper bindingHelper) {
+      super(bindingHelper);
+   }
    
-   /**
-    * Build syntax for a certain Parameter
-    * @param p
-    * @param w
-    * @throws IOException 
-    */
-   void serialize(Parameter p, Writer w) throws IOException;
+   @Override
+   public <TYPE extends Serializable> void setValueOrDefault(Parameter<TYPE> parameter, TYPE value, boolean setDefault) {
+      bindingHelper.setValueOrDefault(parameter, value, setDefault);
+   }
+   @Override
+   public <TYPE extends Serializable> TYPE getValueToSerialize(Parameter<TYPE> p, boolean useDefault) {
+      return bindingHelper.getValueToSerialize(p, useDefault);
+   }
 
-   ParameterizableSerializer setPrintOnlyNonDefault(boolean printOnlyNonDefault);
-
-   boolean getPrintOnlyNonDefault();
-
-   void setBindingHelper(ParamBindingHelper bindingHelper);
-   
 }

@@ -26,11 +26,11 @@ package com.vectorprint.configuration.binding.parameters;
  */
 //~--- non-JDK imports --------------------------------------------------------
 import com.vectorprint.configuration.binding.*;
+import com.vectorprint.configuration.parser.PropertiesParser;
 
 //~--- JDK imports ------------------------------------------------------------
 /**
- * Responsible for converting Strings into (atomic) values and vise versa, for manipulating values and defaults of
- * parameters during or after parsing and serialization and for escaping meaningful characters for a certain syntax.
+ * implementation for the syntax supported by {@link PropertiesParser}, escapes ',', '|' and ')', , uses '|' as separator for array values
  *
  * Threadsafe: it is safe to call the available methods from different threads at the same time on one instance of this
  * class.
@@ -38,16 +38,16 @@ import com.vectorprint.configuration.binding.*;
  * @see StringConverter
  * @author Eduard Drenth at VectorPrint.nl
  */
-public final class EscapingBindingHelper extends AbstractBindingHelperDecorator {
+public final class EscapingBindingHelper extends AbstractParamBindingHelperDecorator {
 
-   public EscapingBindingHelper(BindingHelper bindingHelper) {
+   public EscapingBindingHelper(ParamBindingHelper bindingHelper) {
       super(bindingHelper);
       setEscapeChars(new char[]{',','|',')'});
       setArrayValueSeparator('|');
    }
 
    public EscapingBindingHelper() {
-      super(new BindingHelperImpl());
+      super(new ParamBindingHelperImpl());
       setEscapeChars(new char[]{',','|',')'});
       setArrayValueSeparator('|');
    }

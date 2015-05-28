@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 /**
  * A field in an object can obtain its value from settings by annotating it with this annotation.
  * @author Eduard Drenth at VectorPrint.nl
- * @see SettingAnnotationProcessor
+ * @see SettingsAnnotationProcessor
  */
 @Documented
 @Inherited

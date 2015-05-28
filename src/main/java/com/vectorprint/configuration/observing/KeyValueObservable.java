@@ -32,6 +32,8 @@ import java.io.Serializable;
  * {@link EnhancedMap}s can be Observables enabling the manipulation of key value pairs before they are added.
  *
  * @author Eduard Drenth at VectorPrint.nl
+ * @param <K>
+ * @param <V>
  */
 public interface KeyValueObservable<K extends Serializable, V extends Serializable> extends Serializable {
 

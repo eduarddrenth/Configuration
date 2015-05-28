@@ -29,6 +29,7 @@ package com.vectorprint.configuration.binding;
  * Turns a String into a value of another type
  *
  * @author Eduard Drenth at VectorPrint.nl
+ * @param <T>
  */
 public interface StringConverter<T> {
 

@@ -27,10 +27,9 @@ package com.vectorprint.configuration.binding;
 //~--- non-JDK imports --------------------------------------------------------
 import com.vectorprint.VectorPrintRuntimeException;
 import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
-import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
-import com.vectorprint.configuration.parameters.Parameter;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -47,10 +46,10 @@ import java.util.regex.Pattern;
  * @see StringConverter
  * @author Eduard Drenth at VectorPrint.nl
  */
-public final class BindingHelperImpl implements BindingHelper {
+public class BindingHelperImpl implements BindingHelper {
 
    /**
-    * preferably use {@link #getBindingHelper() }
+    * preferably use {@link ParameterizableBindingFactory#getBindingHelper() } or {@link EnhancedMapBindingFactory#getBindingHelper() }
     */
    public BindingHelperImpl() {
    }
@@ -65,6 +64,9 @@ public final class BindingHelperImpl implements BindingHelper {
     */
    @Override
    public <T> T convert(String[] values, Class<T> clazz) {
+      if (values==null|values.length==0) {
+         return null;
+      }
       if (!clazz.isArray()) {
          throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
       }
@@ -127,6 +129,9 @@ public final class BindingHelperImpl implements BindingHelper {
     */
    @Override
    public <T> T convert(String value, Class<T> clazz) {
+      if (value==null||value.isEmpty()) {
+         return null;
+      }
       Object o = null;
       if (Boolean.class.equals(clazz)) {
          o = BOOLEAN_PARSER.convert(value);
@@ -173,41 +178,15 @@ public final class BindingHelperImpl implements BindingHelper {
       } else if (Pattern.class.equals(clazz)) {
          o = REGEX_PARSER.convert(value);
       } else if (clazz.isEnum()) {
-         o = Enum.valueOf((Class<? extends Enum>) clazz, value);
+         try {
+            o = Enum.valueOf((Class<? extends Enum>) clazz, value);
+         } catch (IllegalArgumentException e) {
+            o = Enum.valueOf((Class<? extends Enum>) clazz, value.toUpperCase());
+         }
       } else {
          throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
       }
       return (T) o;
-   }
-
-   /**
-    *
-    * Call this from {@link ParameterizableParser#initParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Object)
-    * } and when a default is found.
-    *
-    * @param parameter
-    * @param value
-    * @param setDefault
-    */
-   @Override
-   public <TYPE extends Serializable> void setValueOrDefault(Parameter<TYPE> parameter, TYPE value, boolean setDefault) {
-      if (!value.getClass().equals(parameter.getValueClass())) {
-         throw new VectorPrintRuntimeException(String.format("%s is not a %s", value.getClass(), parameter.getValueClass()));
-      }
-      if (setDefault) {
-         parameter.setDefault(value);
-      } else {
-         parameter.setValue(value);
-      }
-   }
-
-   /**
-    * @param p
-    * @return
-    */
-   @Override
-   public <TYPE extends Serializable> TYPE getValueToSerialize(Parameter<TYPE> p, boolean useDefault) {
-      return useDefault ? p.getDefault() : p.getValue();
    }
 
    /**
@@ -217,25 +196,12 @@ public final class BindingHelperImpl implements BindingHelper {
     * @return
     */
    public final String escape(String value) {
-      if (chars==null||chars.length==0) {
+      if (chars==null||chars.length==0||value==null||value.isEmpty()) {
          return value;
       }
       String s = value;
-      StringBuilder sb = new StringBuilder(s.length() + chars.length);
       for (char c : chars) {
-         int j = 0;
-         for (int i = s.indexOf(c, j); i != -1;) {
-            sb.append(s.substring(j, i)).append('\\').append(c);
-            j = i + 1;
-            if (j == s.length()) {
-               break;
-            }
-         }
-         if (j < s.length()) {
-            sb.append(s.substring(j));
-         }
-         s = sb.toString();
-         sb = new StringBuilder(s.length() + chars.length);
+         s = value.replace(String.valueOf(c), "\\"+c);
       }
       return s;
    }
@@ -266,13 +232,13 @@ public final class BindingHelperImpl implements BindingHelper {
    /**
     *
     * @param value
-    * @param sb
-    * @param arrayValueSeparator
+    * @return the String
     */
    @Override
-   public void serializeValue(Object value, StringBuilder sb) {
+   public String serializeValue(Object value) {
+      StringBuilder sb = new StringBuilder();
       if (value == null) {
-         return;
+         return null;
       }
       Class clazz = value.getClass();
       if (!clazz.isArray()) {
@@ -281,12 +247,12 @@ public final class BindingHelperImpl implements BindingHelper {
          } else {
             sb.append(escape(String.valueOf(value)));
          }
-         return;
+         return sb.toString();
       }
       if (!clazz.getComponentType().isPrimitive()) {
          Object[] O = (Object[]) value;
          if (O.length == 0) {
-            return;
+            return null;
          }
          int l = O.length;
          for (int i = 0;; i++) {
@@ -309,7 +275,7 @@ public final class BindingHelperImpl implements BindingHelper {
          if (short[].class.isAssignableFrom(clazz)) {
             short[] s = (short[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -322,7 +288,7 @@ public final class BindingHelperImpl implements BindingHelper {
          } else if (int[].class.isAssignableFrom(clazz)) {
             int[] s = (int[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -335,7 +301,7 @@ public final class BindingHelperImpl implements BindingHelper {
          } else if (long[].class.isAssignableFrom(clazz)) {
             long[] s = (long[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -348,7 +314,7 @@ public final class BindingHelperImpl implements BindingHelper {
          } else if (float[].class.isAssignableFrom(clazz)) {
             float[] s = (float[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -361,7 +327,7 @@ public final class BindingHelperImpl implements BindingHelper {
          } else if (double[].class.isAssignableFrom(clazz)) {
             double[] s = (double[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -374,7 +340,7 @@ public final class BindingHelperImpl implements BindingHelper {
          } else if (byte[].class.isAssignableFrom(clazz)) {
             byte[] s = (byte[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -387,7 +353,7 @@ public final class BindingHelperImpl implements BindingHelper {
          } else if (boolean[].class.isAssignableFrom(clazz)) {
             boolean[] s = (boolean[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -400,7 +366,7 @@ public final class BindingHelperImpl implements BindingHelper {
          } else if (char[].class.isAssignableFrom(clazz)) {
             char[] s = (char[]) value;
             if (s.length == 0) {
-               return;
+               return null;
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -412,6 +378,7 @@ public final class BindingHelperImpl implements BindingHelper {
             }
          }
       }
+      return sb.toString();
    }
 
 }

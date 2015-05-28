@@ -31,6 +31,7 @@ import java.util.logging.Logger;
  * Syntax independent base class for Parsers.
  *
  * @author Eduard Drenth at VectorPrint.nl
+ * @param <T> The type of Object yielded by the parsing process, for example List<String> or Object when the type is unknown
  */
 public abstract class AbstractParameterizableParser<T> implements ParameterizableParser<T>, ParameterizableSerializer {
 
@@ -57,7 +58,6 @@ public abstract class AbstractParameterizableParser<T> implements Parameterizabl
     * {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) } and if
     * applicable {@link Configurable#initSettings(java.util.Map) }
     *
-    * @param settings the value of settings
     */
    @Override
    public void initParameterizable(Parameterizable parameterizable) {

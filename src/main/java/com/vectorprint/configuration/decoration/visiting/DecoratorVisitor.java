@@ -20,11 +20,13 @@ import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.decoration.ObservableProperties;
 
 /**
  * You can define a visitor that allows you to access a certain type of {@link EnhancedMap} in the stack and
  * call its methods. This way you can for example add properties from a url or add observables
  * after the stack of properties is defined.
+ * @param <E>
  * @see AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) 
  * @see SettingsField
  * @see SettingsAnnotationProcessor

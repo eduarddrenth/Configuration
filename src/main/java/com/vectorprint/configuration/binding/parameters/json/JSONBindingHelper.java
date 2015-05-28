@@ -16,35 +16,37 @@
 package com.vectorprint.configuration.binding.parameters.json;
 
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
-import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
+import com.vectorprint.configuration.binding.parameters.AbstractParamBindingHelperDecorator;
+import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
+import com.vectorprint.configuration.binding.parameters.ParamBindingHelperImpl;
 import java.awt.Color;
 
 /**
- *
+ * implemenation supports json syntax, does not escape values, uses ',' as separator for array values
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class JSONBindingHelper extends AbstractBindingHelperDecorator {
+public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
 
-   public JSONBindingHelper(BindingHelper bindingHelper) {
+   public JSONBindingHelper(ParamBindingHelper bindingHelper) {
       super(bindingHelper);
+      setArrayValueSeparator(',');
    }
 
    public JSONBindingHelper() {
-      super(new BindingHelperImpl());
+      this(new ParamBindingHelperImpl());
    }
    
    /**
     * quote (single) all but (B)boolean and (N)numeric, use "null" for null values
     *
     * @param value
-    * @param sb
+    * @return the String
     */
    @Override
-   public void serializeValue(Object value, StringBuilder sb) {
+   public String serializeValue(Object value) {
+      StringBuilder sb = new StringBuilder();
       if (value == null) {
-         sb.append("null");
-         return;
+         return sb.append("null").toString();
       }
       Class clazz = value.getClass();
       if (!clazz.isArray()) {
@@ -58,18 +60,17 @@ public class JSONBindingHelper extends AbstractBindingHelperDecorator {
                sb.append('\'').append(String.valueOf(value)).append('\'');
             }
          }
-         return;
+         return sb.toString();
       }
       sb.append('[');
       if (!clazz.getComponentType().isPrimitive()) {
          if (Number.class.isAssignableFrom(clazz.getComponentType()) || Boolean.class.equals(clazz.getComponentType())) {
-            super.serializeValue(value, sb);
-            return;
+            String serializeValue = super.serializeValue(value);
+            return sb.append(serializeValue==null?"null":serializeValue).append(']').toString();
          }
          Object[] O = (Object[]) value;
          if (O.length == 0) {
-            sb.append("null]");
-            return;
+            return sb.append("null]").toString();
          }
          int l = O.length;
          for (int i = 0;; i++) {
@@ -91,7 +92,7 @@ public class JSONBindingHelper extends AbstractBindingHelperDecorator {
          if (char[].class.isAssignableFrom(clazz)) {
             char[] s = (char[]) value;
             if (s.length == 0) {
-               return;
+               return sb.append("null]").toString();
             }
             int l = s.length;
             for (int i = 0;; i++) {
@@ -102,10 +103,11 @@ public class JSONBindingHelper extends AbstractBindingHelperDecorator {
                sb.append('\'').append(String.valueOf(s[i])).append('\'').append(getArrayValueSeparator());
             }
          } else {
-            super.serializeValue(value, sb);
+            String serializeValue = super.serializeValue(value);
+            return sb.append(serializeValue==null?"null":serializeValue).append(']').toString();
          }
       }
-      sb.append(']');
+      return sb.append(']').toString();
    }
 
 }

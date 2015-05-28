@@ -26,6 +26,7 @@ import java.util.Map;
  * A settings provider is responsible for providing configuration information to a
  * {@link Configurable configuarble object}.
  *
+ * @param <P>
  * @see EnhancedMap
  * @author Eduard Drenth at VectorPrint.nl
  */

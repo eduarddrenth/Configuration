@@ -21,6 +21,8 @@ import java.io.Serializable;
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
+ * @param <K>
+ * @param <V>
  */
 public class KeyValue<K extends Serializable, V extends Serializable> {
    

@@ -16,70 +16,100 @@
 package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parser.ParameterizableParserImpl;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This implementation gives you full control over the syntax used to get to and from Parameterizables.
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParameterizableBindingFactoryImpl implements ParameterizableBindingFactory {
+   /**
+    * name of the system property (java -D...) in which you specify a parser Class
+    */
+   public static final String PARAMPARSER = "paramparser";
+   /**
+    * name of the system property (java -D...) in which you specify a serializer Class
+    */
+   public static final String PARAMSERIALIZER = "paramserializer";
+   /**
+    * name of the system property (java -D...) in which you specify a helper Class
+    */
+   public static final String PARAMHELPER = "paramhelper";
+   public static final Class<? extends ParameterizableParser> PARAMPARSERCLASS = ParameterizableParserImpl.class;
+   public static final Class<? extends ParameterizableSerializer> PARAMSERIALIZERCLASS = ParameterizableParserImpl.class;
+   public static final Class<? extends ParamBindingHelper> PARAMHELPERCLASS = EscapingBindingHelper.class;
 
-   private BindingHelper bindingHelper;
+   private ParamBindingHelper bindingHelper;
+
+   private static <T> Class<T> findClass(String systemProperty, Class<T> clazz) throws ClassNotFoundException {
+      if (System.getProperty(systemProperty) != null) {
+         return (Class<T>) Class.forName(System.getProperty(systemProperty));
+      } else {
+         return clazz;
+      }
+   }
+
+
+   private static ParameterizableBindingFactory factory = null;
+
+   static {
+      try {
+         getFactory(findClass(PARAMPARSER, PARAMPARSERCLASS),
+             findClass(PARAMSERIALIZER, PARAMSERIALIZERCLASS),
+             findClass(PARAMHELPER, PARAMHELPERCLASS).newInstance(), true);
+      } catch (ClassNotFoundException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (InstantiationException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (IllegalAccessException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      }
+   }
 
    private ParameterizableBindingFactoryImpl() {
    }
 
-   private static final Map<CacheKey, ParameterizableBindingFactoryImpl> cache = new HashMap<CacheKey, ParameterizableBindingFactoryImpl>(2);
-
    /**
-    * initializes parser class, serializer class and bindingHelper.
-    * The next call to {@link #getFactory() } will return the same factory.
+    * initializes parser class, serializer class and bindingHelper and optionally the default factory.
     *
     * @param parserClass
     * @param serializerClass
-    * @return
+    * @param bindingHelper the value of bindingHelper will be used in the return factory
+    * @param setAsDefault the value of setAsDefault
+    * @return the com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory
     */
-   public static synchronized ParameterizableBindingFactory getFactory(Class<? extends ParameterizableParser> parserClass,
-       Class<? extends ParameterizableSerializer> serializerClass, BindingHelper bindingHelper) {
-      CacheKey ck = new CacheKey(parserClass, parserClass);
-      if (cache.containsKey(ck)) {
-         ParameterizableBindingFactoryImpl.factory=cache.get(ck);
-         cache.get(ck).bindingHelper = bindingHelper;
-         return cache.get(ck);
-      } else {
-         ParameterizableBindingFactoryImpl factory = new ParameterizableBindingFactoryImpl();
-         try {
-            factory.parserClass = parserClass;
-            factory.constructor = parserClass.getConstructor(Reader.class);
-            factory.serializerClass = serializerClass;
-            if (!ParameterizableParserImpl.class.equals(serializerClass)) {
-               // check no arg constructor
-               serializerClass.getConstructor();
-            }
-         } catch (NoSuchMethodException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         } catch (SecurityException ex) {
-            throw new VectorPrintRuntimeException(ex);
+   public static ParameterizableBindingFactory getFactory(Class<? extends ParameterizableParser> parserClass, Class<? extends ParameterizableSerializer> serializerClass, ParamBindingHelper bindingHelper, boolean setAsDefault) {
+      ParameterizableBindingFactoryImpl factory = new ParameterizableBindingFactoryImpl();
+      try {
+         factory.parserClass = parserClass;
+         factory.constructor = parserClass.getConstructor(Reader.class);
+         factory.serializerClass = serializerClass;
+         if (!ParameterizableParserImpl.class.equals(serializerClass)) {
+            // check no arg constructor
+            serializerClass.getConstructor();
          }
-         ParameterizableBindingFactoryImpl.factory=factory;
-         factory.bindingHelper = bindingHelper;
-         cache.put(ck, factory);
-         return factory;
+      } catch (NoSuchMethodException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (SecurityException ex) {
+         throw new VectorPrintRuntimeException(ex);
       }
+      if (setAsDefault) {
+         ParameterizableBindingFactoryImpl.factory=factory;
+      }
+      factory.bindingHelper = bindingHelper;
+      return factory;
    }
 
    /**
-    * return the factory last requested by {@link #getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.BindingHelper) }
+    * return the factory last requested by {@link #getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.parameters.ParamBindingHelper, boolean) }
+    * with true for setAsDefault. Never returns null, see static finals in this class for initial factory classes.
     * @return 
     */
-   public static ParameterizableBindingFactory getFactory() {
+   public static ParameterizableBindingFactory getDefaultFactory() {
       return factory;
    }
 
@@ -88,10 +118,8 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
 
    private Class<? extends ParameterizableSerializer> serializerClass;
 
-   private static ParameterizableBindingFactory factory = null;
-
    /**
-    * instantiate parser, call {@link ParameterizableParser#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) } and return the parser.
+    * instantiate parser, call {@link ParameterizableParser#setBindingHelper(com.vectorprint.configuration.binding.parameters.ParamBindingHelper) } and return the parser.
     * @param input
     * @return 
     */
@@ -117,7 +145,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
    private static final Reader r = new StringReader("");
 
    /**
-    * instantiate serializer, call {@link ParameterizableSerializer#setBindingHelper(com.vectorprint.configuration.binding.BindingHelper) } and return the serializer.
+    * instantiate serializer, call {@link ParameterizableSerializer#setBindingHelper(com.vectorprint.configuration.binding.parameters.ParamBindingHelper)  } and return the serializer.
     * @return 
     */
    @Override
@@ -145,7 +173,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
    }
 
    @Override
-   public BindingHelper getBindingHelper() {
+   public ParamBindingHelper getBindingHelper() {
       return bindingHelper;
    }
 

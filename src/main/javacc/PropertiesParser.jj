@@ -131,7 +131,7 @@ List<String> keyValue():
    v=value() {kv.add(v);}
    (
       <SEMICOLON>
-      v=value() {kv.add(v);}   
+      v=value() {if (v!=null&&!v.isEmpty()) kv.add(v);}   
    )*
    (
       <EOL> | <EOF>
@@ -183,7 +183,8 @@ TOKEN :
          "$",
          "A"-"Z",
          "_",
-         "a"-"z"
+         "a"-"z",
+         "-"
       ]
   >
 |

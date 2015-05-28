@@ -64,7 +64,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    /**
     * Look for annotation in the object, use settings argument to inject settings. NOTE that the settings argument may
-    * be wrapped, you should always use the {@link ApplicationSettings#getOutermostWrapper() }
+    * be wrapped, you should always use the {@link Settings#getOutermostWrapper() }
     * in that case, and not call the settings argument directly after initialization is performed.
     *
     * @param o
@@ -146,7 +146,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                         if (ParsingProperties.class.isAssignableFrom(dec)) {
                            ParsingProperties pp = (ParsingProperties) settings;
                            EnhancedMapBindingFactory factory =
-                               EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance());
+                               EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance(), false);
                            pp.setFactory(factory);
                         }
                      }

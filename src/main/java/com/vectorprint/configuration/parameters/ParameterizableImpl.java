@@ -131,7 +131,7 @@ public class ParameterizableImpl implements Parameterizable {
 
    /**
     *
-    * @param settings the value of settings
+    * @return 
     */
    @Override
    public Parameterizable clone() {

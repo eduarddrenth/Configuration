@@ -17,6 +17,7 @@ package com.vectorprint.configuration.annotation;
 
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
 import com.vectorprint.configuration.binding.settings.EnhancedMapSerializer;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
@@ -47,7 +48,7 @@ public @interface Feature {
    public Class<? extends AbstractPropertiesDecorator> clazz();
    /**
     * decorators may need an extra source for their functionality, a URL to retrieve help info for example.
-    * setting this argument requires a constructor with {@link EnhancedMap} and {@link 
+    * setting this argument requires a constructor with {@link EnhancedMap} and URL.
     * @see ParsingProperties
     * @see HelpSupportedProperties
     * @return 
@@ -68,6 +69,6 @@ public @interface Feature {
     * @see ParsingProperties
     * @return 
     */
-   public Class<? extends BindingHelper> bindingHelperClass() default BindingHelper.class;
+   public Class<? extends BindingHelper> bindingHelperClass() default BindingHelperImpl.class;
    
 }

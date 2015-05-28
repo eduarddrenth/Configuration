@@ -29,7 +29,7 @@ import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFa
 import java.io.Serializable;
 
 /**
- * Parameters for a {@link Parametrizable} provide help, a key to identify the parameter.
+ * Parameters for a {@link Parameterizable} provide help, a key to identify the parameter.
  *
  * @see ParamAnnotationProcessorImpl
  * @see ParameterizableBindingFactory
@@ -62,19 +62,21 @@ public interface Parameter<TYPE extends Serializable> extends Cloneable, Seriali
    /**
     *
     * @param value the new value
+    * @return 
     */
    Parameter<TYPE> setValue(TYPE value);
 
    /**
     *
     * @param value the new default value
+    * @return 
     */
    Parameter<TYPE> setDefault(TYPE value);
 
    /**
     * return the value for this parameter or, when it is null, the default value
     *
-    * @return the value
+    * @return the value or the default
     */
    TYPE getValue();
 

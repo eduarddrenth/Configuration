@@ -280,7 +280,7 @@ public class PropertyTest {
 
       EnhancedMap mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
-      EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl()).getParser(new StringReader("a=c;d\nb=c\\;d"));
+      EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl(), false).getParser(new StringReader("a=c;d\nb=c\\;d"));
       parser.parse(mtp);
       assertEquals(2, mtp.getStringProperties(null, "a").length);
       assertEquals(1, mtp.getStringProperties(null, "b").length);
@@ -328,7 +328,7 @@ public class PropertyTest {
           + File.separator + "run.properties");
       final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
       assertNotNull(mtp.getProperty("stoponerror"));
-      assertNotNull(mtp.getProperty("marks"));
+      assertNotNull(mtp.getStringProperties(null,"marks"));
       assertNotNull(mtp.getProperty("stoponerror"));
       assertTrue(mtp.containsValue(new String[]{"true"}));
       assertTrue(mtp.values().contains(new String[]{"7"}));
@@ -675,8 +675,8 @@ public class PropertyTest {
    }
 
    private <TYPE extends Serializable> void setVal(Parameter<TYPE> parameter, EnhancedMap settings) {
-      ParameterizableParser objectParser = ParameterizableBindingFactoryImpl.getFactory().getParser(new StringReader(""));
-      ParameterizableBindingFactoryImpl.getFactory().getBindingHelper().setValueOrDefault(
+      ParameterizableParser objectParser = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader(""));
+      ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper().setValueOrDefault(
           parameter,
           (TYPE) objectParser.parseAsParameterValue(settings.getPropertyNoDefault(parameter.getKey()), parameter),
           false);
@@ -707,7 +707,7 @@ public class PropertyTest {
                for (String init : testStrings) {
                   try {
                      settings.clear();
-                     EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl()).getParser(new StringReader(c.getSimpleName() + "=" + init));
+                     EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl(), false).getParser(new StringReader(c.getSimpleName() + "=" + init));
                      parser.parse(settings);
                      setVal(p, settings);
                      assertNotNull(p.toString(), p.getValue());
@@ -719,18 +719,18 @@ public class PropertyTest {
                         assertNull(p.getValue());
                         continue;
                      }
-                     ParameterizableSerializer ps = ParameterizableBindingFactoryImpl.getFactory().getSerializer().setPrintOnlyNonDefault(false);
+                     ParameterizableSerializer ps = ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer().setPrintOnlyNonDefault(false);
                      StringWriter sw = new StringWriter();
                      ps.serialize(p, sw);
                      String conf = sw.toString();
                      
                      if (conf != null && !"".equals(conf)) {
-                        BindingHelper stringConversion = ParameterizableBindingFactoryImpl.getFactory().getBindingHelper();
+                        BindingHelper stringConversion = ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper();
                         StringBuilder sb = new StringBuilder();
-                        stringConversion.serializeValue(p.getValue(), sb);
+                        sb.append(stringConversion.serializeValue(p.getValue()));
                         assertEquals(sb.toString(), conf.substring(conf.indexOf('=') + 1));
                         
-                        Serializable parseAsParameterValue = ParameterizableBindingFactoryImpl.getFactory().getParser(new StringReader("")).parseAsParameterValue(sb.toString(), p);
+                        Serializable parseAsParameterValue = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("")).parseAsParameterValue(sb.toString(), p);
                         if (p.getValueClass().isArray()) {
                            if (!ParameterHelper.isArrayEqual(p.getValueClass(), p.getValue(), parseAsParameterValue)) {
                               System.out.println("");
@@ -745,7 +745,8 @@ public class PropertyTest {
                   } catch (VectorPrintRuntimeException runtimeException) {
                      if (runtimeException.getCause() instanceof MalformedURLException
                          || runtimeException.getCause() instanceof NoSuchFieldException
-                         || runtimeException.getCause() instanceof ClassNotFoundException) {
+                         || runtimeException.getCause() instanceof ClassNotFoundException
+                         || runtimeException.getMessage().contains("cannot turn mutliple strings ")) {
                         runtimeException.printStackTrace();
                      } else {
                         throw runtimeException;
@@ -765,39 +766,34 @@ public class PropertyTest {
       assertEquals("v", p.getValue("s", String.class));
 
       EnhancedMap vp = new Settings();
-      vp.put("ParameterizableImpl.s", "w");
-      ParameterizableParser parser = ParameterizableBindingFactoryImpl.getFactory().getParser(new StringReader("P")).setSettings(vp).setPackageName(P.class.getPackage().getName());
+      vp.put("ParameterizableImpl.s.set_default", "w");
+      ParameterizableParser parser = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("P")).setSettings(vp).setPackageName(P.class.getPackage().getName());
       Parameterizable parse = parser.parseParameterizable();
 
       assertEquals("w", parse.getValue("s", String.class));
 
       StringWriter sw = new StringWriter();
-      ParameterizableBindingFactoryImpl.getFactory().getSerializer().serialize(p, sw);
+      ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer().serialize(p, sw);
       String sp = sw.toString();
 
       StringReader sr = new StringReader(sp);
-      parse = ParameterizableBindingFactoryImpl.getFactory().getParser(sr).setSettings(vp).setPackageName(P.class.getPackage().getName()).parseParameterizable();
+      parse = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(sr).setSettings(vp).setPackageName(P.class.getPackage().getName()).parseParameterizable();
 
       sw = new StringWriter();
-      ParameterizableBindingFactoryImpl.getFactory().getSerializer().serialize(parse, sw);
+      ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer().serialize(parse, sw);
       String sp2 = sw.toString();
 
       assertEquals(sp, sp2);
 
    }
 
-   @Before
-   public void setup() {
-      ParameterizableBindingFactoryImpl.getFactory(ParameterizableParserImpl.class, ParameterizableParserImpl.class, new EscapingBindingHelper());
-   }
-
    @Test
    public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
-      ParameterizableBindingFactory factoryImpl = ParameterizableBindingFactoryImpl.getFactory(JSONSupport.class, JSONSupport.class, new JSONBindingHelper());
+      ParameterizableBindingFactory factoryImpl = ParameterizableBindingFactoryImpl.getFactory(JSONSupport.class, JSONSupport.class, new JSONBindingHelper(), false);
       EnhancedMap settings = new Settings();
       settings.put("staticBoolean", "true");
-      settings.put("P.c", "'red'");
+      settings.put("P.c.set_value", "'red'");
       ParameterizableParser op = factoryImpl.getParser(new StringReader(obj)).
           setPackageName(P.class.getPackage().getName()).setSettings(settings);
       P p = (P) op.parseParameterizable();

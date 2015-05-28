@@ -56,6 +56,7 @@ public interface Parameterizable extends Cloneable, Observer {
    /**
     * get a value from a parameter.
     *
+    * @param <TYPE>
     * @param key
     * @param T
     * @return 

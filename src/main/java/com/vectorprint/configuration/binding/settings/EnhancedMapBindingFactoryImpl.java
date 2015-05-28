@@ -17,13 +17,12 @@ package com.vectorprint.configuration.binding.settings;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.parser.PropertiesParser;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This implementation gives you full control over the syntax to use in settings files.
@@ -32,54 +31,93 @@ import java.util.Map;
  */
 public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory {
 
+   /**
+    * name of the system property (java -D...) in which you specify a parser Class
+    */
+   public static final String SETTINGSPARSER = "settingsparser";
+   /**
+    * name of the system property (java -D...) in which you specify a serializer Class
+    */
+   public static final String SETTINGSSERIALIZER = "settingsserializer";
+   /**
+    * name of the system property (java -D...) in which you specify a helper Class
+    */
+   public static final String SETTINGSHELPER = "settingshelper";
+   public static final Class<? extends EnhancedMapParser> SETTINGSPARSERCLASS = PropertiesParser.class;
+   public static final Class<? extends EnhancedMapSerializer> SETTINGSSERIALIZERCLASS = PropertiesParser.class;
+   public static final Class<? extends BindingHelper> SETTINGSHELPERCLASS = BindingHelperImpl.class;
+
+   private static <T> Class<T> findClass(String systemProperty, Class<T> clazz) throws ClassNotFoundException {
+      if (System.getProperty(systemProperty) != null) {
+         return (Class<T>) Class.forName(System.getProperty(systemProperty));
+      } else {
+         return clazz;
+      }
+   }
+
    private Class<? extends EnhancedMapParser> parserClass;
    private Constructor<? extends EnhancedMapParser> constructor;
 
    private EnhancedMapBindingFactoryImpl() {
    }
 
-   private static final Map<CacheKey, EnhancedMapBindingFactory> cache = new HashMap<CacheKey, EnhancedMapBindingFactory>(2);
    private static EnhancedMapBindingFactory factory;
 
-   /**
-    * initializes parser class, serializer class and BindinHelper.
-    * The next call to {@link #getFactory() } will return the same factory.
-    * @param parserClass
-    * @param serializerClass
-    * @return 
-    */
-   public static synchronized EnhancedMapBindingFactory getFactory(Class<? extends EnhancedMapParser> parserClass,
-       Class<? extends EnhancedMapSerializer> serializerClass,
-       BindingHelper bindingHelper) {
-      CacheKey ck = new CacheKey(parserClass, serializerClass);
-      if (cache.containsKey(ck)) {
-         return cache.get(ck);
-      } else {
-         try {
-            EnhancedMapBindingFactoryImpl factory = new EnhancedMapBindingFactoryImpl();
-            factory.parserClass = parserClass;
-            factory.constructor = parserClass.getConstructor(Reader.class);
-            factory.serializerClass = serializerClass;
-            factory.bindingHelper = bindingHelper;
-            cache.put(ck, factory);
-            EnhancedMapBindingFactoryImpl.factory = factory;
-            return factory;
-         } catch (NoSuchMethodException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         } catch (SecurityException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         }
+   static {
+      try {
+         EnhancedMapBindingFactoryImpl.getFactory(findClass(SETTINGSPARSER, SETTINGSPARSERCLASS),
+             findClass(SETTINGSSERIALIZER, SETTINGSSERIALIZERCLASS),
+             findClass(SETTINGSHELPER, SETTINGSHELPERCLASS).newInstance(), true);
+      } catch (ClassNotFoundException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (InstantiationException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (IllegalAccessException ex) {
+         throw new VectorPrintRuntimeException(ex);
       }
    }
 
    /**
-    * return the factory last requested by {@link #getFactory(java.lang.Class, java.lang.Class) }
-    * @return 
+    * initializes parser class, serializer class, BindinHelper and optionally the default factory
+    *
+    * @param parserClass
+    * @param serializerClass
+    * @param bindingHelper the value of bindingHelper
+    * @param setAsDefault the value of setAsDefault
+    * @return the com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory
     */
-   public static EnhancedMapBindingFactory getFactory() {
+   public static EnhancedMapBindingFactory getFactory(Class<? extends EnhancedMapParser> parserClass, Class<? extends EnhancedMapSerializer> serializerClass, BindingHelper bindingHelper, boolean setAsDefault) {
+      try {
+         EnhancedMapBindingFactoryImpl factory = new EnhancedMapBindingFactoryImpl();
+         factory.parserClass = parserClass;
+         factory.constructor = parserClass.getConstructor(Reader.class);
+         factory.serializerClass = serializerClass;
+         if (!PropertiesParser.class.equals(serializerClass)) {
+            // check no arg constructor
+            serializerClass.getConstructor();
+         }
+         factory.bindingHelper = bindingHelper;
+         if (setAsDefault) {
+            EnhancedMapBindingFactoryImpl.factory = factory;
+         }
+         return factory;
+      } catch (NoSuchMethodException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (SecurityException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      }
+   }
+
+   /**
+    * return the factory last requested by {@link #getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.BindingHelper, boolean)  }
+    * with true for setAsDefault. Never returns null, see static finals in this class for initial factory classes.
+    *
+    * @return
+    */
+   public static EnhancedMapBindingFactory getDefaultFactory() {
       return factory;
    }
-   
+
    private BindingHelper bindingHelper;
 
    @Override
