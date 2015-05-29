@@ -58,12 +58,12 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
     * @return 
     */
    @Override
-   public byte[] getValue() {
+   public final byte[] getValue() {
       byte[] copy = super.getValue();
       if (copy==null) {
          return null;
       }
-      if (clearAfterGet) {
+      if (!eq&&clearAfterGet) {
          copy = Arrays.copyOf(copy, copy.length);
          ArrayHelper.clear(super.getValue());
          setValue(null);
@@ -88,9 +88,15 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
       cp.clearAfterGet=clearAfterGet;
       return cp;
    }
+   private boolean eq = false;
    
    @Override
-   public boolean equals(Object obj) {
-      return super.equals(obj) && ((PasswordParameter)obj).clearAfterGet==clearAfterGet;
+   public final boolean equals(Object obj) {
+      eq=true;
+      try {
+         return super.equals(obj) && ((PasswordParameter) obj).clearAfterGet == clearAfterGet;
+      } finally {
+         eq = false;
+      }
    }
 }

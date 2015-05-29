@@ -177,4 +177,9 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
       return bindingHelper;
    }
 
+   @Override
+   public String toString() {
+      return "ParameterizableBindingFactoryImpl{" + "bindingHelper=" + bindingHelper.getClass() + ", parserClass=" + parserClass + ", serializerClass=" + serializerClass + '}';
+   }
+
 }

@@ -38,6 +38,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +63,10 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
 
+   private EnhancedMap settingsUsed = null;
+
+   private Set objects = new HashSet();
+
    /**
     * Look for annotation in the object, use settings argument to inject settings. NOTE that the settings argument may
     * be wrapped, you should always use the {@link Settings#getOutermostWrapper() }
@@ -71,8 +76,18 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
     * @param settings when null create a new {@link Settings} instance.
     */
    @Override
-   public void initSettings(Object o, EnhancedMap settings) {
-      initSettings(o instanceof Class ? (Class)o : o.getClass(), o instanceof Class ? null : o, settings==null?new Settings():settings, true);
+   public boolean initSettings(Object o, EnhancedMap settings) {
+      if (settingsUsed == null) {
+         settingsUsed = settings;
+      } else if (settingsUsed.equals(settings) && objects.contains(o)) {
+         if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(String.format("assuming, based on equals, settings for %s already initialized with %s", settings, o));
+         }
+         return false;
+      }
+      initSettings(o instanceof Class ? (Class) o : o.getClass(), o instanceof Class ? null : o, settings == null ? new Settings() : settings, true);
+      objects.add(o);
+      return true;
    }
 
    private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
@@ -145,8 +160,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                         settings = constructor.newInstance(settings, u);
                         if (ParsingProperties.class.isAssignableFrom(dec)) {
                            ParsingProperties pp = (ParsingProperties) settings;
-                           EnhancedMapBindingFactory factory =
-                               EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance(), false);
+                           EnhancedMapBindingFactory factory
+                               = EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance(), false);
                            pp.setFactory(factory);
                         }
                      }
@@ -192,7 +207,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          if (a != null) {
             Setting s = (Setting) a;
             try {
-               Object cur = field.get(isStatic?null:obj);
+               Object cur = field.get(isStatic ? null : obj);
                Object v = null;
                if (cur == null) {
                   if (LOGGER.isLoggable(Level.FINE)) {

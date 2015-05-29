@@ -38,6 +38,16 @@ public interface ParamAnnotationProcessor {
     */
    public static final ParamAnnotationProcessor PAP = new ParamAnnotationProcessorImpl();
    
-   void initParameters(Parameterizable parameterizable) throws NoSuchMethodException,InstantiationException,IllegalAccessException, InvocationTargetException;
+   /**
+    * Looks for {@link Parameters} and {@link Param} annotations to add parameters to the Parameterizable. Each Parameterizable will only be
+    * initialized once.
+    * @param parameterizable
+    * @return false when the parameterizable was already initialized
+    * @throws NoSuchMethodException
+    * @throws InstantiationException
+    * @throws IllegalAccessException
+    * @throws InvocationTargetException 
+    */
+   boolean initParameters(Parameterizable parameterizable) throws NoSuchMethodException,InstantiationException,IllegalAccessException, InvocationTargetException;
 
 }

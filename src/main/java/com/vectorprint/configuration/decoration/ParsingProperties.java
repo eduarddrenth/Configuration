@@ -17,12 +17,14 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.annotation.Feature;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
-import com.vectorprint.configuration.parser.PropertiesParser;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,8 +53,13 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
    
-   private transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class, new BindingHelperImpl(), false);
+   private transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getDefaultFactory();
 
+   /**
+    * If you need to override the current {@link EnhancedMapBindingFactoryImpl#getDefaultFactory() default binding factory}.
+    * This may also be called from {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } when your {@link SettingsField} has {@link Feature}s.
+    * @param factory 
+    */
    public void setFactory(EnhancedMapBindingFactory factory) {
       this.factory = factory;
    }

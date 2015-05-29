@@ -21,7 +21,8 @@ import com.vectorprint.configuration.EnhancedMap;
 
 /**
  * Processes objects or classes looking for fields annotated with {@link Setting} or {@link SettingsField}, when both are present only {@link SettingsField} is processed.
- * When the field has no value a value from settings will be required, when none is found you will get a {@link VectorPrintRuntimeException}.
+ * When the field has no value a value from settings will be required, when none is found you will get a {@link VectorPrintRuntimeException}. It is suggested that
+ * initSettings will not be executed when it was already called with the same object and the settings. 
  * @author Eduard Drenth at VectorPrint.nl
  * @see EnhancedMap#getGenericProperty(java.lang.Object, java.lang.Class, java.lang.String...) 
  * @see SettingsField
@@ -38,7 +39,8 @@ public interface SettingsAnnotationProcessor {
     * only static fields will be initialized, otherwise only instance fields.
     * @param o the Class or Object
     * @param settings the settings to use for initialization
+    * @return true when initialization was executed
     */
-   void initSettings(Object o, EnhancedMap settings);
+   boolean initSettings(Object o, EnhancedMap settings);
 
 }

@@ -632,12 +632,10 @@ public final class Settings extends HashMap<String, String[]>
    @Override
    public Collection<String> getUnusedKeys() {
       for (Iterator<String> it = unused.iterator(); it.hasNext();) {
-         String string = it.next();
-         if (!containsKey(string)) {
+         if (!containsKey(it.next())) {
             it.remove();
          }
       }
-      // cleanup here
       return Collections.unmodifiableCollection(unused);
    }
 
@@ -646,13 +644,6 @@ public final class Settings extends HashMap<String, String[]>
    @Override
    public Collection<String> getKeysNotPresent() {
       return Collections.unmodifiableCollection(notPresent);
-   }
-
-   @PreDestroy
-   @Override
-   protected void finalize() throws Throwable {
-      log.info(String.format("Settings (%s) not used sofar: %s", getId(), getUnusedKeys()));
-      log.info(String.format("Settings (%s) not present, default used: %s", getId(), getKeysNotPresent()));
    }
 
    /**

@@ -271,7 +271,7 @@ TOKEN:
 |   <ESC_KOMMA: "\\" <KOMMA>    >
 |   <PIPE: "|">
 |   <ESC_PIPE: "\\|" >
-|   <VALUE: ( ~[",",")","=","|"] )* ~["\\",",",")","=","|"] >
+|   <VALUE: ( ~[",",")","|"] )* ~["\\",",",")","|"] >
 }
 /** stuf like this should be parsed
 Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)

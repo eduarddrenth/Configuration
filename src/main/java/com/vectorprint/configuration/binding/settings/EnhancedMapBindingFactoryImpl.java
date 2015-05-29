@@ -167,4 +167,9 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
       }
    }
 
+   @Override
+   public String toString() {
+      return "EnhancedMapBindingFactoryImpl{" + "parserClass=" + parserClass + ", bindingHelper=" + bindingHelper.getClass() + ", serializerClass=" + serializerClass + '}';
+   }
+
 }
