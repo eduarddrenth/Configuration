@@ -79,6 +79,8 @@ public interface Parameter<TYPE extends Serializable> extends Cloneable, Seriali
     * @return the value or the default
     */
    TYPE getValue();
+   
+   boolean valueIsDefault();
 
    /**
     *

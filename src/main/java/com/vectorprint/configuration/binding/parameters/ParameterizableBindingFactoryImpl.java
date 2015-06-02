@@ -45,6 +45,14 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
 
    private ParamBindingHelper bindingHelper;
 
+   /**
+    * return a Class found in the system property argument or the Class argument
+    * @param <T>
+    * @param systemProperty
+    * @param clazz
+    * @return
+    * @throws ClassNotFoundException 
+    */
    private static <T> Class<T> findClass(String systemProperty, Class<T> clazz) throws ClassNotFoundException {
       if (System.getProperty(systemProperty) != null) {
          return (Class<T>) Class.forName(System.getProperty(systemProperty));

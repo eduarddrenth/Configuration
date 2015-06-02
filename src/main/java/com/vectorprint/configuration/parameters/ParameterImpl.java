@@ -85,6 +85,11 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    @Override
+   public boolean valueIsDefault() {
+      return value == null ? def ==null : value.equals(def);
+   }
+
+   @Override
    public TYPE getDefault() {
       return def;
    }

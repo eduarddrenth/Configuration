@@ -45,6 +45,11 @@ public interface ParameterizableSerializer {
 
    ParameterizableSerializer setPrintOnlyNonDefault(boolean printOnlyNonDefault);
 
+   /**
+    * When true serialize only parameters with non default values.
+    * @see Parameter#valueIsDefault() 
+    * @return 
+    */
    boolean getPrintOnlyNonDefault();
 
    void setBindingHelper(ParamBindingHelper bindingHelper);

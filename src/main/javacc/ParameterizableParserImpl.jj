@@ -198,7 +198,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
             return false;
          }
          if (getPrintOnlyNonDefault()) {
-            return !p.getValue().equals(p.getDefault());
+            return !p.valueIsDefault();
          } else {
             return true;
          }
