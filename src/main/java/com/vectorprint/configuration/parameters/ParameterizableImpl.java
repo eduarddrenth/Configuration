@@ -28,6 +28,7 @@ import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.annotation.SettingsField;
+import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
@@ -39,19 +40,22 @@ import java.util.Observable;
 import java.util.logging.Logger;
 
 /**
- *
+ * This implementation contains static {@link EnhancedMap settings}, which will be initialized in {@link ParameterizableParser#parseParameterizable() } and used in {@link #addParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Class) }.
+ * If 
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParameterizableImpl implements Parameterizable {
 
    public static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
    private static final Logger logger = Logger.getLogger(ParameterizableImpl.class.getName());
+   private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    /**
     * will call {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable)
-    * }
+    * } and {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) }.
     */
    public ParameterizableImpl() {
+      sap.initSettings(this, settings);
       try {
          paramProcessor.initParameters(this);
       } catch (NoSuchMethodException ex) {
@@ -65,7 +69,7 @@ public class ParameterizableImpl implements Parameterizable {
       }
    }
 
-   private Map<String, Parameter> parameters = new HashMap<String, Parameter>(5) {
+   private final Map<String, Parameter> parameters = new HashMap<String, Parameter>(5) {
       @Override
       public Parameter remove(Object key) {
          return null;
@@ -95,8 +99,8 @@ public class ParameterizableImpl implements Parameterizable {
     */
    @Override
    public void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass) {
-      SettingsAnnotationProcessorImpl.SAP.initSettings(parameter.getClass(), settings);
-      SettingsAnnotationProcessorImpl.SAP.initSettings(parameter, settings);
+      sap.initSettings(parameter.getClass(), settings);
+      sap.initSettings(parameter, settings);
       parameters.put(parameter.getKey(), parameter);
       parameter.addObserver(this);
       if (parameter instanceof ParameterImpl) {
@@ -199,6 +203,9 @@ public class ParameterizableImpl implements Parameterizable {
       if (obj == null) {
          return false;
       }
+      if (obj == this) {
+         return true;
+      }
       if (getClass() != obj.getClass()) {
          return false;
       }
@@ -214,5 +221,12 @@ public class ParameterizableImpl implements Parameterizable {
       return "ParameterizableImpl{" + "parameters=" + parameters + '}';
    }
 
+   public EnhancedMap getSettings() {
+      return settings;
+   }
+
+   public static void clearStaticSettings() {
+      settings = null;
+   }
    
 }

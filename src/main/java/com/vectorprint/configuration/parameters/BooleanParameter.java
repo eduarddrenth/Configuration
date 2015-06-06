@@ -32,7 +32,7 @@ package com.vectorprint.configuration.parameters;
 public class BooleanParameter extends ParameterImpl<Boolean>{
 
    public BooleanParameter(String key, String help) {
-      super(key, help);
+      super(key, help,Boolean.class);
       setDefault(Boolean.FALSE);
    }
 

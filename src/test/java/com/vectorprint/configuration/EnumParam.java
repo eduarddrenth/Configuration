@@ -26,7 +26,7 @@ public class EnumParam extends ParameterImpl<EnumParam.E>{
    public enum E { E }
 
    public EnumParam(String key, String help) {
-      super(key, help);
+      super(key, help, E.class);
    }
 
 }

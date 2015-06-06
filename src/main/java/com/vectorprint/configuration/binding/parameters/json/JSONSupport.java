@@ -19,6 +19,7 @@ import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
@@ -49,6 +50,8 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
    private Reader reader;
    
    private ParamBindingHelper bindingHelper;
+   
+   private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    @Override
    public void setBindingHelper(ParamBindingHelper bindingHelper) {
@@ -189,7 +192,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
             }
             if (settings != null) {
                // init static settings
-               SettingsAnnotationProcessor.SAP.initSettings(c, settings);
+               sap.initSettings(c, settings);
             }
             try {
                parameterizable = (Parameterizable) c.newInstance();

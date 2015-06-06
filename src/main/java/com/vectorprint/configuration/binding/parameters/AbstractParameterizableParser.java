@@ -54,14 +54,12 @@ public abstract class AbstractParameterizableParser<T> implements Parameterizabl
    }
 
    /**
-    * Calls {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) },
-    * {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) } and if
+    * Calls {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) } and if
     * applicable {@link Configurable#initSettings(java.util.Map) }
     *
     */
    @Override
    public void initParameterizable(Parameterizable parameterizable) {
-      SettingsAnnotationProcessorImpl.SAP.initSettings(parameterizable, settings);
       if (!(parameterizable instanceof ParameterizableImpl)) {
          try {
             ParamAnnotationProcessorImpl.PAP.initParameters(parameterizable);

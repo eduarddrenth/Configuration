@@ -52,7 +52,8 @@ import java.util.logging.Logger;
  * this instance will never wrap settings in the same decorator more than once. When settings are wrapped the outermost
  * wrapper should be used, otherwise functionality implemented by a decorator may not execute. When the object is a
  * {@link DecoratorVisitor} and settings are a subclass of {@link AbstractPropertiesDecorator}, call
-    * {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) }
+    * {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) }.
+ * Classes will only be initialized once with the same settings.
  *
  * @see AbstractPropertiesDecorator#hasProperties(java.lang.Class)
  * @see SettingsField
@@ -79,14 +80,17 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    public boolean initSettings(Object o, EnhancedMap settings) {
       if (settingsUsed == null) {
          settingsUsed = settings;
-      } else if (settingsUsed.equals(settings) && objects.contains(o)) {
+      } else if (o instanceof Class && objects.contains(o) && settingsUsed.equals(settings)) {
+         // only check for classes, because equals of objects may be very expensive
          if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(String.format("assuming, based on equals, settings for %s already initialized with %s", settings, o));
          }
          return false;
       }
-      initSettings(o instanceof Class ? (Class) o : o.getClass(), o instanceof Class ? null : o, settings == null ? new Settings() : settings, true);
-      objects.add(o);
+      initSettings(o instanceof Class ? (Class) o : o.getClass(), o instanceof Class ? null : o, settings == null ? new Settings() : settings, settings != null);
+      if (o instanceof Class) {
+         objects.add(o);
+      }
       return true;
    }
 

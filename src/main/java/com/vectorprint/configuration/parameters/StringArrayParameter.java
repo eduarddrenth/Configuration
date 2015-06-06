@@ -32,7 +32,7 @@ package com.vectorprint.configuration.parameters;
 public class StringArrayParameter extends ParameterImpl<String[]>{
 
    public StringArrayParameter(String key, String help) {
-      super(key, help);
+      super(key, help, String[].class);
    }
 
 }

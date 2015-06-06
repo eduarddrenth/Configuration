@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.vectorprint.configuration.parameters;
 
 /*
@@ -24,7 +23,6 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.ArrayHelper;
 import java.util.Arrays;
 
@@ -32,21 +30,23 @@ import java.util.Arrays;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class PasswordParameter extends ParameterImpl<byte[]>{
+public class PasswordParameter extends ParameterImpl<byte[]> {
+
    private boolean clearAfterGet = true;
 
    /**
     * Calls {@link #PasswordParameter(java.lang.String, java.lang.String, boolean) } with true
+    *
     * @param key
-    * @param help 
+    * @param help
     */
    public PasswordParameter(String key, String help) {
       this(key, help, true);
    }
 
    public PasswordParameter(String key, String help, boolean clearAfterGet) {
-      super(key, help);
-      this.clearAfterGet=clearAfterGet;
+      super(key, help, byte[].class);
+      this.clearAfterGet = clearAfterGet;
    }
 
    public boolean isClearAfterGet() {
@@ -55,15 +55,16 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
 
    /**
     * when {@link #isClearAfterGet() } is true clear the password array
-    * @return 
+    *
+    * @return
     */
    @Override
    public final byte[] getValue() {
       byte[] copy = super.getValue();
-      if (copy==null) {
+      if (copy == null) {
          return null;
       }
-      if (!eq&&clearAfterGet) {
+      if (clearAfterGet) {
          copy = Arrays.copyOf(copy, copy.length);
          ArrayHelper.clear(super.getValue());
          setValue(null);
@@ -80,23 +81,16 @@ public class PasswordParameter extends ParameterImpl<byte[]>{
    public final byte[] getDefault() {
       return null;
    }
-   
-   
+
    @Override
    public Parameter<byte[]> clone() {
       PasswordParameter cp = (PasswordParameter) super.clone();
-      cp.clearAfterGet=clearAfterGet;
+      cp.clearAfterGet = clearAfterGet;
       return cp;
    }
-   private boolean eq = false;
-   
+
    @Override
    public final boolean equals(Object obj) {
-      eq=true;
-      try {
-         return super.equals(obj) && ((PasswordParameter) obj).clearAfterGet == clearAfterGet;
-      } finally {
-         eq = false;
-      }
+      return super.equals(obj) && ((PasswordParameter) obj).clearAfterGet == clearAfterGet;
    }
 }

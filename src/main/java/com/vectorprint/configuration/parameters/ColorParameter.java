@@ -32,7 +32,7 @@ import java.awt.Color;
 public class ColorParameter extends ParameterImpl<Color> {
 
    public ColorParameter(String key, String help) {
-      super(key, help);
+      super(key, help,Color.class);
    }
    
    @Override

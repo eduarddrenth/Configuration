@@ -26,6 +26,7 @@ package com.vectorprint.configuration.parameters;
  */
 
 //~--- JDK imports ------------------------------------------------------------
+import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import java.io.Serializable;
 import java.util.Map;
@@ -88,4 +89,6 @@ public interface Parameterizable extends Cloneable, Observer {
     * @return 
     */
    boolean isParameterSet(String key);
+
+   EnhancedMap getSettings();
 }

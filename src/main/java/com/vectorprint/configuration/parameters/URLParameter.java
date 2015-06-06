@@ -34,7 +34,7 @@ import java.net.URL;
 public class URLParameter extends ParameterImpl<URL>{
 
    public URLParameter(String key, String help) {
-      super(key, help);
+      super(key, help, URL.class);
    }
 
 

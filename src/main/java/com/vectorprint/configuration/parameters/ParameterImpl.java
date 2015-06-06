@@ -23,7 +23,6 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
@@ -50,10 +49,10 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
     * @param key the value of key
     * @param help the value of help
     */
-   public ParameterImpl(String key, String help) {
+   public ParameterImpl(String key, String help, Class<TYPE> clazz) {
       this.key = key;
       this.help = help;
-      valueClass = (Class<TYPE>) ClassHelper.findParameterClass(0, getClass(), ParameterImpl.class);
+      this.valueClass = clazz;
    }
 
    @Override
@@ -86,7 +85,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    @Override
    public boolean valueIsDefault() {
-      return value == null ? def ==null : value.equals(def);
+      return value == null ? def ==null : !valueClass.isArray() ? value.equals(def) : ParameterHelper.isArrayEqual(value, def);
    }
 
    @Override
@@ -203,6 +202,9 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if (obj == null) {
          return false;
       }
+      if (obj == this) {
+         return true;
+      }
       if (getClass() != obj.getClass()) {
          return false;
       }
@@ -210,30 +212,32 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)) {
          return false;
       }
-      if ((this.help == null) ? (other.help != null) : !this.help.equals(other.help)) {
-         return false;
-      }
-      if (this.declaringClass != other.declaringClass && (this.declaringClass == null || !this.declaringClass.equals(other.declaringClass))) {
-         return false;
-      }
       if (this.valueClass != other.valueClass && (this.valueClass == null || !this.valueClass.equals(other.valueClass))) {
          return false;
       }
+      Object v = (this instanceof PasswordParameter || this instanceof CharPasswordParameter) ? value : getValue();
+      Object o = (this instanceof PasswordParameter || this instanceof CharPasswordParameter) ? other.value : other.getValue();
       // compare getValue, not value, if it equals its ok, wether it originates from default or not
-      if (valueClass.isArray()) {
-         if (this.getValue() != other.getValue() && (this.getValue() == null || !ParameterHelper.isArrayEqual(valueClass,getValue(), other.getValue()))) {
-            return false;
-         }
-         if (this.def != other.def && (this.def == null || !ParameterHelper.isArrayEqual(valueClass,this.def, other.def))) {
-            return false;
-         }
-      } else {
-         if (this.getValue() != other.getValue() && (this.getValue() == null || !this.getValue().equals(other.getValue()))) {
+      if (!valueClass.isArray()) {
+         if (v != o && (v == null || !v.equals(o))) {
             return false;
          }
          if (this.def != other.def && (this.def == null || !this.def.equals(other.def))) {
             return false;
          }
+      } else {
+         if (v != o && (v == null || !ParameterHelper.isArrayEqual(v, o))) {
+            return false;
+         }
+         if (this.def != other.def && (this.def == null || !ParameterHelper.isArrayEqual(this.def, other.def))) {
+            return false;
+         }
+      }
+      if (this.declaringClass != other.declaringClass && (this.declaringClass == null || !this.declaringClass.equals(other.declaringClass))) {
+         return false;
+      }
+      if ((this.help == null) ? (other.help != null) : !this.help.equals(other.help)) {
+         return false;
       }
       return true;
    }

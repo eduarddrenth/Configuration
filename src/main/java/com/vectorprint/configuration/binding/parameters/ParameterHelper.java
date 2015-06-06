@@ -71,35 +71,54 @@ public class ParameterHelper {
 
    /**
     * compares two arrays
+    * @param o
+    * @param p
+    * @return the boolean 
+    */
+
+   /**
+    * compares two arrays
+    *
     * @param valueClass the class of the two objects to compare
     * @param o
     * @param p
-    * @return 
+    * @return
     */
-   public static boolean isArrayEqual(Class valueClass, Object o, Object p) {
-      if (valueClass.isArray()) {
-         if (valueClass.getComponentType().isPrimitive()) {
-            if (short[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((short[])o,(short[])p);
-            } else if (int[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((int[])o,(int[])p);
-            } else if (long[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((long[])o,(long[])p);
-            } else if (float[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((float[])o,(float[])p);
-            } else if (double[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((double[])o,(double[])p);
-            } else if (byte[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((byte[])o,(byte[])p);
-            } else if (boolean[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((boolean[])o,(boolean[])p);
-            } else if (char[].class.isAssignableFrom(valueClass)) {
-               return Arrays.equals((char[])o,(char[])p);
-            }
-         } else {
-            return Arrays.equals((Object[])o,(Object[])p);
+   public static boolean isArrayEqual(Object o, Object p) {
+      if (o != null) {
+         if (p==null) {
+            return false;
          }
+         Class valueClass = o.getClass();
+         if (!valueClass.equals(p.getClass())) {
+            return false;
+         }
+         if (valueClass.isArray()) {
+            if (valueClass.getComponentType().isPrimitive()) {
+               if (short[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((short[]) o, (short[]) p);
+               } else if (int[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((int[]) o, (int[]) p);
+               } else if (long[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((long[]) o, (long[]) p);
+               } else if (float[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((float[]) o, (float[]) p);
+               } else if (double[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((double[]) o, (double[]) p);
+               } else if (byte[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((byte[]) o, (byte[]) p);
+               } else if (boolean[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((boolean[]) o, (boolean[]) p);
+               } else if (char[].class.isAssignableFrom(valueClass)) {
+                  return Arrays.equals((char[]) o, (char[]) p);
+               }
+            } else {
+               return Arrays.equals((Object[]) o, (Object[]) p);
+            }
+         }
+         throw new VectorPrintRuntimeException(String.format("not an array: %s", valueClass));
+      } else {
+         return p == null;
       }
-      throw new VectorPrintRuntimeException(String.format("not an array: %s", valueClass));
    }
 }

@@ -28,6 +28,7 @@ import com.vectorprint.ClassHelper;
 import com.vectorprint.testing.ThreadTester;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.VectorPrintRuntimeException;
+import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.BindingHelperImpl;
@@ -54,9 +55,7 @@ import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
-import com.vectorprint.configuration.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parser.ParseException;
-import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
 import com.vectorprint.configuration.binding.parameters.json.JSONSupport;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
@@ -64,8 +63,10 @@ import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
 import com.vectorprint.configuration.binding.parameters.json.JSONBindingHelper;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
+import com.vectorprint.configuration.observing.TrimKeyValue;
 import com.vectorprint.configuration.parser.PropertiesParser;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
@@ -94,7 +95,6 @@ import java.util.logging.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
 
 /**
  *
@@ -394,40 +394,37 @@ public class PropertyTest {
       }
    }
 
-//   @Test
-//   public void testArguments() throws IOException, ParseException {
-//      ParsingProperties vp = new ParsingProperties(new Settings(), "src/test/resources/config"
-//          + File.separator + "styling.properties");
-//      vp.addFromArguments(new String[]{"-t", "-d", "-n", "-m", "m"});
-//      assertTrue(vp.containsKey("t"));
-//      assertTrue(vp.containsKey("d"));
-//      assertTrue(vp.containsKey("n"));
-//      assertTrue(vp.containsKey("m"));
-//      assertEquals("m", vp.getPropertyNoDefault("m"));
-//      vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
-//      try {
-//         vp.addFromArguments(new String[]{"t", "d", "n", "m", "m"});
-//      } catch (VectorPrintRuntimeException e) {
-//         assertTrue(e.getMessage().startsWith(ArgumentParser.WRONGKEYMESSAGE));
-//      }
-//   }
+   @Test
+   public void testArguments() throws IOException, ParseException {
+      ParsingProperties vp = new ParsingProperties(new Settings(), "src/test/resources/config"
+          + File.separator + "styling.properties");
+      EnhancedMapBindingFactory embf = EnhancedMapBindingFactoryImpl.getDefaultFactory();
+      embf.getParser(new StringReader("t=\nd=\nn=\nm=m")).parse(vp);
+      assertTrue(vp.containsKey("t"));
+      assertTrue(vp.containsKey("d"));
+      assertTrue(vp.containsKey("n"));
+      assertTrue(vp.containsKey("m"));
+      assertEquals("m", vp.getPropertyNoDefault("m"));
+   }
+   
    @Test
    public void testFindProperties() throws IOException, VectorPrintException, ParseException {
       new FindableProperties(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"));
       assertNotNull(FindableProperties.findContains("styling.properties"));
    }
 
-//   @Test
-//   public void testTrim() throws IOException, ParseException {
-//      PreparingProperties vp = new PreparingProperties(new Settings());
-//      vp.addObserver(new TrimKeyValue());
-//      vp.addFromArguments(new String[]{"-t ", "-d ", "-n ", "-m ", " m "});
-//      assertTrue(vp.containsKey("t"));
-//      assertTrue(vp.containsKey("d"));
-//      assertTrue(vp.containsKey("n"));
-//      assertTrue(vp.containsKey("m"));
-//      assertEquals("m", vp.getPropertyNoDefault("m"));
-//   }
+   @Test
+   public void testTrim() throws IOException, ParseException {
+      PreparingProperties vp = new PreparingProperties(new Settings());
+      vp.addObserver(new TrimKeyValue());
+      EnhancedMapBindingFactory embf = EnhancedMapBindingFactoryImpl.getDefaultFactory();
+      embf.getParser(new StringReader("t=\nd=\nn=\nm=m")).parse(vp);
+      assertTrue(vp.containsKey("t"));
+      assertTrue(vp.containsKey("d"));
+      assertTrue(vp.containsKey("n"));
+      assertTrue(vp.containsKey("m"));
+      assertEquals("m", vp.getPropertyNoDefault("m"));
+   }
    @Test
    public void testRecordUnused() throws IOException, ParseException {
       EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
@@ -732,10 +729,10 @@ public class PropertyTest {
                         
                         Serializable parseAsParameterValue = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("")).parseAsParameterValue(sb.toString(), p);
                         if (p.getValueClass().isArray()) {
-                           if (!ParameterHelper.isArrayEqual(p.getValueClass(), p.getValue(), parseAsParameterValue)) {
+                           if (!ParameterHelper.isArrayEqual(p.getValue(), parseAsParameterValue)) {
                               System.out.println("");
                            }
-                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(),p.getValue(),parseAsParameterValue),ParameterHelper.isArrayEqual(p.getValueClass(), p.getValue(), parseAsParameterValue));
+                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(),p.getValue(),parseAsParameterValue),ParameterHelper.isArrayEqual(p.getValue(), parseAsParameterValue));
                         } else {
                               assertEquals(String.valueOf(p.getValue()), String.valueOf(parseAsParameterValue));
                         }
@@ -816,6 +813,7 @@ public class PropertyTest {
       p.setValue("c", Color.red);
       assertEquals(pp, p);
    }
+   private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    @Test
    public void testSettingAnnotations() throws IOException, ParseException {
@@ -829,12 +827,12 @@ public class PropertyTest {
       vp.put("ff", new String[]{"10", "20"});
       vp.put("", "true");
       try {
-         SettingsAnnotationProcessorImpl.SAP.initSettings(f, vp);
+         sap.initSettings(f, vp);
       } catch (VectorPrintRuntimeException e) {
          // expected, no default and no setting
       }
       vp.put("nodefault", "true");
-      SettingsAnnotationProcessorImpl.SAP.initSettings(f, vp);
+      sap.initSettings(f, vp);
       try {
          f.getSettings().put("notallowed", "");
       } catch (VectorPrintRuntimeException e) {

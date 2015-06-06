@@ -26,6 +26,7 @@ package com.vectorprint.configuration.parameters.annotation;
  */
 
 import com.vectorprint.configuration.parameters.Parameterizable;
+import com.vectorprint.configuration.parameters.ParameterizableImpl;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -39,8 +40,8 @@ public interface ParamAnnotationProcessor {
    public static final ParamAnnotationProcessor PAP = new ParamAnnotationProcessorImpl();
    
    /**
-    * Looks for {@link Parameters} and {@link Param} annotations to add parameters to the Parameterizable. Each Parameterizable will only be
-    * initialized once.
+    * Looks for {@link Parameters} and {@link Param} annotations to add parameters to the Parameterizable. Each Parameterizable should only be
+    * initialized once. Preferably extend or use {@link ParameterizableImpl}.
     * @param parameterizable
     * @return false when the parameterizable was already initialized
     * @throws NoSuchMethodException

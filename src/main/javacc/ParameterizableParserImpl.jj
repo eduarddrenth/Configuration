@@ -72,6 +72,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
       private Parameterizable parameterizable = null;
 
       private ParamBindingHelper bindingHelper;
+      private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    @Override
    public void setBindingHelper(ParamBindingHelper bindingHelper) {
@@ -290,7 +291,7 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
       }
       if (settings != null) {
          // init static settings
-         SettingsAnnotationProcessorImpl.SAP.initSettings(c,settings);
+         sap.initSettings(c,settings);
       }
       parameterizable = (Parameterizable)c.newInstance();
       initParameterizable(parameterizable);

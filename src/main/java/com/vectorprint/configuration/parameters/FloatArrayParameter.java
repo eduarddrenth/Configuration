@@ -34,7 +34,7 @@ import java.util.Arrays;
 public class FloatArrayParameter extends ParameterImpl<float[]>{
    
    public FloatArrayParameter(String key, String help) {
-      super(key, help);
+      super(key, help,float[].class);
    }
 
    @Override

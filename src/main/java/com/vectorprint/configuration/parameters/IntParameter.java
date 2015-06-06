@@ -32,7 +32,7 @@ package com.vectorprint.configuration.parameters;
 public class IntParameter extends ParameterImpl<Integer>{
 
    public IntParameter(String key, String help) {
-      super(key, help);
+      super(key, help,Integer.class);
       setDefault(0);
    }
 

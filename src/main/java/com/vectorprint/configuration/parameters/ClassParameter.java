@@ -22,7 +22,7 @@ package com.vectorprint.configuration.parameters;
 public class ClassParameter extends ParameterImpl<Class> {
 
    public ClassParameter(String key, String help) {
-      super(key, help);
+      super(key, help, Class.class);
    }
 
    @Override

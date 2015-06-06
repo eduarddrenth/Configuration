@@ -29,10 +29,6 @@ import com.vectorprint.configuration.EnhancedMap;
  * @see Setting
  */
 public interface SettingsAnnotationProcessor {
-   /**
-    * you can safely use this, also from different threads
-    */
-   public static final SettingsAnnotationProcessor SAP = new SettingsAnnotationProcessorImpl();
    
    /**
     * initializes annotated fields for a class or object. When the object argument is a Class,

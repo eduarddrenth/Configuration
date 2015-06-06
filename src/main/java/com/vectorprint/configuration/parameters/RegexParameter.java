@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 public class RegexParameter extends ParameterImpl<Pattern>{
 
    public RegexParameter(String key, String help) {
-      super(key, help);
+      super(key, help, Pattern.class);
    }
 
 

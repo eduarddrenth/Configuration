@@ -32,7 +32,7 @@ package com.vectorprint.configuration.parameters;
 public class StringParameter extends ParameterImpl<String>{
 
    public StringParameter(String key, String help) {
-      super(key, help);
+      super(key, help, String.class);
    }
 
 }

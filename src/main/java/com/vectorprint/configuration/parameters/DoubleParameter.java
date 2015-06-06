@@ -33,7 +33,7 @@ package com.vectorprint.configuration.parameters;
 public class DoubleParameter extends ParameterImpl<Double>{
 
    public DoubleParameter(String key, String help) {
-      super(key, help);
+      super(key, help,Double.class);
       setDefault(0d);
    }
 

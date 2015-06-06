@@ -34,7 +34,7 @@ import java.util.Arrays;
 public class IntArrayParameter extends ParameterImpl<int[]>{
 
    public IntArrayParameter(String key, String help) {
-      super(key, help);
+      super(key, help,int[].class);
    }
 
    @Override

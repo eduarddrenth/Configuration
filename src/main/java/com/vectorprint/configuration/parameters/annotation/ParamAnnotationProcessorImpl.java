@@ -31,8 +31,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,8 +42,6 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
 
    private static final Logger log = Logger.getLogger(ParamAnnotationProcessorImpl.class.getName());
    
-   private final Set<Parameterizable> s = new HashSet<Parameterizable>(50);
-
    /**
     * looks for parameter annotations on each class in the hierarchy and adds a parameter to the parameterizable for
     * each annotation found. Skips parameters already present on the parameterizable. Call {@link ParameterImpl#setDeclaringClass(java.lang.Class)
@@ -60,12 +56,6 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
     */
    @Override
    public boolean initParameters(Parameterizable parameterizable) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-      if (s.contains(parameterizable)) {
-         if (log.isLoggable(Level.FINE)) {
-            log.fine(String.format("assuming, based on equals, parameterizable for %s already initialized", parameterizable));
-         }
-         return false;
-      }
       Class c = parameterizable.getClass();
       while (Parameterizable.class.isAssignableFrom(c)) {
          if (log.isLoggable(Level.FINE)) {
@@ -74,7 +64,6 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
          process(c, parameterizable);
          c = c.getSuperclass();
       }
-      s.add(parameterizable);
       return true;
    }
 

@@ -34,7 +34,7 @@ import java.util.Arrays;
 public class DoubleArrayParameter extends ParameterImpl<double[]>{
    
    public DoubleArrayParameter(String key, String help) {
-      super(key, help);
+      super(key, help,double[].class);
    }
 
    @Override

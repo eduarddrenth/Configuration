@@ -33,7 +33,7 @@ package com.vectorprint.configuration.parameters;
 public class FloatParameter extends ParameterImpl<Float>{
 
    public FloatParameter(String key, String help) {
-      super(key, help);
+      super(key, help,Float.class);
       setDefault(0f);
    }
 
