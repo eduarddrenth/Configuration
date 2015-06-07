@@ -15,7 +15,6 @@
  */
 package com.vectorprint.configuration.binding.parameters;
 
-import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import java.io.IOException;
@@ -43,15 +42,12 @@ public interface ParameterizableSerializer {
     */
    void serialize(Parameter p, Writer w) throws IOException;
 
-   ParameterizableSerializer setPrintOnlyNonDefault(boolean printOnlyNonDefault);
+   void setBindingHelper(ParamBindingHelper bindingHelper);
 
    /**
-    * When true serialize only parameters with non default values.
-    * @see Parameter#valueIsDefault() 
+    * return true when the parameter should be included in serialization
+    * @param parameter
     * @return 
     */
-   boolean getPrintOnlyNonDefault();
-
-   void setBindingHelper(ParamBindingHelper bindingHelper);
-   
+   boolean include(Parameter parameter);
 }

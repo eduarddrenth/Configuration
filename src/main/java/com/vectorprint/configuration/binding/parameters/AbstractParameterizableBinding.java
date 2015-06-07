@@ -18,13 +18,15 @@ package com.vectorprint.configuration.binding.parameters;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.Configurable;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
+import com.vectorprint.configuration.parameters.CharPasswordParameter;
+import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.ParameterizableImpl;
+import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -33,18 +35,11 @@ import java.util.logging.Logger;
  * @author Eduard Drenth at VectorPrint.nl
  * @param <T> The type of Object yielded by the parsing process, for example List<String> or Object when the type is unknown
  */
-public abstract class AbstractParameterizableParser<T> implements ParameterizableParser<T>, ParameterizableSerializer {
+public abstract class AbstractParameterizableBinding<T> implements ParameterizableParser<T>, ParameterizableSerializer {
 
-   private boolean printOnlyNonDefault = false;
-   private static final Logger logger = Logger.getLogger(AbstractParameterizableParser.class.getName());
+   private static final Logger logger = Logger.getLogger(AbstractParameterizableBinding.class.getName());
    private String packageName;
    private EnhancedMap settings;
-
-   @Override
-   public ParameterizableSerializer setPrintOnlyNonDefault(boolean printOnlyNonDefault) {
-      this.printOnlyNonDefault = printOnlyNonDefault;
-      return this;
-   }
 
    public final void checkKey(Parameterizable st, String key) {
       if (!st.getParameters().containsKey(key)) {
@@ -79,11 +74,6 @@ public abstract class AbstractParameterizableParser<T> implements Parameterizabl
    }
 
    @Override
-   public boolean getPrintOnlyNonDefault() {
-      return printOnlyNonDefault;
-   }
-
-   @Override
    public EnhancedMap getSettings() {
       return settings;
    }
@@ -103,6 +93,26 @@ public abstract class AbstractParameterizableParser<T> implements Parameterizabl
    public ParameterizableParser setPackageName(String packageName) {
       this.packageName = packageName;
       return this;
+   }
+
+   /**
+    * return false for password parameters and when parameter value and default are the same
+    * @param parameter
+    * @return 
+    */
+   @Override
+   public boolean include(Parameter parameter) {
+      boolean rv = true;
+      if (parameter instanceof CharPasswordParameter || parameter instanceof PasswordParameter) {
+         rv = false;
+      } else {
+         Object v = parameter.getValue();
+         rv = !(v == null ? parameter.getDefault() == null : v.equals(parameter.getDefault()));
+      }
+      if (!rv) {
+         logger.warning(String.format("not including %s in serialization", parameter));
+      }
+      return rv;
    }
 
 }

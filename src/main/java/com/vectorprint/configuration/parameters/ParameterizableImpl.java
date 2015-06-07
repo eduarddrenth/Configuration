@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 public class ParameterizableImpl implements Parameterizable {
 
    public static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
-   private static final Logger logger = Logger.getLogger(ParameterizableImpl.class.getName());
+   protected static final Logger logger = Logger.getLogger(ParameterizableImpl.class.getName());
    private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    /**

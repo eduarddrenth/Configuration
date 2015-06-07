@@ -75,6 +75,7 @@ public class CharPasswordParameter extends ParameterImpl<char[]> {
          return null;
       }
       if (clearAfterGet) {
+         log.warning("clearing password after first retrieval");
          copy = Arrays.copyOf(copy, copy.length);
          ArrayHelper.clear(super.getValue());
          setValue(null);
@@ -92,5 +93,10 @@ public class CharPasswordParameter extends ParameterImpl<char[]> {
    @Override
    public final boolean equals(Object obj) {
       return super.equals(obj) && ((CharPasswordParameter) obj).clearAfterGet == clearAfterGet;
+   }
+
+   @Override
+   protected final String valueToString(char[] value) {
+      return "";
    }
 }

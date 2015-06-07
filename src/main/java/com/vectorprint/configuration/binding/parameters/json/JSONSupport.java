@@ -21,7 +21,7 @@ import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
+import com.vectorprint.configuration.binding.parameters.AbstractParameterizableBinding;
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.parameters.Parameter;
@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -45,21 +46,19 @@ import java.util.Map;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class JSONSupport extends AbstractParameterizableParser<Object> {
+public class JSONSupport extends AbstractParameterizableBinding<Object> {
 
    private Reader reader;
-   
+
    private ParamBindingHelper bindingHelper;
-   
+
    private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    @Override
    public void setBindingHelper(ParamBindingHelper bindingHelper) {
       this.bindingHelper = bindingHelper;
    }
-   
-   
-   
+
    public JSONSupport(Reader reader) {
       this.reader = reader;
    }
@@ -89,7 +88,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
             sl.add(String.valueOf(o));
          }
          if (String[].class.equals(parameter.getValueClass())) {
-               return (TYPE) ArrayHelper.toArray(sl);
+            return (TYPE) ArrayHelper.toArray(sl);
          } else {
             Serializable o = (Serializable) bindingHelper.convert(ArrayHelper.toArray(sl), parameter.getValueClass());
             return (TYPE) o;
@@ -104,7 +103,7 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
          }
       }
    }
-   
+
    protected void convertAndSet(Parameter parameter, Object values, boolean setDefault) {
       Serializable convert = convert(values, parameter);
       bindingHelper.setValueOrDefault(parameter, convert, setDefault);
@@ -129,17 +128,27 @@ public class JSONSupport extends AbstractParameterizableParser<Object> {
       StringBuilder sb = new StringBuilder();
       sb.append("{'").append(p.getClass().getSimpleName()).append("': ");
       if (!p.getParameters().isEmpty()) {
-         sb.append('[');
-         final int max = p.getParameters().size();
-         int i = 0;
+         Collection<Parameter> c = new ArrayList<Parameter>(p.getParameters().size());
          for (Parameter par : p.getParameters().values()) {
-            serializeParam(par, sb);
-            if (i < max - 1) {
-               sb.append(',');
+            if ((include(par))) {
+               c.add(par);
             }
-            i++;
          }
-         sb.append(']');
+         if (!c.isEmpty()) {
+            int max = c.size();
+            int i = 0;
+            sb.append('[');
+            for (Parameter par : c) {
+               serializeParam(par, sb);
+               if (i < max - 1) {
+                  sb.append(',');
+               }
+               i++;
+            }
+            sb.append(']');
+         } else {
+            sb.append(" null");
+         }
       } else {
          sb.append(" null");
       }

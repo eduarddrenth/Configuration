@@ -36,7 +36,8 @@ PARSER_BEGIN(ParameterizableParserImpl)
     import com.vectorprint.configuration.EnhancedMap;
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
-    import com.vectorprint.configuration.binding.parameters.AbstractParameterizableParser;
+    import com.vectorprint.configuration.binding.parameters.AbstractParameterizableBinding;
+    import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
     import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
     import com.vectorprint.configuration.binding.parameters.ParameterHelper;
     import com.vectorprint.configuration.parameters.Parameterizable;
@@ -67,7 +68,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
       * Parameterizables and Parameters will be initialized and default values for parameters will initialized from settings, see
       * {@link ParameterHelper#findKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap, com.vectorprint.configuration.binding.parameters.ParameterHelper.SUFFIX)}
       */
-    public class ParameterizableParserImpl extends AbstractParameterizableParser<List<String>> {
+    public class ParameterizableParserImpl extends AbstractParameterizableBinding<List<String>> {
 
       private Parameterizable parameterizable = null;
 
@@ -152,7 +153,6 @@ PARSER_BEGIN(ParameterizableParserImpl)
        * returns a String in the form simpleClassName(key=value,key2=v1|v2|v3,key3=value)
        *
        * @param parameterizable
-       * @param printOnlyNonDefault when true only print non default values
        * @return
        */
       private StringBuilder toConfig(Parameterizable parameterizable) {
@@ -170,12 +170,11 @@ PARSER_BEGIN(ParameterizableParserImpl)
       }
 
       /**
-       * returns a String in the form key=value,key2=v1|v2|v3,key3=value. Only includes parameters with non default values,
-       * see {@link
-       * Parameter#getDefault() }.
+       * returns a String in the form key=value,key2=v1|v2|v3,key3=value. Only includes parameters when
+       * {@link ParameterizableSerializer#include(Parameter)} is true.
        *
        * @param parameters
-       * @param printOnlyNonDefault when true only print non default values
+       * @param sb
        * @return
        */
       private void toConfig(Collection<Parameter> parameters, StringBuilder sb) {
@@ -194,31 +193,16 @@ PARSER_BEGIN(ParameterizableParserImpl)
          }
       }
 
-      private boolean include(Parameter p) {
-         if (null == p.getValue()) {
-            return false;
-         }
-         if (getPrintOnlyNonDefault()) {
-            return !p.valueIsDefault();
-         } else {
-            return true;
-         }
-      }
-
       /**
-       * returns a String in the form key=value or key2=v1|v2|v3, but only when the value is non default, see {@link
-       * Parameter#getDefault() }.
+       * returns a String in the form key=value or key2=v1|v2|v3.
        *
        * @param p
-       * @param printOnlyNonDefault when true only print non default values
-       *
+       * @param sb
        * @return
        */
       private void toConfig(Parameter p, StringBuilder sb) {
-         if (include(p)) {
             sb.append(p.getKey()).append(ParameterizableParserImplConstants.tokenImage[ParameterizableParserImplConstants.EQ].substring(1, 2))
             .append(bindingHelper.serializeValue(bindingHelper.getValueToSerialize(p, false)));
-         }
       }
 
     }

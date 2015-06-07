@@ -30,6 +30,7 @@ import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import java.io.Serializable;
 import java.util.Observable;
+import java.util.logging.Logger;
 
 /**
  *
@@ -44,6 +45,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private TYPE def;
    private Class<? extends Parameterizable> declaringClass;
    private Class<TYPE> valueClass;
+   protected static final Logger log = Logger.getLogger(ParameterImpl.class.getName());
 
    /**
     * @param key the value of key
@@ -84,11 +86,6 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    @Override
-   public boolean valueIsDefault() {
-      return value == null ? def ==null : !valueClass.isArray() ? value.equals(def) : ParameterHelper.isArrayEqual(value, def);
-   }
-
-   @Override
    public TYPE getDefault() {
       return def;
    }
@@ -119,8 +116,12 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       return this;
    }
 
+   /**
+    * uses {@link #valueToString(java.io.Serializable) }
+    * @return 
+    */
    @Override
-   public String toString() {
+   public final String toString() {
       return getClass().getSimpleName()+"{" + "key=" + key + ", value=" + valueToString(value) + ", def=" + valueToString(def) + ", help=" + help + ", declaringClass=" + declaringClass + '}';
    }
 

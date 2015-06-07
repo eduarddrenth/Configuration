@@ -716,7 +716,7 @@ public class PropertyTest {
                         assertNull(p.getValue());
                         continue;
                      }
-                     ParameterizableSerializer ps = ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer().setPrintOnlyNonDefault(false);
+                     ParameterizableSerializer ps = ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer();
                      StringWriter sw = new StringWriter();
                      ps.serialize(p, sw);
                      String conf = sw.toString();
@@ -783,7 +783,7 @@ public class PropertyTest {
       assertEquals(sp, sp2);
 
    }
-
+   
    @Test
    public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
@@ -813,6 +813,7 @@ public class PropertyTest {
       p.setValue("c", Color.red);
       assertEquals(pp, p);
    }
+   
    private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    @Test

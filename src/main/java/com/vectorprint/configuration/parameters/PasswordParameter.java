@@ -65,6 +65,7 @@ public class PasswordParameter extends ParameterImpl<byte[]> {
          return null;
       }
       if (clearAfterGet) {
+         log.warning("clearing password after first retrieval");
          copy = Arrays.copyOf(copy, copy.length);
          ArrayHelper.clear(super.getValue());
          setValue(null);
@@ -92,5 +93,10 @@ public class PasswordParameter extends ParameterImpl<byte[]> {
    @Override
    public final boolean equals(Object obj) {
       return super.equals(obj) && ((PasswordParameter) obj).clearAfterGet == clearAfterGet;
+   }
+   
+   @Override
+   protected final String valueToString(byte[] value) {
+      return "";
    }
 }
