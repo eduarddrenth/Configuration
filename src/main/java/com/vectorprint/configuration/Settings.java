@@ -24,6 +24,7 @@ import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import java.awt.Color;
 import java.io.PrintStream;
@@ -33,14 +34,13 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import javax.annotation.PreDestroy;
 import static com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl.getDefaultFactory;
 
 /**
- * Enhances Java Map with support for data types, debugging info, overriding properties from command line arguments,
- * working with default values in code. You cannot subclass this class, instead subclass
+ * Enhances Java Map with support for data types, debugging info, working with default values in code. You cannot subclass this class, instead subclass
  * {@link AbstractPropertiesDecorator} and wrap an instance of this class.
  *
+ * @see EnhancedMapBindingFactory
  * @see com.vectorprint.configuration.decoration
  * @see SettingsAnnotationProcessor
  * @see SettingsField

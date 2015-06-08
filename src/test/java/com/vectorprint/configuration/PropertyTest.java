@@ -61,7 +61,6 @@ import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
-import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
 import com.vectorprint.configuration.binding.parameters.json.JSONBindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
@@ -716,18 +715,12 @@ public class PropertyTest {
                         assertNull(p.getValue());
                         continue;
                      }
-                     ParameterizableSerializer ps = ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer();
-                     StringWriter sw = new StringWriter();
-                     ps.serialize(p, sw);
-                     String conf = sw.toString();
+                     BindingHelper stringConversion = ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper();
+                     String conf = stringConversion.serializeValue(p.getValue());
                      
                      if (conf != null && !"".equals(conf)) {
-                        BindingHelper stringConversion = ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper();
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(stringConversion.serializeValue(p.getValue()));
-                        assertEquals(sb.toString(), conf.substring(conf.indexOf('=') + 1));
                         
-                        Serializable parseAsParameterValue = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("")).parseAsParameterValue(sb.toString(), p);
+                        Serializable parseAsParameterValue = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("")).parseAsParameterValue(conf, p);
                         if (p.getValueClass().isArray()) {
                            if (!ParameterHelper.isArrayEqual(p.getValue(), parseAsParameterValue)) {
                               System.out.println("");

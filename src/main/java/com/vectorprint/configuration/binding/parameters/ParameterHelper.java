@@ -64,7 +64,7 @@ public class ParameterHelper {
          simpleName = clazz.getSimpleName() + "." + key + "." + suffix;
       }
       if (log.isLoggable(Level.FINE)) {
-         log.fine("found default " + simpleName + ": " + settings.get(simpleName));
+         log.fine("found default " + simpleName + ": " + Arrays.toString(settings.get(simpleName)));
       }
       return simpleName;
    }

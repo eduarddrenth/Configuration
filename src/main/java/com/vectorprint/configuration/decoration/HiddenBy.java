@@ -26,7 +26,8 @@ import com.vectorprint.configuration.EnhancedMap;
 public interface HiddenBy extends EnhancedMap {
    
    /**
-    * return true if the functionality of this object is hidden by the argument decorator.
+    * return true if the functionality of this object is hidden by the argument decorator. Called from
+    * {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap) }.
     * @param settings
     * @return the boolean 
     */

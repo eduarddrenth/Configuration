@@ -20,7 +20,6 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
-import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.AbstractParameterizableBinding;
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
@@ -153,13 +152,6 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
          sb.append(" null");
       }
       w.write(sb.append('}').toString());
-   }
-
-   @Override
-   public void serialize(Parameter par, Writer w) throws IOException {
-      StringBuilder sb = new StringBuilder();
-      serializeParam(par, sb);
-      w.write(sb.toString());
    }
 
    /**

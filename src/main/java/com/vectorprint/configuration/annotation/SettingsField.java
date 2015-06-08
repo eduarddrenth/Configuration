@@ -15,9 +15,11 @@
  */
 package com.vectorprint.configuration.annotation;
 
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
+import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -35,35 +37,46 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SettingsField {
+
    /**
     * by default settings will be {@link CachingProperties read / write}.
-    * @return 
+    *
+    * @return
     */
    boolean readonly() default false;
+
    /**
     * by default settings will be {@link CachingProperties cached}.
-    * @return 
+    *
+    * @return
     */
    boolean cache() default true;
+
    /**
-    * by default settings will not be {@link ObservableProperties observable}.
-    * If you want the object containing the settings to be added automatically as observer, implement
-    * {@link Observer}.
+    * by default settings will not be {@link ObservableProperties observable}. If you want the object containing the
+    * settings to be added automatically as observer, just implement {@link Observer}.
+    *
     * @see SettingsAnnotationProcessorImpl
     * @see ObservableVisitor
-    * @return 
+    * @return
     */
    boolean observable() default false;
-   
+
    /**
-    * when urls are defined properties will be loaded from it
-    * @return 
+    * When urls are supplied properties will be loaded from it, using {@link EnhancedMapBindingFactoryImpl#getDefaultFactory()
+    * } for syntax. You have control over the syntax used through {@link EnhancedMapBindingFactoryImpl#getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.BindingHelper, boolean)
+    * }, or by using {@link #features() } instead of this urls construct.
+    *
+    * @see ParsingProperties
+    * @return
     */
    String[] urls() default {};
+
    /**
     * You can add your own features to settings, these will be applied at the end of the decoration stack.
-    * @return 
+    *
+    * @return
     */
    Feature[] features() default {};
-   
+
 }

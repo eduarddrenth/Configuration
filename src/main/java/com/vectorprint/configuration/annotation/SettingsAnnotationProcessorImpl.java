@@ -22,7 +22,6 @@ import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
-import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
@@ -38,6 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -66,12 +66,13 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private EnhancedMap settingsUsed = null;
 
-   private Set objects = new HashSet();
+   private final Set objects = new HashSet();
 
    /**
-    * Look for annotation in the object, use settings argument to inject settings. NOTE that the settings argument may
+    * Look for annotated fields in the Object class, use settings argument to apply settings. NOTE that the settings argument may
     * be wrapped, you should always use the {@link Settings#getOutermostWrapper() }
-    * in that case, and not call the settings argument directly after initialization is performed.
+    * in that case, and not call the settings argument directly after initialization is performed. When the Object argument is a class
+    * only static fields will be processed, otherwise only instance fields.
     *
     * @param o
     * @param settings when null create a new {@link Settings} instance.
@@ -96,14 +97,15 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
       Field[] declaredFields = c.getDeclaredFields();
+      if (LOGGER.isLoggable(Level.FINE)) {
+         LOGGER.fine(String.format("looking for %s fields to apply settings to", (obj==null ? "static" : "instance")));
+      }
       for (Field field : declaredFields) {
          // when looping use the original settings argument, each settings annotation should use its own setup
          boolean isStatic = Modifier.isStatic(field.getModifiers());
          if (isStatic && obj != null) {
-            LOGGER.warning(String.format("not processing static field %s", field.getName()));
             continue;
          } else if (!isStatic && obj == null) {
-            LOGGER.warning(String.format("not processing instance field %s", field.getName()));
             continue;
          }
          EnhancedMap settings = eh;
@@ -153,15 +155,14 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                }
                for (Feature feat : set.features()) {
                   Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
-                  String extraSource = feat.url();
-                  if (HelpSupportedProperties.class.isAssignableFrom(dec) || ParsingProperties.class.isAssignableFrom(dec)) {
+                  if (feat.urls().length > 0) {
+                     URL[] urls = EnhancedMapBindingFactoryImpl.getDefaultFactory().getBindingHelper().convert(feat.urls(),URL[].class);
+                     Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec,EnhancedMap.class, URL.class);
                      if (!hasProps(settings, dec)) {
-                        Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class, URL.class);
-                        URL u = new URL(extraSource);
                         if (notifyWrapping) {
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
-                        settings = constructor.newInstance(settings, u);
+                        settings = constructor.newInstance(settings, urls);
                         if (ParsingProperties.class.isAssignableFrom(dec)) {
                            ParsingProperties pp = (ParsingProperties) settings;
                            EnhancedMapBindingFactory factory
@@ -171,7 +172,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      }
                   } else {
                      if (!hasProps(settings, dec)) {
-                        Constructor<? extends AbstractPropertiesDecorator> constructor = dec.getConstructor(EnhancedMap.class);
+                        Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec,EnhancedMap.class);
                         if (notifyWrapping) {
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
@@ -183,8 +184,6 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                   ((AbstractPropertiesDecorator) settings).accept((DecoratorVisitor) obj);
                }
             } catch (IOException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (NoSuchMethodException ex) {
                throw new VectorPrintRuntimeException(ex);
             } catch (SecurityException ex) {
                throw new VectorPrintRuntimeException(ex);
@@ -215,20 +214,20 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                Object v = null;
                if (cur == null) {
                   if (LOGGER.isLoggable(Level.FINE)) {
-                     LOGGER.fine(String.format("requiring a value for %s in settings", s.keys()));
+                     LOGGER.fine(String.format("requiring a value for %s in settings", Arrays.toString(s.keys())));
                   }
                   // don't catch exception, a setting is required
                   v = settings.getGenericProperty(null, type, s.keys());
                } else {
                   if (LOGGER.isLoggable(Level.FINE)) {
-                     LOGGER.fine(String.format("looking for a value for %s in settings, ", s.keys()));
+                     LOGGER.fine(String.format("looking for a value for %s in settings, ", Arrays.toString(s.keys())));
                   }
                   // a setting is not required, only look for one if it is there
                   v = settings.getGenericProperty(cur, type, s.keys());
                }
                if (v != null) {
                   if (LOGGER.isLoggable(Level.FINE)) {
-                     LOGGER.fine(String.format("found %s for %s in settings, ", v, s.keys()));
+                     LOGGER.fine(String.format("found %s for %s in settings, ", v, Arrays.toString(s.keys())));
                   }
                   if (!executeSetter(field, obj, v, isStatic)) {
                      field.set(obj, v);
@@ -245,6 +244,26 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          // when recursing we use the original settings argument, each settings annotation should use its own setup
          initSettings(c.getSuperclass(), obj, eh, notifyWrapping);
       }
+   }
+   
+   public static <T> Constructor<T> findConstructor(Class<T> clazz, Class... parameters) {
+      for (Constructor con : clazz.getConstructors()) {
+         Class[] parameterTypes = con.getParameterTypes();
+         if (parameters.length!=parameterTypes.length) {
+            continue;
+         }
+         boolean ok = true;
+         for (int i = 0; i < parameters.length; i++) {
+            if (!parameters[i].isAssignableFrom(parameterTypes[i])) {
+               ok = false;
+               break;
+            }
+         }
+         if (ok) {
+            return con;
+         }
+      }
+      return null;
    }
 
    private boolean executeSetter(Field f, Object o, Object value, boolean isStatic) {

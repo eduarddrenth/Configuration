@@ -47,13 +47,13 @@ public @interface Feature {
     */
    public Class<? extends AbstractPropertiesDecorator> clazz();
    /**
-    * decorators may need an extra source for their functionality, a URL to retrieve help info for example.
-    * setting this argument requires a constructor with {@link EnhancedMap} and URL.
+    * decorators may need input for their functionality, a URL to retrieve help info for example.
+    * setting this argument requires a constructor with {@link EnhancedMap} and URL[].
     * @see ParsingProperties
     * @see HelpSupportedProperties
     * @return 
     */
-   public String url() default "";
+   public String[] urls() default {};
    
    /**
     * @see ParsingProperties

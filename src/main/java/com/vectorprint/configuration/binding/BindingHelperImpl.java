@@ -36,8 +36,7 @@ import java.util.regex.Pattern;
 
 //~--- JDK imports ------------------------------------------------------------
 /**
- * Responsible for converting Strings into (atomic) values and vise versa, for manipulating values and defaults of
- * parameters during or after parsing and serialization and for escaping meaningful characters for a certain syntax.
+ * Responsible for converting Strings into (atomic) values and vise versa and for escaping meaningful characters for a certain syntax.
  * Use this default implementation in {@link AbstractBindingHelperDecorator#AbstractBindingHelperDecorator(com.vectorprint.configuration.binding.BindingHelper) } when extending it.
  * 
  * Threadsafe: it is safe to call the available methods from different threads at the same time on one instance of this

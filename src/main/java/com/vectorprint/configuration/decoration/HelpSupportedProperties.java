@@ -44,42 +44,34 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
    public static final String HELPFORMAT = "help format: <property>=<type>;<description>";
    private static final Logger log = Logger.getLogger(HelpSupportedProperties.class.getName());
-   private URL help;
 
-   public HelpSupportedProperties(EnhancedMap properties, URL help) {
+   public HelpSupportedProperties(EnhancedMap properties, URL... help) {
       super(properties);
       initHelp(help);
-      this.help = help;
    }
-   
+
    /**
     * Uses {@link HelpParser}, calls {@link #setHelp(java.util.Map) }
-    * @param url 
+    *
+    * @param url
     */
-   protected void initHelp(URL url) {
-      try {
-         Map<String, PropertyHelp> h = new HashMap<String, PropertyHelp>(150);
-
-         new HelpParser(url.openStream()).parse(h);
-
-         super.setHelp(h);
-      } catch (TokenMgrError iOException) {
-         super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
-         log.log(Level.WARNING, HELPFORMAT, iOException);
-      } catch (ParseException iOException) {
-         super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
-         log.log(Level.WARNING, HELPFORMAT, iOException);
-      } catch (IOException iOException) {
-         super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
-         log.log(Level.WARNING, HELPFORMAT, iOException);
+   protected void initHelp(URL... urls) {
+      Map<String, PropertyHelp> h = new HashMap<String, PropertyHelp>(150);
+      for (URL url : urls) {
+         try {
+            new HelpParser(url.openStream()).parse(h);
+         } catch (TokenMgrError iOException) {
+            super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
+            log.log(Level.WARNING, HELPFORMAT, iOException);
+         } catch (ParseException iOException) {
+            super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
+            log.log(Level.WARNING, HELPFORMAT, iOException);
+         } catch (IOException iOException) {
+            super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
+            log.log(Level.WARNING, HELPFORMAT, iOException);
+         }
       }
-   }
-
-   @Override
-   public EnhancedMap clone() {
-      HelpSupportedProperties h = (HelpSupportedProperties) super.clone();
-      h.help = help;
-      return h;
+      super.setHelp(h);
    }
 
 }

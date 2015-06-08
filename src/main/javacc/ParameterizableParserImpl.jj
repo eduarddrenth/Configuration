@@ -32,7 +32,6 @@ PARSER_BEGIN(ParameterizableParserImpl)
     package com.vectorprint.configuration.parser;
 
     import com.vectorprint.ArrayHelper;
-    import com.vectorprint.configuration.Configurable;
     import com.vectorprint.configuration.EnhancedMap;
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
     import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
@@ -42,11 +41,8 @@ PARSER_BEGIN(ParameterizableParserImpl)
     import com.vectorprint.configuration.binding.parameters.ParameterHelper;
     import com.vectorprint.configuration.parameters.Parameterizable;
     import com.vectorprint.configuration.parameters.Parameter;
-    import com.vectorprint.configuration.parameters.ParameterizableImpl;
     import com.vectorprint.VectorPrintRuntimeException;
 
-    import java.util.Map;
-    import java.util.HashMap;
     import java.util.List;
     import java.util.ArrayList;
     import java.util.Collection;
@@ -141,13 +137,6 @@ PARSER_BEGIN(ParameterizableParserImpl)
       public void serialize(Parameterizable parameterizable, Writer writer) throws IOException {
          writer.write(toConfig(parameterizable).toString());
       }
-      @Override
-      public void serialize(Parameter parameter, Writer writer) throws IOException {
-         StringBuilder sb = new StringBuilder(15);
-         toConfig(parameter,sb);
-         writer.write(sb.toString());
-      }
-
 
       /**
        * returns a String in the form simpleClassName(key=value,key2=v1|v2|v3,key3=value)

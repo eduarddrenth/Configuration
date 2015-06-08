@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Base class for all decorators that add functionality to properties. All implemented methods just call the embedded
+ * Base class for all decorators that add functionality to {@link Settings}. All implemented methods just call the embedded
  * {@link EnhancedMap}.
  *
  * @author Eduard Drenth at VectorPrint.nl

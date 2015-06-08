@@ -75,7 +75,9 @@ public class CharPasswordParameter extends ParameterImpl<char[]> {
          return null;
       }
       if (clearAfterGet) {
-         log.warning("clearing password after first retrieval");
+         if (copy!=null) {
+            log.warning("clearing password after first retrieval");
+         }
          copy = Arrays.copyOf(copy, copy.length);
          ArrayHelper.clear(super.getValue());
          setValue(null);

@@ -33,14 +33,6 @@ public interface ParameterizableSerializer {
     * @throws IOException 
     */
    void serialize(Parameterizable p, Writer w) throws IOException;
-   
-   /**
-    * Build syntax for a certain Parameter
-    * @param p
-    * @param w
-    * @throws IOException 
-    */
-   void serialize(Parameter p, Writer w) throws IOException;
 
    void setBindingHelper(ParamBindingHelper bindingHelper);
 

@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 /**
  * This interface is a suggested way to store values for settings as arrays of String and retrieve settings
- * in the type needed by applications.
+ * in the type needed by applications. Values are arrays because support for multiple values will not require splitting intelligence.
  *
  * @see Settings
  * @see AbstractPropertiesDecorator
