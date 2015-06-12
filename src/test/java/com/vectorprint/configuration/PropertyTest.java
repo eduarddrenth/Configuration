@@ -45,8 +45,6 @@ import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.ThreadSafeProperties;
 import com.vectorprint.configuration.decoration.visiting.ParsingVisitor;
-import com.vectorprint.configuration.observing.HandleEmptyValues;
-import com.vectorprint.configuration.observing.PrepareKeyValue;
 import com.vectorprint.configuration.parameters.BooleanParameter;
 import com.vectorprint.configuration.parameters.CharPasswordParameter;
 import com.vectorprint.configuration.parameters.FloatArrayParameter;
@@ -65,12 +63,18 @@ import com.vectorprint.configuration.binding.parameters.json.JSONBindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
-import com.vectorprint.configuration.observing.TrimKeyValue;
+import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
+import com.vectorprint.configuration.jaxb.SettingsXMLHelper;
+import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.configuration.parser.PropertiesParser;
+import com.vectorprint.configuration.preparing.NoEmptyValues;
+import com.vectorprint.configuration.preparing.PrepareKeyValue;
+import com.vectorprint.configuration.preparing.TrimKeyValue;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -91,6 +95,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -363,11 +368,9 @@ public class PropertyTest {
    public void testHandleEmptyValues() throws IOException, ParseException {
       new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
 
-      HandleEmptyValues emtiesOK = new HandleEmptyValues(true);
-      HandleEmptyValues emtiesNOTOK = new HandleEmptyValues(false);
+      NoEmptyValues emtiesNOTOK = new NoEmptyValues();
 
       List<PrepareKeyValue<String, String[]>> observers = new LinkedList<PrepareKeyValue<String, String[]>>();
-      observers.add(emtiesOK);
 
       try {
          new PreparingProperties(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"), observers);
@@ -385,7 +388,7 @@ public class PropertyTest {
       } catch (VectorPrintRuntimeException ex) {
       }
 
-      emtiesNOTOK.addKeyToSkip("empty").addKeyToSkip("klantlogo");
+      emtiesNOTOK.addKeysToSkip("empty").addKeysToSkip("klantlogo");
       try {
          new PreparingProperties(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"), observers);
       } catch (VectorPrintRuntimeException ex) {
@@ -417,7 +420,7 @@ public class PropertyTest {
       PreparingProperties vp = new PreparingProperties(new Settings());
       vp.addObserver(new TrimKeyValue());
       EnhancedMapBindingFactory embf = EnhancedMapBindingFactoryImpl.getDefaultFactory();
-      embf.getParser(new StringReader("t=\nd=\nn=\nm=m")).parse(vp);
+      embf.getParser(new StringReader("t=\nd=\nn=\nm=m ")).parse(vp);
       assertTrue(vp.containsKey("t"));
       assertTrue(vp.containsKey("d"));
       assertTrue(vp.containsKey("n"));
@@ -846,5 +849,20 @@ public class PropertyTest {
 
       vp.accept(new ParsingVisitor(f.getU()));
       assertTrue(vp.containsKey("dataclass"));
+   }
+   
+   @Test
+   public void testXMLSettings() throws Exception {
+      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(SettingsXMLHelper.fromXML(new FileReader("src/test/resources/settings.xml")));
+      assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%'");
+      assertTrue(settings instanceof AbstractPropertiesDecorator);
+      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
+      assertTrue(apd.hasProperties(CachingProperties.class));
+      assertTrue(apd.hasProperties(HelpSupportedProperties.class));
+      assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
+      assertEquals(settings.getHelp("stoponerror").getExplanation(),"wat een mooie\n" +
+"help tekst\n" +
+"\n" +
+"is dit");
    }
 }

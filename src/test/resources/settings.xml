@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2015 VectorPrint.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<ns1:settings
+   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns:ns1='http://www.vectorprint.nl/config/settings/1.0'
+   xsi:schemaLocation='http://www.vectorprint.nl/config/settings/1.0 file:/home/eduarddrenth/NetBeansProjects/config/trunk/src/main/resources/xsd/Settings.xsd'>
+   <ns1:url>src/test/resources/config/chart.properties</ns1:url>
+   <ns1:url>src/test/resources/config/run.properties</ns1:url>
+   <ns1:url>src/test/resources/config/page.properties</ns1:url>
+   <ns1:url>src/test/resources/config/styling.properties</ns1:url>
+   <ns1:feature classname="com.vectorprint.configuration.decoration.HelpSupportedProperties">
+      <ns1:url>src/test/resources/help.properties</ns1:url>
+   </ns1:feature>
+   <ns1:preprocessor preprocessorclassname="com.vectorprint.configuration.preparing.TrimKeyValue">
+      <ns1:keysToSkip></ns1:keysToSkip>
+   </ns1:preprocessor>
+
+</ns1:settings>

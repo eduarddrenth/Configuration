@@ -16,6 +16,7 @@
 package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import java.util.logging.Logger;
 /**
  * Enables being notified about property changes
  * @see Observable
+ * @see ObservableVisitor
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
@@ -57,8 +59,6 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
          o.update(this, changes);
       }
    }
-
-   private boolean notified;
 
    @Override
    public String[] put(String key, String value) {

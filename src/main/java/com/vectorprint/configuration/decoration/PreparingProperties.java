@@ -16,19 +16,20 @@
 package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.observing.KeyValue;
-import com.vectorprint.configuration.observing.KeyValueObservable;
-import com.vectorprint.configuration.observing.PrepareKeyValue;
+import com.vectorprint.configuration.preparing.KeyValue;
+import com.vectorprint.configuration.preparing.KeyValueObservable;
+import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class PreparingProperties extends AbstractPropertiesDecorator implements KeyValueObservable<String, String[]> {
-
+   private static final Logger log = Logger.getLogger(PreparingProperties.class.getName());
 
    public PreparingProperties(EnhancedMap properties) {
       super(properties);
@@ -39,8 +40,18 @@ public class PreparingProperties extends AbstractPropertiesDecorator implements 
       this.observers.addAll(observers);
    }
 
+   /**
+    * adds the observer if none of the same class is already registered.
+    * @param observer 
+    */
    @Override
    public void addObserver(PrepareKeyValue<String, String[]> observer) {
+      for (PrepareKeyValue pkv : observers) {
+         if (pkv.getClass().equals(observer.getClass())) {
+            log.warning(String.format("not adding %s, an observer of this class is already present", observer));
+            return;
+         }
+      }
       observers.add(observer);
    }
 

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.vectorprint.configuration.observing;
+package com.vectorprint.configuration.preparing;
 
 /*
  * #%L
@@ -23,25 +23,19 @@ package com.vectorprint.configuration.observing;
  * limitations under the License.
  * #L%
  */
+import com.vectorprint.VectorPrintRuntimeException;
+
 /**
+ * Class for dealing with empty (null or empty) values, throws an exception when an empty value is found.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class TrimKeyValue extends AbstractPrepareKeyValue<String, String[]> {
+public class NoEmptyValues extends AbstractPrepareKeyValue {
 
    @Override
    public void prepare(KeyValue<String, String[]> keyValue) {
-      if (keyValue.getValue() != null) {
-         int i = 0;
-         for (String v : keyValue.getValue()) {
-            if (v != null) {
-               keyValue.getValue()[i] = v.trim();
-            }
-            i++;
-         }
-      }
-      if (keyValue.getKey() != null) {
-         keyValue.setKey(keyValue.getKey().trim());
+      if (keyValue.getValue() == null || keyValue.getValue().length == 0 || keyValue.getValue()[0] == null || keyValue.getValue()[0].isEmpty()) {
+         throw new VectorPrintRuntimeException("empty value not allowed for key: " + keyValue.getKey());
       }
    }
 }

@@ -53,15 +53,15 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
    
-   private transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getDefaultFactory();
+   private static transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getDefaultFactory();
 
    /**
     * If you need to override the current {@link EnhancedMapBindingFactoryImpl#getDefaultFactory() default binding factory}.
     * This may also be called from {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } when your {@link SettingsField} has {@link Feature}s.
     * @param factory 
     */
-   public void setFactory(EnhancedMapBindingFactory factory) {
-      this.factory = factory;
+   public static void setFactory(EnhancedMapBindingFactory factory) {
+      ParsingProperties.factory = factory;
    }
 
    private ParsingProperties(EnhancedMap properties) throws IOException {

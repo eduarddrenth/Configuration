@@ -9,7 +9,8 @@
 
    <name>Config</name>
    <description>A library for application settings and parameterization of objects. The main strengths of this library are
-      support for parsing and serialization, dealing with different types of data, stacking functionality for settings, simple
+      support for parsing and serialization, dealing with different types of data, stacking functionality for settings, manipulating keys and values
+      before addition, simple
       and intuitive annotations. Both settings and parameters can be monitored (observed) for changes.
       The functionalities of this library are easy to extend, for example you can provide your own syntax support,
       features for settings or support for your own data types.
@@ -66,7 +67,7 @@
                <target>1.6</target>
             </configuration>
          </plugin>
-<!--         <plugin>
+         <!--         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.9</version>
@@ -131,6 +132,24 @@
                </instrumentation>
             </configuration>
          </plugin>        
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jaxb2-maven-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+               <execution>
+                  <id>xjc</id>
+                  <goals>
+                     <goal>xjc</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <packageName>com.vectorprint.config.jaxb</packageName>
+               <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+               <includeSchemasOutputPath>schema</includeSchemasOutputPath>
+            </configuration>
+         </plugin>
       </plugins>
    </build>
     

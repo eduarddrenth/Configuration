@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.vectorprint.configuration.observing;
+package com.vectorprint.configuration.preparing;
 
 /*
  * #%L
@@ -52,7 +52,7 @@ public interface KeyValueObservable<K extends Serializable, V extends Serializab
          * @return
          */
         <PKV extends PrepareKeyValue<K, V>> PKV removeObserver(PKV observer);
-
+        
         /**
          * suggested method where the {@link PrepareKeyValue} will be called.
          *

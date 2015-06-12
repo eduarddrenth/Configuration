@@ -1,40 +1,53 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.vectorprint.configuration.observing;
-
-/*
- * #%L
- * VectorPrintConfig3.0
- * %%
- * Copyright (C) 2011 - 2013 VectorPrint
- * %%
+ * Copyright 2015 VectorPrint.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * #L%
  */
+
+package com.vectorprint.configuration.preparing;
+
 import java.io.Serializable;
 
 /**
- * An object to prepare key value pairs
  *
  * @author Eduard Drenth at VectorPrint.nl
  * @param <K>
  * @param <V>
  */
-public interface PrepareKeyValue<K extends Serializable, V extends Serializable> extends Serializable {
+public class KeyValue<K extends Serializable, V extends Serializable> {
+   
+   private K key;
+   private V value;
 
-   void prepare(KeyValue<K, V> keyValue);
+   public KeyValue(K key, V value) {
+      this.key = key;
+      this.value = value;
+   }
 
-   boolean shouldPrepare(KeyValue<K, V> keyValue);
+   public K getKey() {
+      return key;
+   }
+
+   public V getValue() {
+      return value;
+   }
+
+   public void setKey(K key) {
+      this.key = key;
+   }
+
+   public void setValue(V value) {
+      this.value = value;
+   }
+   
 }

@@ -18,16 +18,20 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
+import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
+import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
+import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
+import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
+import com.vectorprint.configuration.parser.PropertiesParser;
 import java.beans.Statement;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -69,10 +73,10 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    private final Set objects = new HashSet();
 
    /**
-    * Look for annotated fields in the Object class, use settings argument to apply settings. NOTE that the settings argument may
-    * be wrapped, you should always use the {@link Settings#getOutermostWrapper() }
-    * in that case, and not call the settings argument directly after initialization is performed. When the Object argument is a class
-    * only static fields will be processed, otherwise only instance fields.
+    * Look for annotated fields in the Object class, use settings argument to apply settings. NOTE that the settings
+    * argument may be wrapped, you should always use the {@link Settings#getOutermostWrapper() }
+    * in that case, and not call the settings argument directly after initialization is performed. When the Object
+    * argument is a class only static fields will be processed, otherwise only instance fields.
     *
     * @param o
     * @param settings when null create a new {@link Settings} instance.
@@ -98,7 +102,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
       Field[] declaredFields = c.getDeclaredFields();
       if (LOGGER.isLoggable(Level.FINE)) {
-         LOGGER.fine(String.format("looking for %s fields to apply settings to", (obj==null ? "static" : "instance")));
+         LOGGER.fine(String.format("looking for %s fields to apply settings to", (obj == null ? "static" : "instance")));
       }
       for (Field field : declaredFields) {
          // when looping use the original settings argument, each settings annotation should use its own setup
@@ -122,6 +126,20 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             }
             SettingsField set = (SettingsField) se;
             try {
+               if (set.preprocessors().length > 0) {
+                  if (!hasProps(settings, PreparingProperties.class)) {
+                     if (notifyWrapping) {
+                        LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), PreparingProperties.class.getName()));
+                     }
+                     settings = new PreparingProperties(settings);
+                  }
+                  for (PreProcess pp : set.preprocessors()) {
+                     AbstractPrepareKeyValue apkv = pp.preProcessorClass().newInstance().addKeysToSkip(pp.keysToSkip());
+                     AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
+                     apd.accept(new PreparingVisitor(apkv));
+                  }
+               }
+
                if (set.observable()) {
                   if (!hasProps(settings, ObservableProperties.class)) {
                      if (notifyWrapping) {
@@ -156,23 +174,25 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                for (Feature feat : set.features()) {
                   Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
                   if (feat.urls().length > 0) {
-                     URL[] urls = EnhancedMapBindingFactoryImpl.getDefaultFactory().getBindingHelper().convert(feat.urls(),URL[].class);
-                     Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec,EnhancedMap.class, URL.class);
+                     URL[] urls = EnhancedMapBindingFactoryImpl.getDefaultFactory().getBindingHelper().convert(feat.urls(), URL[].class);
+                     Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec, EnhancedMap.class, URL[].class);
                      if (!hasProps(settings, dec)) {
                         if (notifyWrapping) {
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
-                        settings = constructor.newInstance(settings, urls);
                         if (ParsingProperties.class.isAssignableFrom(dec)) {
-                           ParsingProperties pp = (ParsingProperties) settings;
-                           EnhancedMapBindingFactory factory
-                               = EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance(), false);
-                           pp.setFactory(factory);
+                           if (!PropertiesParser.class.equals(feat.parserClass())
+                               || !PropertiesParser.class.equals(feat.serializerClass())
+                               || !BindingHelperImpl.class.equals(feat.bindingHelperClass())) {
+                              ParsingProperties.setFactory(
+                                  EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance(), false));
+                           }
                         }
+                        settings = constructor.newInstance(settings, urls);
                      }
                   } else {
                      if (!hasProps(settings, dec)) {
-                        Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec,EnhancedMap.class);
+                        Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec, EnhancedMap.class);
                         if (notifyWrapping) {
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
@@ -245,11 +265,11 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          initSettings(c.getSuperclass(), obj, eh, notifyWrapping);
       }
    }
-   
+
    public static <T> Constructor<T> findConstructor(Class<T> clazz, Class... parameters) {
       for (Constructor con : clazz.getConstructors()) {
          Class[] parameterTypes = con.getParameterTypes();
-         if (parameters.length!=parameterTypes.length) {
+         if (parameters.length != parameterTypes.length) {
             continue;
          }
          boolean ok = true;

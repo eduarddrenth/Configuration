@@ -17,7 +17,7 @@
 package com.vectorprint.configuration.decoration.visiting;
 
 import com.vectorprint.configuration.decoration.PreparingProperties;
-import com.vectorprint.configuration.observing.PrepareKeyValue;
+import com.vectorprint.configuration.preparing.PrepareKeyValue;
 
 /**
  *

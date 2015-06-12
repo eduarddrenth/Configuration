@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.vectorprint.configuration.observing;
+package com.vectorprint.configuration.preparing;
 
 /*
  * #%L
@@ -24,40 +24,17 @@ package com.vectorprint.configuration.observing;
  * #L%
  */
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
+ * An object to prepare key value pairs
  *
  * @author Eduard Drenth at VectorPrint.nl
  * @param <K>
  * @param <V>
  */
-public abstract class AbstractPrepareKeyValue<K extends Serializable, V extends Serializable> implements PrepareKeyValue<K, V> {
+public interface PrepareKeyValue<K extends Serializable, V extends Serializable> extends Serializable {
 
-   private static final long serialVersionUID = 1;
-   private Set<K> keysToSkip = new HashSet<K>(3);
+   void prepare(KeyValue<K, V> keyValue);
 
-   /**
-    * returns true when the key should not be skipped
-    *
-    * @see #addKeyToSkip(java.io.Serializable) 
-    * @param keyValue 
-    * @return
-    */
-   @Override
-   public boolean shouldPrepare(KeyValue<K, V> keyValue) {
-      return !keysToSkip.contains(keyValue.getKey());
-   }
-
-   /**
-    * register a key that should not be prepared
-    *
-    * @param key
-    * @return
-    */
-   public AbstractPrepareKeyValue<K, V> addKeyToSkip(K key) {
-      keysToSkip.add(key);
-      return this;
-   }
+   boolean shouldPrepare(KeyValue<K, V> keyValue);
 }

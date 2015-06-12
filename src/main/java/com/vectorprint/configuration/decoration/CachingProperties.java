@@ -70,14 +70,15 @@ public class CachingProperties extends AbstractPropertiesDecorator {
       if (!cache.containsKey(key)) {
          cache.put(key, super.getGenericProperty(defaultValue, clazz, key));
       } else if (null != cache.get(key)) {
-         Class c = cache.get(key).getClass();
          if (clazz.isPrimitive()) {
+            Class c = cache.get(key).getClass();
             if (!checkPrimitive(clazz, c)) {
                cache.remove(key);
                throw new VectorPrintRuntimeException(String.format("class for %s in cache is %s, this does not match requested class: %s. Removed from cache.",
                    key, c.getName(), clazz.getName()));
             }
          } else if (!clazz.isAssignableFrom(cache.get(key).getClass())) {
+            Class c = cache.get(key).getClass();
             cache.remove(key);
             throw new VectorPrintRuntimeException(String.format("class for %s in cache is %s, this does not match requested class: %s. Removed from cache.",
                 key, c.getName(), clazz.getName()));
