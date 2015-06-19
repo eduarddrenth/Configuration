@@ -55,7 +55,6 @@ import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parser.ParseException;
 import com.vectorprint.configuration.binding.parameters.json.JSONSupport;
-import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
@@ -64,8 +63,6 @@ import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
 import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
-import com.vectorprint.configuration.jaxb.SettingsXMLHelper;
-import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.configuration.parser.PropertiesParser;
 import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
@@ -95,10 +92,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static com.vectorprint.ArrayHelper.isArrayEqual;
 
 /**
  *
@@ -725,10 +722,10 @@ public class PropertyTest {
                         
                         Serializable parseAsParameterValue = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("")).parseAsParameterValue(conf, p);
                         if (p.getValueClass().isArray()) {
-                           if (!ParameterHelper.isArrayEqual(p.getValue(), parseAsParameterValue)) {
+                           if (!isArrayEqual(p.getValue(), parseAsParameterValue)) {
                               System.out.println("");
                            }
-                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(),p.getValue(),parseAsParameterValue),ParameterHelper.isArrayEqual(p.getValue(), parseAsParameterValue));
+                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(),p.getValue(),parseAsParameterValue),isArrayEqual(p.getValue(), parseAsParameterValue));
                         } else {
                               assertEquals(String.valueOf(p.getValue()), String.valueOf(parseAsParameterValue));
                         }
@@ -853,7 +850,7 @@ public class PropertyTest {
    
    @Test
    public void testXMLSettings() throws Exception {
-      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(SettingsXMLHelper.fromXML(new FileReader("src/test/resources/settings.xml")));
+      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings.xml"));
       assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%'");
       assertTrue(settings instanceof AbstractPropertiesDecorator);
       AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;

@@ -22,7 +22,7 @@ import com.vectorprint.config.jaxb.Preprocessortype;
 import com.vectorprint.config.jaxb.Settingstype;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
-import static com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl.findConstructor;
+import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;

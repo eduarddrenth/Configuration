@@ -111,7 +111,7 @@ public class SettingsXMLHelper {
     */
    public static void main(String[] args) throws IOException, SAXException {
       if (args != null && args.length > 0) {
-         validateXml(new URL(args[1]));
+         validateXml(new URL(args[0]));
       } else {
          System.out.println(getXsd());
       }

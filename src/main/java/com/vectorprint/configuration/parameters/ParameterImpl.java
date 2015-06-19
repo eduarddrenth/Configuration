@@ -31,6 +31,7 @@ import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFa
 import java.io.Serializable;
 import java.util.Observable;
 import java.util.logging.Logger;
+import static com.vectorprint.ArrayHelper.isArrayEqual;
 
 /**
  *
@@ -227,10 +228,10 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
             return false;
          }
       } else {
-         if (v != o && (v == null || !ParameterHelper.isArrayEqual(v, o))) {
+         if (v != o && (v == null || !isArrayEqual(v, o))) {
             return false;
          }
-         if (this.def != other.def && (this.def == null || !ParameterHelper.isArrayEqual(this.def, other.def))) {
+         if (this.def != other.def && (this.def == null || !isArrayEqual(this.def, other.def))) {
             return false;
          }
       }

@@ -46,6 +46,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static com.vectorprint.ClassHelper.findConstructor;
 
 /**
  * This implementation will try to call a setter for a field first when injecting a value from settings, when this fails
@@ -264,26 +265,6 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          // when recursing we use the original settings argument, each settings annotation should use its own setup
          initSettings(c.getSuperclass(), obj, eh, notifyWrapping);
       }
-   }
-
-   public static <T> Constructor<T> findConstructor(Class<T> clazz, Class... parameters) {
-      for (Constructor con : clazz.getConstructors()) {
-         Class[] parameterTypes = con.getParameterTypes();
-         if (parameters.length != parameterTypes.length) {
-            continue;
-         }
-         boolean ok = true;
-         for (int i = 0; i < parameters.length; i++) {
-            if (!parameters[i].isAssignableFrom(parameterTypes[i])) {
-               ok = false;
-               break;
-            }
-         }
-         if (ok) {
-            return con;
-         }
-      }
-      return null;
    }
 
    private boolean executeSetter(Field f, Object o, Object value, boolean isStatic) {
