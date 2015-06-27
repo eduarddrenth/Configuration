@@ -19,7 +19,7 @@ options {
 
 PARSER_BEGIN(JSONParser)
 
-package com.vectorprint.configuration.parser;
+package com.vectorprint.configuration.generated.parser;
 
 import java.io.*;
 import java.util.*;

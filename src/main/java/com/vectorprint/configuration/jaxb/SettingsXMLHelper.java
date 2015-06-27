@@ -26,7 +26,7 @@ package com.vectorprint.configuration.jaxb;
  * #L%
  */
 import com.vectorprint.IOHelper;
-import com.vectorprint.config.jaxb.Settingstype;
+import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,7 +63,7 @@ public class SettingsXMLHelper {
       try {
          SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
          schema = sf.newSchema(new SAXSource(new InputSource(SettingsXMLHelper.class.getResourceAsStream(XSD))));
-         JAXBCONTEXT = JAXBContext.newInstance("com.vectorprint.config.jaxb");
+         JAXBCONTEXT = JAXBContext.newInstance("com.vectorprint.configuration.generated.jaxb");
       } catch (JAXBException ex) {
          logger.log(Level.SEVERE, "failed to load jaxb context", ex);
       } catch (SAXException ex) {

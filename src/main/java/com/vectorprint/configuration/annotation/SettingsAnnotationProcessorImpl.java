@@ -31,7 +31,7 @@ import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
-import com.vectorprint.configuration.parser.PropertiesParser;
+import com.vectorprint.configuration.generated.parser.PropertiesParser;
 import java.beans.Statement;
 import java.io.IOException;
 import java.lang.annotation.Annotation;

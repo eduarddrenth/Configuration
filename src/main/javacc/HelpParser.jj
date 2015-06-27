@@ -23,7 +23,7 @@ options {
     DEBUG_PARSER = false;
 }
 PARSER_BEGIN(HelpParser)
-    package com.vectorprint.configuration.parser;
+    package com.vectorprint.configuration.generated.parser;
     
     import java.util.Map;
     import com.vectorprint.configuration.PropertyHelp;

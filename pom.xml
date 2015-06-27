@@ -3,7 +3,7 @@
 
    <groupId>com.vectorprint</groupId>
    <artifactId>Config</artifactId>
-   <version>5.1-SNAPSHOT</version>
+   <version>5.3-SNAPSHOT</version>
    <packaging>jar</packaging>
    <inceptionYear>2015</inceptionYear>
 
@@ -152,7 +152,7 @@ your own features for settings.
                </execution>
             </executions>
             <configuration>
-               <packageName>com.vectorprint.config.jaxb</packageName>
+               <packageName>com.vectorprint.configuration.generated.jaxb</packageName>
                <schemaDirectory>src/main/resources/xsd</schemaDirectory>
                <includeSchemasOutputPath>schema</includeSchemasOutputPath>
             </configuration>

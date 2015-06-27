@@ -24,7 +24,6 @@ import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
-import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -64,7 +63,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
       ParsingProperties.factory = factory;
    }
 
-   private ParsingProperties(EnhancedMap properties) throws IOException {
+   public ParsingProperties(EnhancedMap properties) throws IOException {
       super(properties);
    }
 

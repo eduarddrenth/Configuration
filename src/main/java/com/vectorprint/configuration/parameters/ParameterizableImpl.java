@@ -25,10 +25,12 @@ package com.vectorprint.configuration.parameters;
  */
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.Settings;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
+import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
@@ -89,7 +91,7 @@ public class ParameterizableImpl implements Parameterizable {
    };
    
    @SettingsField
-   private static EnhancedMap settings;
+   private static EnhancedMap settings = new CachingProperties(new Settings(0));
 
    /**
     * Adds the parameter to this Parameterizable and registers this Parameterizable with the Parameter as Observer.

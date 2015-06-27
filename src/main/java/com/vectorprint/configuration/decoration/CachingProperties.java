@@ -35,7 +35,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * A Caching {@link EnhancedMap}.
+ * A Caching {@link EnhancedMap}, when the cache contains a value of a different type then the type requested
+ * the value is removed from cache and a {@link VectorPrintRuntimeException} is thrown.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
@@ -68,7 +69,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    private <T> T fromCache(T defaultValue, Class<T> clazz, String... keys) {
       String key = cacheKey(keys);
       if (!cache.containsKey(key)) {
-         cache.put(key, super.getGenericProperty(defaultValue, clazz, key));
+         cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
       } else if (null != cache.get(key)) {
          if (clazz.isPrimitive()) {
             Class c = cache.get(key).getClass();

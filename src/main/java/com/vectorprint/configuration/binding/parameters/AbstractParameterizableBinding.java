@@ -110,7 +110,9 @@ public abstract class AbstractParameterizableBinding<T> implements Parameterizab
          rv = !(v == null ? parameter.getDefault() == null : v.equals(parameter.getDefault()));
       }
       if (!rv) {
-         logger.warning(String.format("not including %s in serialization", parameter));
+         if (logger.isLoggable(Level.FINE)) {
+            logger.fine(String.format("not including %s in serialization", parameter));
+         }
       }
       return rv;
    }

@@ -23,7 +23,7 @@ options {
     DEBUG_PARSER = false;
 }
 PARSER_BEGIN(PropertiesParser)
-    package com.vectorprint.configuration.parser;
+    package com.vectorprint.configuration.generated.parser;
     
     import java.util.Map;
     import java.util.List;

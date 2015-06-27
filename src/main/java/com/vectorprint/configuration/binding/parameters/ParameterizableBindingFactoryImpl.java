@@ -16,7 +16,7 @@
 package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.parser.ParameterizableParserImpl;
+import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;

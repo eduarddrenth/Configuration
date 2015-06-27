@@ -29,7 +29,7 @@ Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,bac
 
 PARSER_BEGIN(ParameterizableParserImpl)
    
-    package com.vectorprint.configuration.parser;
+    package com.vectorprint.configuration.generated.parser;
 
     import com.vectorprint.ArrayHelper;
     import com.vectorprint.configuration.EnhancedMap;

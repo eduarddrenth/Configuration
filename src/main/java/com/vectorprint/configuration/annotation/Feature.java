@@ -23,7 +23,7 @@ import com.vectorprint.configuration.binding.settings.EnhancedMapSerializer;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
-import com.vectorprint.configuration.parser.PropertiesParser;
+import com.vectorprint.configuration.generated.parser.PropertiesParser;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
