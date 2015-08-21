@@ -34,6 +34,7 @@ import static com.vectorprint.configuration.binding.BindingHelper.URL_PARSER;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
+import java.io.File;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.Date;
@@ -295,6 +296,18 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       int i = 0;
       for (String s : values) {
          rv[i++] = URL_PARSER.convert(s);
+      }
+      return rv;
+   }
+
+   public static File[] parseFileValues(String[] values) {
+      if (values == null || values.length == 0) {
+         return null;
+      }
+      File[] rv = new File[values.length];
+      int i = 0;
+      for (String s : values) {
+         rv[i++] = FILE_PARSER.convert(s);
       }
       return rv;
    }

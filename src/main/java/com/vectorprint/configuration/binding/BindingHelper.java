@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.vectorprint.configuration.binding;
 
 import com.vectorprint.VectorPrintRuntimeException;
@@ -28,27 +27,31 @@ import java.util.regex.Pattern;
 
 /**
  * Responsible for converting Strings into (atomic) values and vise versa.
- * 
+ *
  * BindingHelpers are Threadsafe.
+ *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface BindingHelper {
 
    /**
-    * use this from {@link #serializeValue(java.lang.Object)  } if you need
-    * to escape syntax specific characters. Note that overriding only this method when extending {@link AbstractBindingHelperDecorator}
-    * will not work, because the overridden method will not be called by the encapsulated {@link BindingHelper}.
-    * @see #setEscapeChars(char[]) 
+    * use this from {@link #serializeValue(java.lang.Object) } if you need to escape syntax specific characters. Note
+    * that overriding only this method when extending {@link AbstractBindingHelperDecorator} will not work, because the
+    * overridden method will not be called by the encapsulated {@link BindingHelper}.
+    *
+    * @see #setEscapeChars(char[])
     * @param value
-    * @return 
+    * @return
     */
    public String escape(String value);
 
    /**
     * set characters to be escaped, do this from the constructors when extending {@link AbstractBindingHelperDecorator}.
-    * @param chars 
+    *
+    * @param chars
     */
    public void setEscapeChars(char[] chars);
+
    /**
     * supports arrays of primitives and their wrappers, enums, URL, Color, Date, Pattern and String
     *
@@ -69,14 +72,17 @@ public interface BindingHelper {
     */
    <T> T convert(String value, Class<T> clazz);
 
-
    /**
-    * set separator to be used for array values, do this from the constructors when extending {@link AbstractBindingHelperDecorator}.
+    * set separator to be used for array values, do this from the constructors when extending
+    * {@link AbstractBindingHelperDecorator}.
+    *
     * @param separator
     * @param char
     */
    public void setArrayValueSeparator(char separator);
+
    char getArrayValueSeparator();
+
    /**
     * Serialize Objects and arrays of Objects and primitives in a specific syntax. Array values will be separated by the
     * {@link #setArrayValueSeparator(char) separator}.
@@ -85,7 +91,6 @@ public interface BindingHelper {
     * @return the String
     */
    String serializeValue(Object value);
-
 
    public static class FloatParser implements StringConverter<Float> {
 
@@ -170,6 +175,17 @@ public interface BindingHelper {
       }
    }
 
+   /**
+    * Constructs a File from a String.
+    */
+   public static class FileParser implements StringConverter<File> {
+
+      @Override
+      public File convert(String val) {
+         return new File(val);
+      }
+   }
+
    public static class ClassParser implements StringConverter<Class> {
 
       @Override
@@ -195,7 +211,7 @@ public interface BindingHelper {
 
       @Override
       public Character convert(String val) {
-         if (val==null||val.length()==0) {
+         if (val == null || val.length() == 0) {
             return null;
          } else if (val.length() > 1) {
             throw new VectorPrintRuntimeException(String.format("cannot turn %s into one Character", val));
@@ -247,6 +263,7 @@ public interface BindingHelper {
    public static final FloatParser FLOAT_PARSER = new FloatParser();
    public static final DoubleParser DOUBLE_PARSER = new DoubleParser();
    public static final URLParser URL_PARSER = new URLParser();
+   public static final FileParser FILE_PARSER = new FileParser();
    public static final ClassParser CLASS_PARSER = new ClassParser();
    public static final BooleanParser BOOLEAN_PARSER = new BooleanParser();
    public static final ColorParser COLOR_PARSER = new ColorParser();

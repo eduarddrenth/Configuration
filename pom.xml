@@ -174,7 +174,7 @@ your own features for settings.
       <dependency>
          <groupId>${project.groupId}</groupId>
          <artifactId>VectorPrintCommon</artifactId>
-         <version>3.2</version>
+         <version>3.3</version>
       </dependency>
    </dependencies>
    <profiles>

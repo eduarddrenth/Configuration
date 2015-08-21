@@ -30,6 +30,7 @@ import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorat
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
+import java.io.File;
 import java.net.URL;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -74,6 +75,8 @@ public class BindingHelperImpl implements BindingHelper {
          o = parseURLValues(values);
       } else if (float[].class.equals(clazz)) {
          o = parseFloatValues(values);
+      } else if (File[].class.equals(clazz)) {
+         o = parseFileValues(values);
       } else if (double[].class.equals(clazz)) {
          o = parseDoubleValues(values);
       } else if (short[].class.equals(clazz)) {
@@ -170,6 +173,8 @@ public class BindingHelperImpl implements BindingHelper {
          o = value;
       } else if (URL.class.equals(clazz)) {
          o = URL_PARSER.convert(value);
+      } else if (File.class.equals(clazz)) {
+         o = FILE_PARSER.convert(value);
       } else if (Date.class.equals(clazz)) {
          o = DATE_PARSER.convert(value);
       } else if (Class.class.equals(clazz)) {

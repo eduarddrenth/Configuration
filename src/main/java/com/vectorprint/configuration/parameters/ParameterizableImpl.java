@@ -120,14 +120,9 @@ public class ParameterizableImpl implements Parameterizable {
       return parameters;
    }
 
-   private final Map<String, Object> cache = new HashMap<String, Object>(10);
-
    @Override
    public <TYPE extends Serializable> TYPE getValue(String key, Class<TYPE> T) {
-      if (!cache.containsKey(key)) {
-         cache.put(key, parameters.get(key).getValue());
-      }
-      return (TYPE) cache.get(key);
+         return (TYPE) parameters.get(key).getValue();
    }
 
    @Override
@@ -170,26 +165,12 @@ public class ParameterizableImpl implements Parameterizable {
    }
 
    /**
-    * When the argument Observable is a Parameter, this method clears the cache for the parameter key. Calls 
-    * {@link #parameterChanged(com.vectorprint.configuration.parameters.Parameter) }.
-    *
+    * does nothing
     * @param o
-    * @param arg
+    * @param arg 
     */
    @Override
-   public final void update(Observable o, Object arg) {
-      if (o instanceof Parameter) {
-         Parameter p = (Parameter) o;
-         cache.remove(p.getKey());
-         parameterChanged(p);
-      }
-   }
-   
-   /**
-    * Called when a Parameter changed (value or default changed), does nothing
-    * @param o 
-    */
-   protected void parameterChanged(Parameter o) {
+   public void update(Observable o, Object arg) {
       
    }
 
