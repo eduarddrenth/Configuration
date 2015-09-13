@@ -534,69 +534,37 @@ public class PropertyTest {
 
    @Test
    public void testCaching() throws IOException, VectorPrintException, ParseException {
-      EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config"
+      EnhancedMap noCache = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
-      EnhancedMap ch = new CachingProperties(vp);
+      EnhancedMap cache = new CachingProperties(noCache.clone());
 
       long start = System.currentTimeMillis();
-      // fill cache should be slower
-      for (int i = 0; i < 10000; i++) {
-         ch.getColorProperties(null, "markcolors");
+      for (int i = 0; i < 100000; i++) {
+         cache.getColorProperties(null, "markcolors");
       }
-      long ch1 = System.currentTimeMillis() - start;
-
-      // cache filled should be faster
-      start = System.currentTimeMillis();
-      for (int i = 0; i < 10000; i++) {
-         ch.getColorProperties(null, "markcolors");
-      }
-      long ch2 = System.currentTimeMillis() - start;
-
-      // cache filled should be faster
-      start = System.currentTimeMillis();
-      for (int i = 0; i < 10000; i++) {
-         ch.getColorProperties(null, "markcolors");
-      }
-      long ch3 = System.currentTimeMillis() - start;
-
-      vp = new ParsingProperties(new Settings(), "src/test/resources/config"
-          + File.separator + "chart.properties");
-      ch = new CachingProperties(vp);
-
-      // don't measure first two passes
-      start = System.currentTimeMillis();
-      for (int i = 0; i < 10000; i++) {
-         vp.getColorProperties(null, "markcolors");
-      }
-      long vp1 = System.currentTimeMillis() - start;
+      long caching = System.currentTimeMillis() - start;
 
       start = System.currentTimeMillis();
-      for (int i = 0; i < 10000; i++) {
-         vp.getColorProperties(null, "markcolors");
+      for (int i = 0; i < 100000; i++) {
+         noCache.getColorProperties(null, "markcolors");
       }
-      long vp2 = System.currentTimeMillis() - start;
+      long nocaching = System.currentTimeMillis() - start;
 
-      // second pass will be much faster
-      start = System.currentTimeMillis();
-      for (int i = 0; i < 10000; i++) {
-         vp.getColorProperties(null, "markcolors");
-      }
-      long vp3 = System.currentTimeMillis() - start;
 
-      assertTrue(String.format("caching not faster: %d <= %d", ch2 + ch3, vp2 + vp3), ch2 + ch3 < vp2 + vp3);
+      assertTrue(String.format("caching not faster: %d <= %d", caching, nocaching), caching  < nocaching);
 
-      ch.put("tt", "racing");
-      ch.getPropertyNoDefault("tt");
+      cache.put("tt", "racing");
+      cache.getPropertyNoDefault("tt");
       try {
-         ch.getStringProperties(null, "tt");
+         cache.getStringProperties(null, "tt");
       } catch (VectorPrintRuntimeException e) {
          assertTrue(e.getMessage().contains("Removed from cache"));
-         ch.getStringProperties(null, "tt");
+         cache.getStringProperties(null, "tt");
       }
 
-      ch.put("prim", "1");
-      ch.getGenericProperty(null, Integer.class, "prim");
-      ch.getIntegerProperty(null, "prim");
+      cache.put("prim", "1");
+      cache.getGenericProperty(null, Integer.class, "prim");
+      cache.getIntegerProperty(null, "prim");
 
    }
 

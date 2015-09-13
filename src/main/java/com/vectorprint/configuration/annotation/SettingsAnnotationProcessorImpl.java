@@ -181,7 +181,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                         if (notifyWrapping) {
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
-                        if (ParsingProperties.class.isAssignableFrom(dec)) {
+                        if (ParsingProperties.class.isInstance(feat)) {
                            if (!PropertiesParser.class.equals(feat.parserClass())
                                || !PropertiesParser.class.equals(feat.serializerClass())
                                || !BindingHelperImpl.class.equals(feat.bindingHelperClass())) {

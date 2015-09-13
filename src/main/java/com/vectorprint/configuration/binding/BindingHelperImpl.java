@@ -276,7 +276,7 @@ public class BindingHelperImpl implements BindingHelper {
             sb.append(v).append(separator);
          }
       } else {
-         if (short[].class.isAssignableFrom(clazz)) {
+         if (short[].class.isInstance(value)) {
             short[] s = (short[]) value;
             if (s.length == 0) {
                return null;
@@ -289,7 +289,7 @@ public class BindingHelperImpl implements BindingHelper {
                }
                sb.append(String.valueOf(s[i])).append(separator);
             }
-         } else if (int[].class.isAssignableFrom(clazz)) {
+         } else if (int[].class.isInstance(value)) {
             int[] s = (int[]) value;
             if (s.length == 0) {
                return null;
@@ -302,7 +302,7 @@ public class BindingHelperImpl implements BindingHelper {
                }
                sb.append(String.valueOf(s[i])).append(separator);
             }
-         } else if (long[].class.isAssignableFrom(clazz)) {
+         } else if (long[].class.isInstance(value)) {
             long[] s = (long[]) value;
             if (s.length == 0) {
                return null;
@@ -315,7 +315,7 @@ public class BindingHelperImpl implements BindingHelper {
                }
                sb.append(String.valueOf(s[i])).append(separator);
             }
-         } else if (float[].class.isAssignableFrom(clazz)) {
+         } else if (float[].class.isInstance(value)) {
             float[] s = (float[]) value;
             if (s.length == 0) {
                return null;
@@ -328,7 +328,7 @@ public class BindingHelperImpl implements BindingHelper {
                }
                sb.append(String.valueOf(s[i])).append(separator);
             }
-         } else if (double[].class.isAssignableFrom(clazz)) {
+         } else if (double[].class.isInstance(value)) {
             double[] s = (double[]) value;
             if (s.length == 0) {
                return null;
@@ -341,7 +341,7 @@ public class BindingHelperImpl implements BindingHelper {
                }
                sb.append(String.valueOf(s[i])).append(separator);
             }
-         } else if (byte[].class.isAssignableFrom(clazz)) {
+         } else if (byte[].class.isInstance(value)) {
             byte[] s = (byte[]) value;
             if (s.length == 0) {
                return null;
@@ -354,7 +354,7 @@ public class BindingHelperImpl implements BindingHelper {
                }
                sb.append(String.valueOf(s[i])).append(separator);
             }
-         } else if (boolean[].class.isAssignableFrom(clazz)) {
+         } else if (boolean[].class.isInstance(value)) {
             boolean[] s = (boolean[]) value;
             if (s.length == 0) {
                return null;
@@ -367,7 +367,7 @@ public class BindingHelperImpl implements BindingHelper {
                }
                sb.append(String.valueOf(s[i])).append(separator);
             }
-         } else if (char[].class.isAssignableFrom(clazz)) {
+         } else if (char[].class.isInstance(value)) {
             char[] s = (char[]) value;
             if (s.length == 0) {
                return null;

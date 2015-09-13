@@ -265,7 +265,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    public final boolean hasProperties(Class<? extends EnhancedMap> clazz) {
       EnhancedMap inner = this;
       while (inner != null) {
-         if (clazz.isAssignableFrom(inner.getClass())) {
+         if (clazz.isInstance(inner)) {
             return true;
          } else if (inner instanceof AbstractPropertiesDecorator) {
             inner = ((AbstractPropertiesDecorator) inner).settings;
@@ -301,7 +301,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    public final void accept(DecoratorVisitor dv) {
       EnhancedMap inner = this;
       while (inner != null) {
-         if (dv.getClazzToVisit().isAssignableFrom(inner.getClass())) {
+         if (dv.getClazzToVisit().isInstance(inner)) {
             dv.visit(inner);
          }
          if (inner instanceof AbstractPropertiesDecorator) {

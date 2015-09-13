@@ -54,7 +54,7 @@ public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
             sb.append('\'').append(AbstractBindingHelperDecorator.colorToHex((Color) value)).append('\'');
          } else {
             // parameter clazz is never primitive
-            if (Number.class.isAssignableFrom(clazz) || Boolean.class.equals(clazz)) {
+            if (Number.class.isInstance(value) || Boolean.class.equals(clazz)) {
                sb.append(String.valueOf(value));
             } else {
                sb.append('\'').append(String.valueOf(value)).append('\'');
@@ -89,7 +89,7 @@ public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
             sb.append('\'').append(v).append('\'').append(getArrayValueSeparator());
          }
       } else {
-         if (char[].class.isAssignableFrom(clazz)) {
+         if (char[].class.isInstance(value)) {
             char[] s = (char[]) value;
             if (s.length == 0) {
                return sb.append("null]").toString();

@@ -29,7 +29,6 @@ import java.awt.Color;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,17 +69,20 @@ public class CachingProperties extends AbstractPropertiesDecorator {
 
    private <T> T fromCache(T defaultValue, Class<T> clazz, String... keys) {
       String key = cacheKey(keys);
+      if (cache.containsKey(key) && (clazz.isInstance(cache.get(key)) || (clazz.isPrimitive() && checkPrimitive(clazz, cache.get(key).getClass())))) {
+         return (T)cache.get(key);
+      }
       if (!cache.containsKey(key)) {
          cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
       } else if (null != cache.get(key)) {
          if (clazz.isPrimitive()) {
-            Class c = cache.get(key).getClass();
-            if (!checkPrimitive(clazz, c)) {
+            if (!checkPrimitive(clazz, cache.get(key).getClass())) {
+               Class c = cache.get(key).getClass();
                cache.remove(key);
                throw new VectorPrintRuntimeException(String.format("class for %s in cache is %s, this does not match requested class: %s. Removed from cache.",
                    key, c.getName(), clazz.getName()));
             }
-         } else if (!clazz.isAssignableFrom(cache.get(key).getClass())) {
+         } else if (!clazz.isInstance(cache.get(key))) {
             Class c = cache.get(key).getClass();
             cache.remove(key);
             throw new VectorPrintRuntimeException(String.format("class for %s in cache is %s, this does not match requested class: %s. Removed from cache.",
