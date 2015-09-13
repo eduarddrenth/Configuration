@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import static com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl.getDefaultFactory;
+import java.io.File;
 
 /**
  * Enhances Java Map with support for data types, debugging info, working with default values in code. You cannot subclass this class, instead subclass
@@ -239,6 +240,15 @@ public final class Settings extends HashMap<String, String[]>
    }
 
    @Override
+   public File getFileProperty(File defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
+      if (shouldUseDefault( key,defaultValue)) {
+         return defaultValue;
+      }
+      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), File.class);
+   }
+
+   @Override
    public float getFloatProperty(Float defaultValue, String... keys) {
       String key = getFirstKeyPresent(keys);
       if (shouldUseDefault(key, defaultValue)) {
@@ -359,6 +369,15 @@ public final class Settings extends HashMap<String, String[]>
          return defaultValue;
       }
       return AbstractBindingHelperDecorator.parseURLValues(getStringProperties(null, key));
+   }
+
+   @Override
+   public File[] getFileProperties(File[] defaultValue, String... keys) {
+      String key = getFirstKeyPresent(keys);
+      if (shouldUseDefault(key, defaultValue)) {
+         return defaultValue;
+      }
+      return AbstractBindingHelperDecorator.parseFileValues(getStringProperties(null, key));
    }
 
    @Override

@@ -26,6 +26,7 @@ package com.vectorprint.configuration;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
+import java.io.File;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -83,6 +84,10 @@ public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializa
    String getProperty(String defaultValue, String... keys);
 
    URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException;
+   
+   File getFileProperty(File defaultValue, String... keys);
+
+   File[] getFileProperties(File[] defaultValue, String... keys);
 
    String[] getStringProperties(String[] defaultValue, String... keys);
 

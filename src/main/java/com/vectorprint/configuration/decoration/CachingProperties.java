@@ -26,8 +26,10 @@ package com.vectorprint.configuration.decoration;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.awt.Color;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,9 +61,9 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    }
    
    private String cacheKey(String... keys) {
-      String s = keys[0];
-      for (int i = 1; i < keys.length; i++) {
-         s += keys[i];
+      String s = "";
+      for (String k : keys) {
+         s += k;
       }
       return s;
    }
@@ -242,6 +244,16 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
+   public File[] getFileProperties(File[] defaultValue, String... keys) {
+      return fromCache(defaultValue, File[].class, keys);
+   }
+
+   @Override
+   public File getFileProperty(File defaultValue, String... keys) {
+      return fromCache(defaultValue, File.class, keys);
+   }
+
+   @Override
    public long[] getLongProperties(long[] defaultValue, String... keys) {
       return fromCache(defaultValue, long[].class, keys);
    }
@@ -279,6 +291,11 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    @Override
    public Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys) {
       return fromCache(defaultValue, Pattern[].class, keys);
+   }
+
+   @Override
+   public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
+      return fromCache(defaultValue, clazz, keys);
    }
 
 }

@@ -30,6 +30,7 @@ import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.Settings;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
@@ -415,6 +416,16 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    @Override
    public Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys) {
       return settings.getRegexProperties(defaultValue, keys);
+   }
+
+   @Override
+   public File getFileProperty(File defaultValue, String... keys) {
+      return settings.getFileProperty(defaultValue, keys);
+   }
+
+   @Override
+   public File[] getFileProperties(File[] defaultValue, String... keys) {
+      return settings.getFileProperties(defaultValue, keys);
    }
 
    @Override

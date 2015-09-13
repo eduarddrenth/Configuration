@@ -83,7 +83,7 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
     * @param parserClass
     * @param serializerClass
     * @param bindingHelper the value of bindingHelper
-    * @param setAsDefault the value of setAsDefault
+    * @param setAsDefault when true {@link #getDefaultFactory() the default factory} will be set to the requested factory
     * @return the com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory
     */
    public static EnhancedMapBindingFactory getFactory(Class<? extends EnhancedMapParser> parserClass, Class<? extends EnhancedMapSerializer> serializerClass, BindingHelper bindingHelper, boolean setAsDefault) {
@@ -98,7 +98,9 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
          }
          factory.bindingHelper = bindingHelper;
          if (setAsDefault) {
-            EnhancedMapBindingFactoryImpl.factory = factory;
+            synchronized (EnhancedMapBindingFactoryImpl.class) {
+               EnhancedMapBindingFactoryImpl.factory = factory;
+            }
          }
          return factory;
       } catch (NoSuchMethodException ex) {

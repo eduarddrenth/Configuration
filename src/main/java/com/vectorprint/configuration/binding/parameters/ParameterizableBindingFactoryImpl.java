@@ -87,7 +87,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
     * @param parserClass
     * @param serializerClass
     * @param bindingHelper the value of bindingHelper will be used in the return factory
-    * @param setAsDefault the value of setAsDefault
+    * @param setAsDefault when true {@link #getDefaultFactory() the default factory} will be set to the requested factory
     * @return the com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory
     */
    public static ParameterizableBindingFactory getFactory(Class<? extends ParameterizableParser> parserClass, Class<? extends ParameterizableSerializer> serializerClass, ParamBindingHelper bindingHelper, boolean setAsDefault) {
@@ -106,7 +106,9 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
          throw new VectorPrintRuntimeException(ex);
       }
       if (setAsDefault) {
-         ParameterizableBindingFactoryImpl.factory=factory;
+         synchronized (ParameterizableBindingFactoryImpl.class) {
+            ParameterizableBindingFactoryImpl.factory=factory;
+         }
       }
       factory.bindingHelper = bindingHelper;
       return factory;
