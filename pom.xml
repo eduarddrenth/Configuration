@@ -3,24 +3,24 @@
 
    <groupId>com.vectorprint</groupId>
    <artifactId>Config</artifactId>
-   <version>5.4-SNAPSHOT</version>
+   <version>5.6-SNAPSHOT</version>
    <packaging>jar</packaging>
    <inceptionYear>2015</inceptionYear>
 
    <name>Config</name>
    <description>This project is about configuration of applications and about parameterization of Objects.
 
-This library offers annotations (and annotation processors), parsers, typing, observing changes, serialization,
-cloning and more when working with settings and/or object parameters. Settings and its features can be declared using an xml format.
+      This library offers annotations (and annotation processors), parsers, typing, observing changes, serialization,
+      cloning and more when working with settings and/or object parameters. Settings and its features can be declared using an xml format.
 
-The library offers syntax support for settings and parameters in a loosely coupled manner. You are not restricted to the built in syntaxes, you
-can provide your own.
+      The library offers syntax support for settings and parameters in a loosely coupled manner. You are not restricted to the built in syntaxes, you
+      can provide your own.
 
-At runtime this library tracks keys for which a default is used because they are not found in settings. Also it tracks
-unused keys.
+      At runtime this library tracks keys for which a default is used because they are not found in settings. Also it tracks
+      unused keys.
 
-You can stack features for settings such as caching, preparing keys and values, readonlyness, threadsafety, helpsupport, reading / parsing from input. You can easily develop
-your own features for settings.
+      You can stack features for settings such as caching, preparing keys and values, readonlyness, threadsafety, helpsupport, reading / parsing from input. You can easily develop
+      your own features for settings.
    </description>
    <licenses>
       <license>
@@ -68,17 +68,17 @@ your own features for settings.
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.1</version>
+            <version>3.3</version>
             <configuration>
-               <source>1.6</source>
-               <target>1.6</target>
+               <source>1.8</source>
+               <target>1.8</target>
             </configuration>
          </plugin>
-         <!--         <plugin>
+         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9</version>
-            <configuration>
+            <version>2.10.3</version>
+            <!--<configuration>
                <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
                <docletArtifact>
                   <groupId>org.umlgraph</groupId>
@@ -88,8 +88,11 @@ your own features for settings.
                <additionalparam>-views</additionalparam>   
                <additionalparam>-all -collapsible  -inferdep -inferrel -inferreltype composed -hide (java.*) -collpackages java.util.*</additionalparam>
                <useStandardDocletOptions>true</useStandardDocletOptions>
+            </configuration>-->
+            <configuration>
+               <additionalparam>-Xdoclint:none</additionalparam>
             </configuration>
-         </plugin>-->
+         </plugin>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>javacc-maven-plugin</artifactId>
@@ -106,7 +109,7 @@ your own features for settings.
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>license-maven-plugin</artifactId>
-            <version>1.5</version>
+            <version>1.8</version>
             <configuration>
                <licenseName>apache_v2</licenseName>
                <includes>
@@ -118,7 +121,7 @@ your own features for settings.
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>2.4.2</version>
+            <version>2.5.2</version>
             <configuration>
                <releaseProfiles>release</releaseProfiles>
                <goals>deploy</goals>         
@@ -127,7 +130,7 @@ your own features for settings.
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>cobertura-maven-plugin</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
             <configuration>
                <instrumentation>
                   <ignores>
@@ -142,7 +145,7 @@ your own features for settings.
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>jaxb2-maven-plugin</artifactId>
-            <version>1.6</version>
+            <version>2.2</version>
             <executions>
                <execution>
                   <id>xjc</id>
@@ -153,8 +156,10 @@ your own features for settings.
             </executions>
             <configuration>
                <packageName>com.vectorprint.configuration.generated.jaxb</packageName>
-               <schemaDirectory>src/main/resources/xsd</schemaDirectory>
-               <includeSchemasOutputPath>schema</includeSchemasOutputPath>
+               <sources>
+                  <source>src/main/resources/xsd</source>
+               </sources>
+               <xsdPathWithinArtifact>xsd</xsdPathWithinArtifact>
             </configuration>
          </plugin>
       </plugins>
@@ -168,7 +173,7 @@ your own features for settings.
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
-         <version>4.11</version>
+         <version>4.12</version>
          <scope>test</scope>
       </dependency>
       <dependency>
@@ -191,12 +196,15 @@ your own features for settings.
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-javadoc-plugin</artifactId>
-                  <version>2.9.1</version>
+                  <version>2.10.3</version>
+                  <configuration>
+                     <additionalparam>-Xdoclint:none</additionalparam>
+                  </configuration>
                </plugin>
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-gpg-plugin</artifactId>
-                  <version>1.5</version>
+                  <version>1.6</version>
                   <executions>
                      <execution>
                         <id>sign-artifacts</id>

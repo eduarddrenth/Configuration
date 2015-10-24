@@ -704,7 +704,8 @@ public class PropertyTest {
                      if (runtimeException.getCause() instanceof MalformedURLException
                          || runtimeException.getCause() instanceof NoSuchFieldException
                          || runtimeException.getCause() instanceof ClassNotFoundException
-                         || runtimeException.getMessage().contains("cannot turn mutliple strings ")) {
+                         || runtimeException.getMessage().contains("cannot turn mutliple strings ")
+                         || runtimeException.getMessage().contains("does not support multiple values")) {
                         runtimeException.printStackTrace();
                      } else {
                         throw runtimeException;

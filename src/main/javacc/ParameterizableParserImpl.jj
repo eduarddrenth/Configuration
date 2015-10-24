@@ -118,6 +118,9 @@ PARSER_BEGIN(ParameterizableParserImpl)
                return (TYPE) o;
             }
          } else {
+            if (values.size()>1) {
+               throw new VectorPrintRuntimeException(String.format("unable to store %s in %s, it does not support multiple values",values,parameter));
+            }
             if (String.class.equals(parameter.getValueClass())) {
                return (TYPE) values.get(0);
             } else {
