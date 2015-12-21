@@ -25,6 +25,7 @@ import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import java.awt.Color;
 import java.io.PrintStream;
@@ -34,7 +35,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import static com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl.getDefaultFactory;
 import java.io.File;
 
 /**
@@ -207,7 +207,7 @@ public final class Settings extends HashMap<String, String[]>
       if (l!=null) {
          if (l.length > 1) {
             throw new VectorPrintRuntimeException(String.format("more then one value (%s) for %s, expected one",
-                getDefaultFactory().getBindingHelper().serializeValue(l),key));
+                getFactory().getBindingHelper().serializeValue(l),key));
          }
          return l.length ==0 ? null : l[0];
       } else {
@@ -236,7 +236,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault( key,defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), URL.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), URL.class);
    }
 
    @Override
@@ -245,7 +245,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault( key,defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), File.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), File.class);
    }
 
    @Override
@@ -254,7 +254,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(keys), Float.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(keys), Float.class);
    }
 
    @Override
@@ -263,7 +263,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Boolean.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Boolean.class);
    }
 
    /**
@@ -296,7 +296,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Double.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Double.class);
    }
 
    @Override
@@ -305,7 +305,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Integer.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Integer.class);
    }
 
    @Override
@@ -314,7 +314,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Short.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Short.class);
    }
 
    @Override
@@ -323,7 +323,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Character.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Character.class);
    }
 
    @Override
@@ -332,7 +332,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Byte.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Byte.class);
    }
 
    @Override
@@ -341,7 +341,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Long.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Long.class);
    }
 
    @Override
@@ -350,7 +350,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Color.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Color.class);
    }
 
    @Override
@@ -612,12 +612,12 @@ public final class Settings extends HashMap<String, String[]>
             if (String[].class.equals(clazz)) {
                return (T) get(key);
             }
-            return getDefaultFactory().getBindingHelper().convert(get(key), clazz);
+            return getFactory().getBindingHelper().convert(get(key), clazz);
          } else {
             if (String.class.equals(clazz)) {
                return (T) getPropertyNoDefault(key);
             }
-            return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), clazz);
+            return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), clazz);
          }
       }
    }
@@ -628,7 +628,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Date.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Date.class);
    }
 
    @Override
@@ -672,7 +672,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Class.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Class.class);
    }
 
    @Override
@@ -681,7 +681,7 @@ public final class Settings extends HashMap<String, String[]>
       if (shouldUseDefault(key, defaultValue)) {
          return defaultValue;
       }
-      return getDefaultFactory().getBindingHelper().convert(getPropertyNoDefault(key), Pattern.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Pattern.class);
    }
 
    @Override
@@ -774,6 +774,10 @@ public final class Settings extends HashMap<String, String[]>
          }
       }
       return false;
+   }
+
+   private EnhancedMapBindingFactory getFactory() {
+      return SettingsBindingService.getInstance().getFactory();
    }
 
 }

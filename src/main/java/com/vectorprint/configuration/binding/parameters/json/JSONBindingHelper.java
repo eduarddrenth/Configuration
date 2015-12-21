@@ -17,23 +17,17 @@ package com.vectorprint.configuration.binding.parameters.json;
 
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.parameters.AbstractParamBindingHelperDecorator;
-import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelperImpl;
 import java.awt.Color;
 
 /**
- * implemenation supports json syntax, does not escape values, uses ',' as separator for array values
+ * implementation supports json syntax, does not escape values, uses ',' as separator for array values
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
 
-   public JSONBindingHelper(ParamBindingHelper bindingHelper) {
-      super(bindingHelper);
-      setArrayValueSeparator(',');
-   }
-
    public JSONBindingHelper() {
-      this(new ParamBindingHelperImpl());
+      super(new ParamBindingHelperImpl());
    }
    
    /**

@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vectorprint.configuration.binding.parameters;
+package com.vectorprint.configuration.binding.parameters.json;
 
+import com.vectorprint.configuration.binding.parameters.*;
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * This implementation supports the fast built in syntax for parameters
+ * This implementation uses Json syntax for parameters
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class ParameterizableBindingFactoryImpl implements ParameterizableBindingFactory {
+public class ParameterizableBindingFactoryJson implements ParameterizableBindingFactory {
 
-   private static final ParamBindingHelper bindingHelper = new EscapingBindingHelper();
+   private static final ParamBindingHelper bindingHelper = new JSONBindingHelper();
 
-   public ParameterizableBindingFactoryImpl() {
+   public ParameterizableBindingFactoryJson() {
       try {
-         this.constructor = ParameterizableParserImpl.class.getConstructor(Reader.class);
+         constructor = JSONSupport.class.getConstructor(Reader.class);
       } catch (NoSuchMethodException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (SecurityException ex) {
@@ -40,10 +40,10 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
       }
    }
 
-   private Class<? extends ParameterizableParser> parserClass = ParameterizableParserImpl.class;
+   private Class<? extends ParameterizableParser> parserClass = JSONSupport.class;
    private final Constructor<? extends ParameterizableParser> constructor;
 
-   private Class<? extends ParameterizableSerializer> serializerClass = ParameterizableParserImpl.class;
+   private Class<? extends ParameterizableSerializer> serializerClass = JSONSupport.class;
 
    /**
     * instantiate parser, call {@link ParameterizableParser#setBindingHelper(com.vectorprint.configuration.binding.parameters.ParamBindingHelper) } and return the parser.
@@ -78,7 +78,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
    @Override
    public ParameterizableSerializer getSerializer() {
       try {
-         ParameterizableSerializer ps = (ParameterizableSerializer) constructor.newInstance(r);
+         ParameterizableSerializer ps = serializerClass.newInstance();
          ps.setBindingHelper(bindingHelper);
          return ps;
       } catch (InstantiationException ex) {
@@ -86,8 +86,6 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
       } catch (IllegalAccessException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
@@ -101,7 +99,8 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
 
    @Override
    public String toString() {
-      return "ParameterizableBindingFactoryImpl{" + "bindingHelper=" + bindingHelper.getClass() + ", parserClass=" + parserClass + ", serializerClass=" + serializerClass + '}';
+      return "ParameterizableBindingFactoryJson{" + "bindingHelper=" + bindingHelper + ", parserClass=" + parserClass + ", serializerClass=" + serializerClass + '}';
    }
+
 
 }

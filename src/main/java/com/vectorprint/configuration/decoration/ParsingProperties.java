@@ -24,6 +24,7 @@ import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,7 +53,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
    
-   private static transient EnhancedMapBindingFactory factory = EnhancedMapBindingFactoryImpl.getDefaultFactory();
+   private static transient EnhancedMapBindingFactory factory = SettingsBindingService.getInstance().getFactory();
 
    /**
     * If you need to override the current {@link EnhancedMapBindingFactoryImpl#getDefaultFactory() default binding factory}.

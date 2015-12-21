@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.Observable;
 import java.util.logging.Logger;
 import static com.vectorprint.ArrayHelper.isArrayEqual;
+import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 
 /**
  *
@@ -137,7 +138,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if (valueClass.isArray()) {
          sb.append('[');
       }
-      sb.append(ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper().serializeValue(value));
+      sb.append(ParamBindingService.getInstance().getFactory().getBindingHelper().serializeValue(value));
       if (valueClass.isArray()) {
          sb.append(']');
       }

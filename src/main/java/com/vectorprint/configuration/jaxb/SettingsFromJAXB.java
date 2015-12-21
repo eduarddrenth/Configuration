@@ -28,6 +28,7 @@ import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
 import com.vectorprint.configuration.binding.settings.EnhancedMapSerializer;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
@@ -72,7 +73,7 @@ public class SettingsFromJAXB {
             settings = new ObservableProperties(settings);
          }
          if (!settingstype.getUrl().isEmpty()) {
-            settings = new ParsingProperties(settings, EnhancedMapBindingFactoryImpl.getDefaultFactory().getBindingHelper().
+            settings = new ParsingProperties(settings, SettingsBindingService.getInstance().getFactory().getBindingHelper().
                 convert(ArrayHelper.toArray(settingstype.getUrl()), URL[].class));
          }
          if (settingstype.isReadonly()) {
@@ -85,7 +86,7 @@ public class SettingsFromJAXB {
             for (Featuretype f : settingstype.getFeature()) {
                Class<? extends AbstractPropertiesDecorator> forName = (Class<? extends AbstractPropertiesDecorator>) Class.forName(f.getClassname());
                if (!f.getUrl().isEmpty()) {
-                  URL[] urls = EnhancedMapBindingFactoryImpl.getDefaultFactory().getBindingHelper().convert(ArrayHelper.toArray(f.getUrl()), URL[].class);
+                  URL[] urls = SettingsBindingService.getInstance().getFactory().getBindingHelper().convert(ArrayHelper.toArray(f.getUrl()), URL[].class);
                   Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(forName, EnhancedMap.class, URL[].class);
                   if (ParsingProperties.class.isAssignableFrom(forName)) {
                      if (!PropertiesParser.class.getName().equals(f.getParserclassname())

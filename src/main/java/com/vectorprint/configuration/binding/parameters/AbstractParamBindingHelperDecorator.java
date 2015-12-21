@@ -17,7 +17,6 @@
 package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
-import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.Parameter;
 import java.io.Serializable;
 

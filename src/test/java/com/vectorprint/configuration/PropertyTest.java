@@ -54,11 +54,8 @@ import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.generated.parser.ParseException;
-import com.vectorprint.configuration.binding.parameters.json.JSONSupport;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
-import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
-import com.vectorprint.configuration.binding.parameters.json.JSONBindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
@@ -96,6 +93,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static com.vectorprint.ArrayHelper.isArrayEqual;
+import com.vectorprint.configuration.binding.parameters.ParamBindingService;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
+import org.junit.Before;
 
 /**
  *
@@ -106,6 +106,11 @@ public class PropertyTest {
    @BeforeClass
    public static void setUpClass() throws IOException {
       Logger.getLogger(Settings.class.getName()).setLevel(Level.FINE);
+   }
+
+   @Before
+   public void setUp() throws IOException {
+      ParamBindingService.getInstance().setJson(false);
    }
 
    @Test
@@ -281,7 +286,7 @@ public class PropertyTest {
 
       EnhancedMap mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
-      EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl(), false).getParser(new StringReader("a=c;d\nb=c\\;d"));
+      EnhancedMapParser parser = SettingsBindingService.getInstance().getFactory().getParser(new StringReader("a=c;d\nb=c\\;d"));
       parser.parse(mtp);
       assertEquals(2, mtp.getStringProperties(null, "a").length);
       assertEquals(1, mtp.getStringProperties(null, "b").length);
@@ -397,7 +402,7 @@ public class PropertyTest {
    public void testArguments() throws IOException, ParseException {
       ParsingProperties vp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "styling.properties");
-      EnhancedMapBindingFactory embf = EnhancedMapBindingFactoryImpl.getDefaultFactory();
+      EnhancedMapBindingFactory embf = SettingsBindingService.getInstance().getFactory();
       embf.getParser(new StringReader("t=\nd=\nn=\nm=m")).parse(vp);
       assertTrue(vp.containsKey("t"));
       assertTrue(vp.containsKey("d"));
@@ -416,7 +421,7 @@ public class PropertyTest {
    public void testTrim() throws IOException, ParseException {
       PreparingProperties vp = new PreparingProperties(new Settings());
       vp.addObserver(new TrimKeyValue());
-      EnhancedMapBindingFactory embf = EnhancedMapBindingFactoryImpl.getDefaultFactory();
+      EnhancedMapBindingFactory embf = SettingsBindingService.getInstance().getFactory();
       embf.getParser(new StringReader("t=\nd=\nn=\nm=m ")).parse(vp);
       assertTrue(vp.containsKey("t"));
       assertTrue(vp.containsKey("d"));
@@ -639,8 +644,8 @@ public class PropertyTest {
    }
 
    private <TYPE extends Serializable> void setVal(Parameter<TYPE> parameter, EnhancedMap settings) {
-      ParameterizableParser objectParser = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader(""));
-      ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper().setValueOrDefault(
+      ParameterizableParser objectParser = ParamBindingService.getInstance().getFactory().getParser(new StringReader(""));
+      ParamBindingService.getInstance().getFactory().getBindingHelper().setValueOrDefault(
           parameter,
           (TYPE) objectParser.parseAsParameterValue(settings.getPropertyNoDefault(parameter.getKey()), parameter),
           false);
@@ -671,7 +676,7 @@ public class PropertyTest {
                for (String init : testStrings) {
                   try {
                      settings.clear();
-                     EnhancedMapParser parser = EnhancedMapBindingFactoryImpl.getFactory(PropertiesParser.class, PropertiesParser.class,new BindingHelperImpl(), false).getParser(new StringReader(c.getSimpleName() + "=" + init));
+                     EnhancedMapParser parser = SettingsBindingService.getInstance().getFactory().getParser(new StringReader(c.getSimpleName() + "=" + init));
                      parser.parse(settings);
                      setVal(p, settings);
                      assertNotNull(p.toString(), p.getValue());
@@ -683,12 +688,12 @@ public class PropertyTest {
                         assertNull(p.getValue());
                         continue;
                      }
-                     BindingHelper stringConversion = ParameterizableBindingFactoryImpl.getDefaultFactory().getBindingHelper();
+                     BindingHelper stringConversion = ParamBindingService.getInstance().getFactory().getBindingHelper();
                      String conf = stringConversion.serializeValue(p.getValue());
                      
                      if (conf != null && !"".equals(conf)) {
                         
-                        Serializable parseAsParameterValue = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("")).parseAsParameterValue(conf, p);
+                        Serializable parseAsParameterValue = ParamBindingService.getInstance().getFactory().getParser(new StringReader("")).parseAsParameterValue(conf, p);
                         if (p.getValueClass().isArray()) {
                            if (!isArrayEqual(p.getValue(), parseAsParameterValue)) {
                               System.out.println("");
@@ -726,20 +731,20 @@ public class PropertyTest {
 
       EnhancedMap vp = new Settings();
       vp.put("ParameterizableImpl.s.set_default", "w");
-      ParameterizableParser parser = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(new StringReader("P")).setSettings(vp).setPackageName(P.class.getPackage().getName());
+      ParameterizableParser parser = ParamBindingService.getInstance().getFactory().getParser(new StringReader("P")).setSettings(vp).setPackageName(P.class.getPackage().getName());
       Parameterizable parse = parser.parseParameterizable();
 
       assertEquals("w", parse.getValue("s", String.class));
 
       StringWriter sw = new StringWriter();
-      ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer().serialize(p, sw);
+      ParamBindingService.getInstance().getFactory().getSerializer().serialize(p, sw);
       String sp = sw.toString();
 
       StringReader sr = new StringReader(sp);
-      parse = ParameterizableBindingFactoryImpl.getDefaultFactory().getParser(sr).setSettings(vp).setPackageName(P.class.getPackage().getName()).parseParameterizable();
+      parse = ParamBindingService.getInstance().getFactory().getParser(sr).setSettings(vp).setPackageName(P.class.getPackage().getName()).parseParameterizable();
 
       sw = new StringWriter();
-      ParameterizableBindingFactoryImpl.getDefaultFactory().getSerializer().serialize(parse, sw);
+      ParamBindingService.getInstance().getFactory().getSerializer().serialize(parse, sw);
       String sp2 = sw.toString();
 
       assertEquals(sp, sp2);
@@ -749,7 +754,7 @@ public class PropertyTest {
    @Test
    public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
-      ParameterizableBindingFactory factoryImpl = ParameterizableBindingFactoryImpl.getFactory(JSONSupport.class, JSONSupport.class, new JSONBindingHelper(), false);
+      ParameterizableBindingFactory factoryImpl = ParamBindingService.getInstance().setJson(true).getFactory();
       EnhancedMap settings = new Settings();
       settings.put("staticBoolean", "true");
       settings.put("P.c.set_value", "'red'");

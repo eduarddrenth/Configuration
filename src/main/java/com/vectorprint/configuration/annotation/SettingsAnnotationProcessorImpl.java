@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static com.vectorprint.ClassHelper.findConstructor;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 
 /**
  * This implementation will try to call a setter for a field first when injecting a value from settings, when this fails
@@ -175,7 +176,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                for (Feature feat : set.features()) {
                   Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
                   if (feat.urls().length > 0) {
-                     URL[] urls = EnhancedMapBindingFactoryImpl.getDefaultFactory().getBindingHelper().convert(feat.urls(), URL[].class);
+                     URL[] urls = SettingsBindingService.getInstance().getFactory().getBindingHelper().convert(feat.urls(), URL[].class);
                      Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec, EnhancedMap.class, URL[].class);
                      if (!hasProps(settings, dec)) {
                         if (notifyWrapping) {

@@ -40,12 +40,6 @@ import com.vectorprint.configuration.generated.parser.PropertiesParser;
  */
 public final class EscapingBindingHelper extends AbstractParamBindingHelperDecorator {
 
-   public EscapingBindingHelper(ParamBindingHelper bindingHelper) {
-      super(bindingHelper);
-      setEscapeChars(new char[]{',','|',')'});
-      setArrayValueSeparator('|');
-   }
-
    public EscapingBindingHelper() {
       super(new ParamBindingHelperImpl());
       setEscapeChars(new char[]{',','|',')'});
