@@ -60,7 +60,7 @@ public final class Settings extends HashMap<String, String[]>
       ps.println("settings with id " + getId() + ":");
       ps.println();
       for (Map.Entry<String, String[]> entry : super.entrySet()) {
-         ps.println(entry.getKey() + "=" + Arrays.asList(entry.getValue()));
+         ps.println(entry.getKey() + "=" + (entry.getValue()!=null ? Arrays.asList(entry.getValue()) : ""));
       }
       ps.println("");
       ps.println("settings wrapped by " + decorators.toString());
@@ -453,12 +453,12 @@ public final class Settings extends HashMap<String, String[]>
       return AbstractBindingHelperDecorator.parseColorValues(getStringProperties(null, key));
    }
 
-   @Override
-   public int hashCode() {
-      int hash = 7;
-      return hash;
-   }
-
+   /**
+    * This implementation only includes key and value state, not the rest of the state (i.e. {@link #getUnusedKeys() }, {@link #getHelp() } and {@link #getKeysNotPresent() }).
+    * The {@link #getId() id's} of the objects must be both null or the same, otherwise false is returned.
+    * @param obj
+    * @return 
+    */
    @Override
    public boolean equals(Object obj) {
       if (obj == null) {
@@ -475,15 +475,6 @@ public final class Settings extends HashMap<String, String[]>
       }
       final Settings other = (Settings) obj;
       if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
-         return false;
-      }
-      if (this.help != other.help && (this.help == null || !this.help.equals(other.help))) {
-         return false;
-      }
-      if (this.unused != other.unused && (this.unused == null || !this.unused.equals(other.unused))) {
-         return false;
-      }
-      if (this.notPresent != other.notPresent && (this.notPresent == null || !this.notPresent.equals(other.notPresent))) {
          return false;
       }
       return true;

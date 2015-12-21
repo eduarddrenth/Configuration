@@ -72,9 +72,11 @@ PARSER_BEGIN(PropertiesParser)
          }
          w.append(e.getKey());
          w.append('=');
-         for (String v : e.getValue()) {
-            w.append(v);
-            w.append(';');
+         if (e.getValue()!=null) {
+            for (String v : e.getValue()) {
+               w.append(v);
+               w.append(';');
+            }
          }
          w.append(System.getProperty("line.separator"));
 
