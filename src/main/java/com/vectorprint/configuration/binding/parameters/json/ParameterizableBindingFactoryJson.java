@@ -23,14 +23,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * This implementation uses Json syntax for parameters
+ * This implementation uses Json syntax for parameters.
+ * @see ParamBindingService
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParameterizableBindingFactoryJson implements ParameterizableBindingFactory {
 
    private static final ParamBindingHelper bindingHelper = new JSONBindingHelper();
+   private static Constructor<? extends ParameterizableParser> constructor;
+   private static final Class<? extends ParameterizableSerializer> serializerClass = JSONSupport.class;
 
-   public ParameterizableBindingFactoryJson() {
+   static {
       try {
          constructor = JSONSupport.class.getConstructor(Reader.class);
       } catch (NoSuchMethodException ex) {
@@ -40,10 +43,6 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
       }
    }
 
-   private Class<? extends ParameterizableParser> parserClass = JSONSupport.class;
-   private final Constructor<? extends ParameterizableParser> constructor;
-
-   private Class<? extends ParameterizableSerializer> serializerClass = JSONSupport.class;
 
    /**
     * instantiate parser, call {@link ParameterizableParser#setBindingHelper(com.vectorprint.configuration.binding.parameters.ParamBindingHelper) } and return the parser.
@@ -99,7 +98,7 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
 
    @Override
    public String toString() {
-      return "ParameterizableBindingFactoryJson{" + "bindingHelper=" + bindingHelper + ", parserClass=" + parserClass + ", serializerClass=" + serializerClass + '}';
+      return "ParameterizableBindingFactoryJson{" + "bindingHelper=" + bindingHelper + ", parserClass=" + serializerClass + ", serializerClass=" + serializerClass + '}';
    }
 
 

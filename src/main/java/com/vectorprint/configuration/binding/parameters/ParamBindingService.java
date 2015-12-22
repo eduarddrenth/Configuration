@@ -19,12 +19,12 @@ import com.vectorprint.configuration.binding.parameters.json.ParameterizableBind
 import java.util.ServiceLoader;
 
 /**
- *
+ * Singleton provider of {@link ParameterizableBindingFactory} instances. This class uses spi ({@link ServiceLoader#load(java.lang.Class) }) 
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParamBindingService {
    
-   private ServiceLoader<ParameterizableBindingFactory> loader;
+   private final ServiceLoader<ParameterizableBindingFactory> loader;
    
    private ParamBindingService() {
       loader = ServiceLoader.load(ParameterizableBindingFactory.class);
@@ -39,8 +39,8 @@ public class ParamBindingService {
    }
 
    /**
-    * Return the first implementation of {@link ParameterizableBindingFactory} found that is not built in or return one of the built in factories.
-    * This Service class uses {@link ServiceLoader#load(java.lang.Class)}.
+    * Return the first implementation of {@link ParameterizableBindingFactory} found that is not built in or return one of the built in factories
+    * ({@link ParameterizableBindingFactoryImpl} and {@link ParameterizableBindingFactoryJson}).
     * @see #setJson(boolean) 
     * @return 
     */
@@ -56,7 +56,7 @@ public class ParamBindingService {
    }
 
    /**
-    * When true {@link ParameterizableBindingFactoryJson} is used otherwise {@link ParameterizableBindingFactoryImpl}
+    * When true {@link ParameterizableBindingFactoryJson} is the preferred built in class otherwise {@link ParameterizableBindingFactoryImpl} is.
     * @param json 
     * @return
     */

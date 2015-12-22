@@ -23,27 +23,24 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * This implementation supports the fast built in syntax for parameters
+ * This implementation supports the fast built in syntax for parameters.
+ * @see ParamBindingService
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParameterizableBindingFactoryImpl implements ParameterizableBindingFactory {
 
    private static final ParamBindingHelper bindingHelper = new EscapingBindingHelper();
-
-   public ParameterizableBindingFactoryImpl() {
+   private static Constructor<? extends ParameterizableParser> constructor;
+   
+   static {
       try {
-         this.constructor = ParameterizableParserImpl.class.getConstructor(Reader.class);
+         constructor = ParameterizableParserImpl.class.getConstructor(Reader.class);
       } catch (NoSuchMethodException ex) {
          throw new VectorPrintRuntimeException(ex);
       } catch (SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
-
-   private Class<? extends ParameterizableParser> parserClass = ParameterizableParserImpl.class;
-   private final Constructor<? extends ParameterizableParser> constructor;
-
-   private Class<? extends ParameterizableSerializer> serializerClass = ParameterizableParserImpl.class;
 
    /**
     * instantiate parser, call {@link ParameterizableParser#setBindingHelper(com.vectorprint.configuration.binding.parameters.ParamBindingHelper) } and return the parser.
@@ -101,7 +98,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
 
    @Override
    public String toString() {
-      return "ParameterizableBindingFactoryImpl{" + "bindingHelper=" + bindingHelper.getClass() + ", parserClass=" + parserClass + ", serializerClass=" + serializerClass + '}';
+      return "ParameterizableBindingFactoryImpl{" + "bindingHelper=" + bindingHelper.getClass() + ", parserClass=" + ParameterizableParserImpl.class + ", serializerClass=" + ParameterizableParserImpl.class + '}';
    }
 
 }

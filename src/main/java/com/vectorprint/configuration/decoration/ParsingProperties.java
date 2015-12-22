@@ -23,7 +23,6 @@ import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -56,7 +55,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private static transient EnhancedMapBindingFactory factory = SettingsBindingService.getInstance().getFactory();
 
    /**
-    * If you need to override the current {@link EnhancedMapBindingFactoryImpl#getDefaultFactory() default binding factory}.
+    * If need to override the {@link SettingsBindingService#getFactory() factory found by the service}.
     * This may also be called from {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } when your {@link SettingsField} has {@link Feature}s.
     * @param factory 
     */

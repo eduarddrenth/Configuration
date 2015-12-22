@@ -25,16 +25,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * This implementation gives you full control over the syntax to use in settings files.
- *
+ * This implementation supports the fast built in syntax for settings.
+ * @see SettingsBindingService
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory {
 
-   private Class<? extends EnhancedMapParser> parserClass = PropertiesParser.class;
-   private final Constructor<? extends EnhancedMapParser> constructor;
+   private static final Class<? extends EnhancedMapParser> parserClass = PropertiesParser.class;
+   private static Constructor<? extends EnhancedMapParser> constructor;
+   private static final BindingHelper bindingHelper = new BindingHelperImpl();
 
-   public EnhancedMapBindingFactoryImpl() {
+   static {
       try {
          constructor = PropertiesParser.class.getConstructor(Reader.class);
       } catch (NoSuchMethodException ex) {
@@ -45,14 +46,11 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
    }
 
 
-   private static final BindingHelper bindingHelper = new BindingHelperImpl();
 
    @Override
    public BindingHelper getBindingHelper() {
       return bindingHelper;
    }
-
-   private Class<? extends EnhancedMapSerializer> serializerClass;
 
    @Override
    public EnhancedMapParser getParser(Reader input) {
@@ -92,8 +90,6 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
 
    @Override
    public String toString() {
-      return "EnhancedMapBindingFactoryImpl{" + "parserClass=" + parserClass + ", bindingHelper=" + bindingHelper + ", serializerClass=" + serializerClass + '}';
+      return "EnhancedMapBindingFactoryImpl{" + "parserClass=" + parserClass + ", bindingHelper=" + bindingHelper + ", serializerClass=" + parserClass + '}';
    }
-
-
 }

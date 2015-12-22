@@ -27,7 +27,6 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
-import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl;
 import java.io.Serializable;
 import java.util.Observable;
 import java.util.logging.Logger;

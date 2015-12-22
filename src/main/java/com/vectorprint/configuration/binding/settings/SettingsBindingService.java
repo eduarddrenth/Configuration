@@ -21,12 +21,12 @@ import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
 import java.util.ServiceLoader;
 
 /**
- *
+ * Singleton provider of {@link EnhancedMapBindingFactory} instances. This class uses spi ({@link ServiceLoader#load(java.lang.Class) }) 
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class SettingsBindingService {
    
-   private ServiceLoader<EnhancedMapBindingFactory> loader;
+   private final ServiceLoader<EnhancedMapBindingFactory> loader;
    
    private SettingsBindingService() {
       loader = ServiceLoader.load(EnhancedMapBindingFactory.class);
@@ -41,8 +41,10 @@ public class SettingsBindingService {
    private Class<? extends EnhancedMapBindingFactory> factoryClass = null;
 
    /**
-    * Return the first implementation of {@link EnhancedMapBindingFactory} found that is not built in or return the built in factory.
-    * This Service class uses {@link ServiceLoader#load(java.lang.Class)}.
+    * When {@link #setFactoryClass(java.lang.Class) a custom factory is set} return a new instance of this class, otherwise
+    * return the first implementation of {@link EnhancedMapBindingFactory} found that is not built in or return
+    * {@link EnhancedMapBindingFactoryImpl the built in factory}.
+    * @see #setFactoryClass(java.lang.Class) 
     * @return 
     */
    public EnhancedMapBindingFactory getFactory() {
