@@ -18,8 +18,6 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
@@ -31,7 +29,6 @@ import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
-import com.vectorprint.configuration.generated.parser.PropertiesParser;
 import java.beans.Statement;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -47,6 +44,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static com.vectorprint.ClassHelper.findConstructor;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 
 /**
@@ -183,12 +181,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
                         if (ParsingProperties.class.isInstance(feat)) {
-                           if (!PropertiesParser.class.equals(feat.parserClass())
-                               || !PropertiesParser.class.equals(feat.serializerClass())
-                               || !BindingHelperImpl.class.equals(feat.bindingHelperClass())) {
-                              ParsingProperties.setFactory(
-                                  EnhancedMapBindingFactoryImpl.getFactory(feat.parserClass(), feat.serializerClass(), feat.bindingHelperClass().newInstance(), false));
-                           }
+                           Class<? extends EnhancedMapBindingFactory> factoryClass = feat.factoryClass();
+                              ParsingProperties.setFactory(SettingsBindingService.getInstance().setFactoryClass(factoryClass).getFactory());
                         }
                         settings = constructor.newInstance(settings, urls);
                      }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<xs:schema version="1.0" targetNamespace="http://www.vectorprint.nl/config/settings/1.0"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vpconfig="http://www.vectorprint.nl/config/settings/1.0"
+<xs:schema version="1.0" targetNamespace="http://www.vectorprint.nl/config/settings/1.5"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vpconfig="http://www.vectorprint.nl/config/settings/1.5"
            elementFormDefault="qualified" attributeFormDefault="unqualified">
    <xs:annotation>
       <xs:documentation>Schema for Settings in applications.</xs:documentation>
@@ -56,19 +56,9 @@
             <xs:documentation>Used by ParsingProperties. A feature class must extend AbstractPropertiesDecorator and requires a constructor with EnhancedMap as argument.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="parserclassname" type="xs:string" default="com.vectorprint.configuration.parser.PropertiesParser">
+      <xs:attribute name="factoryClass" type="xs:string" default="com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl">
          <xs:annotation>
-            <xs:documentation>Used by ParsingProperties. You can define your own parser</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="serializerclassname" type="xs:string" default="com.vectorprint.configuration.parser.PropertiesParser">
-         <xs:annotation>
-            <xs:documentation></xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="helperclassname" type="xs:string" default="com.vectorprint.configuration.binding.BindingHelperImpl">
-         <xs:annotation>
-            <xs:documentation>Used by ParsingProperties. You can define your own helper.</xs:documentation>
+            <xs:documentation>Used by ParsingProperties. You can define your own factory for syntax binding.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
    </xs:complexType>

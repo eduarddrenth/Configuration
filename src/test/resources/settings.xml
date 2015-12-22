@@ -18,8 +18,8 @@ limitations under the License.
 
 <ns1:settings
    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-   xmlns:ns1='http://www.vectorprint.nl/config/settings/1.0'
-   xsi:schemaLocation='http://www.vectorprint.nl/config/settings/1.0 file:/home/eduarddrenth/NetBeansProjects/config/trunk/src/main/resources/xsd/Settings.xsd'>
+   xmlns:ns1='http://www.vectorprint.nl/config/settings/1.5'
+   xsi:schemaLocation='http://www.vectorprint.nl/config/settings/1.5 file:/home/eduarddrenth/NetBeansProjects/config/trunk/src/main/resources/xsd/Settings.xsd'>
    <ns1:url>src/test/resources/config/chart.properties</ns1:url>
    <ns1:url>src/test/resources/config/run.properties</ns1:url>
    <ns1:url>src/test/resources/config/page.properties</ns1:url>

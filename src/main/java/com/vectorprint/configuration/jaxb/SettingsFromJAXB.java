@@ -23,11 +23,7 @@ import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
 import static com.vectorprint.ClassHelper.findConstructor;
-import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
-import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
-import com.vectorprint.configuration.binding.settings.EnhancedMapSerializer;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
@@ -37,7 +33,6 @@ import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
-import com.vectorprint.configuration.generated.parser.PropertiesParser;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
@@ -89,15 +84,7 @@ public class SettingsFromJAXB {
                   URL[] urls = SettingsBindingService.getInstance().getFactory().getBindingHelper().convert(ArrayHelper.toArray(f.getUrl()), URL[].class);
                   Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(forName, EnhancedMap.class, URL[].class);
                   if (ParsingProperties.class.isAssignableFrom(forName)) {
-                     if (!PropertiesParser.class.getName().equals(f.getParserclassname())
-                         || !PropertiesParser.class.getName().equals(f.getSerializerclassname())
-                         || !BindingHelperImpl.class.getName().equals(f.getHelperclassname())) {
-                        Class<? extends EnhancedMapParser> pc = (Class<? extends EnhancedMapParser>) Class.forName(f.getParserclassname());
-                        Class<? extends EnhancedMapSerializer> sc = (Class<? extends EnhancedMapSerializer>) Class.forName(f.getSerializerclassname());
-                        Class<? extends BindingHelper> bh = (Class<? extends BindingHelper>) Class.forName(f.getHelperclassname());
-                        ParsingProperties.setFactory(
-                            EnhancedMapBindingFactoryImpl.getFactory(pc, sc, bh.newInstance(), false));
-                     }
+                        ParsingProperties.setFactory(SettingsBindingService.getInstance().setFactoryClass((Class<? extends EnhancedMapBindingFactory>) Class.forName(f.getFactoryClass())).getFactory());
                   }
                   settings = constructor.newInstance(settings, urls);
                } else {
