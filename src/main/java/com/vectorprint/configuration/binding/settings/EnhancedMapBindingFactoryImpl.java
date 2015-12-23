@@ -110,6 +110,6 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
 
    @Override
    public String toString() {
-      return "EnhancedMapBindingFactoryImpl{" + "parserClass=" + parserClass + ", bindingHelper=" + bindingHelper + ", serializerClass=" + parserClass + '}';
+      return "EnhancedMapBindingFactoryImpl{" + "parserClass=" + parserClass + ", bindingHelper=" + getBindingHelper() + ", serializerClass=" + parserClass + '}';
    }
 }

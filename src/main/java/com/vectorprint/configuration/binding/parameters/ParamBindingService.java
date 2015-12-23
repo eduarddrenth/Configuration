@@ -34,55 +34,59 @@ package com.vectorprint.configuration.binding.parameters;
  * limitations under the License.
  * #L%
  */
-
-import com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson;
+import com.vectorprint.VectorPrintRuntimeException;
 import java.util.ServiceLoader;
 
 /**
- * Singleton provider of {@link ParameterizableBindingFactory} instances. This class uses spi ({@link ServiceLoader#load(java.lang.Class) }) 
+ * Singleton provider of {@link ParameterizableBindingFactory} instances. This class uses spi ({@link ServiceLoader#load(java.lang.Class)
+ * })
+ *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParamBindingService {
-   
+
    private final ServiceLoader<ParameterizableBindingFactory> loader;
-   
+
    private ParamBindingService() {
       loader = ServiceLoader.load(ParameterizableBindingFactory.class);
    }
-   
+
    private static final ParamBindingService instance = new ParamBindingService();
-   
-   private boolean json = false;
-   
+
    public static ParamBindingService getInstance() {
       return instance;
    }
 
    /**
-    * Return the first implementation of {@link ParameterizableBindingFactory} found that is not built in or return one of the built in factories
-    * ({@link ParameterizableBindingFactoryImpl} and {@link ParameterizableBindingFactoryJson}).
-    * @see #setJson(boolean) 
-    * @return 
+    * When {@link #setFactoryClass(java.lang.Class) a custom factory is set} return a new instance of this class,
+    * otherwise return the first external implementation of {@link ParameterizableBindingFactory} found that is not built in or
+    * return {@link ParameterizableBindingFactoryImpl}.
+    *
+    * @see #setFactoryClass(java.lang.Class)
+    * @return
     */
    public ParameterizableBindingFactory getFactory() {
-      ParameterizableBindingFactory factory = json ? new ParameterizableBindingFactoryJson() : new ParameterizableBindingFactoryImpl();
-      for (ParameterizableBindingFactory  f : loader) {
-         if (!ParameterizableBindingFactoryImpl.class.equals(f.getClass()) && !ParameterizableBindingFactoryJson.class.equals(f.getClass())) {
-            factory = f;
-            break;
+      if (factoryClass != null) {
+         try {
+            return factoryClass.newInstance();
+         } catch (InstantiationException ex) {
+            throw new VectorPrintRuntimeException(ex);
+         } catch (IllegalAccessException ex) {
+            throw new VectorPrintRuntimeException(ex);
          }
+      }
+      ParameterizableBindingFactory factory = new ParameterizableBindingFactoryImpl();
+      for (ParameterizableBindingFactory f : loader) {
+         return f;
       }
       return factory;
    }
+   private Class<? extends ParameterizableBindingFactory> factoryClass = null;
 
-   /**
-    * When true {@link ParameterizableBindingFactoryJson} is the preferred built in class otherwise {@link ParameterizableBindingFactoryImpl} is.
-    * @param json 
-    * @return
-    */
-   public ParamBindingService setJson(boolean json) {
-      this.json = json;
+   public ParamBindingService setFactoryClass(Class<? extends ParameterizableBindingFactory> factoryClass) {
+      this.factoryClass = factoryClass;
       return this;
    }
-      
+
+
 }

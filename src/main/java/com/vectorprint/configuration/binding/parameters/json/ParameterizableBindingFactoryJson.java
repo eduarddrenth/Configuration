@@ -73,7 +73,7 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
    public ParameterizableParser getParser(Reader input) {
       try {
          ParameterizableParser newInstance = constructor.newInstance(input);
-         newInstance.setBindingHelper(bindingHelper);
+         newInstance.setBindingHelper(getBindingHelper());
          return newInstance;
       } catch (InstantiationException ex) {
          throw new VectorPrintRuntimeException(ex);
@@ -98,7 +98,7 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
    public ParameterizableSerializer getSerializer() {
       try {
          ParameterizableSerializer ps = serializerClass.newInstance();
-         ps.setBindingHelper(bindingHelper);
+         ps.setBindingHelper(getBindingHelper());
          return ps;
       } catch (InstantiationException ex) {
          throw new VectorPrintRuntimeException(ex);
@@ -118,7 +118,7 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
 
    @Override
    public String toString() {
-      return "ParameterizableBindingFactoryJson{" + "bindingHelper=" + bindingHelper + ", parserClass=" + serializerClass + ", serializerClass=" + serializerClass + '}';
+      return "ParameterizableBindingFactoryJson{" + "bindingHelper=" + getBindingHelper() + ", parserClass=" + serializerClass + ", serializerClass=" + serializerClass + '}';
    }
 
 

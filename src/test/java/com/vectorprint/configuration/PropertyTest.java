@@ -31,7 +31,6 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.Changes;
@@ -57,10 +56,8 @@ import com.vectorprint.configuration.generated.parser.ParseException;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
 import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
-import com.vectorprint.configuration.generated.parser.PropertiesParser;
 import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
@@ -94,6 +91,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static com.vectorprint.ArrayHelper.isArrayEqual;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
+import com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import org.junit.Before;
 
@@ -110,7 +108,7 @@ public class PropertyTest {
 
    @Before
    public void setUp() throws IOException {
-      ParamBindingService.getInstance().setJson(false);
+      ParamBindingService.getInstance().setFactoryClass(null);
    }
 
    @Test
@@ -754,7 +752,7 @@ public class PropertyTest {
    @Test
    public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
-      ParameterizableBindingFactory factoryImpl = ParamBindingService.getInstance().setJson(true).getFactory();
+      ParameterizableBindingFactory factoryImpl = ParamBindingService.getInstance().setFactoryClass(ParameterizableBindingFactoryJson.class).getFactory();
       EnhancedMap settings = new Settings();
       settings.put("staticBoolean", "true");
       settings.put("P.c.set_value", "'red'");
