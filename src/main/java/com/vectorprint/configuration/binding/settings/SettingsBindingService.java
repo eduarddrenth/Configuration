@@ -15,27 +15,10 @@
  */
 package com.vectorprint.configuration.binding.settings;
 
-/*
- * #%L
- * Config
- * %%
- * Copyright (C) 2015 VectorPrint
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.Feature;
+import com.vectorprint.configuration.binding.parameters.ParamFactoryValidator;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
 import java.util.ServiceLoader;
 
@@ -47,10 +30,12 @@ import java.util.ServiceLoader;
  */
 public class SettingsBindingService {
 
-   private final ServiceLoader<EnhancedMapBindingFactory> loader;
+   private final ServiceLoader<EnhancedMapBindingFactory> factories;
+   private final ServiceLoader<SettingsFactoryValidator> validators;
 
    private SettingsBindingService() {
-      loader = ServiceLoader.load(EnhancedMapBindingFactory.class);
+      factories = ServiceLoader.load(EnhancedMapBindingFactory.class);
+      validators = ServiceLoader.load(SettingsFactoryValidator.class);
    }
 
    private static final SettingsBindingService instance = new SettingsBindingService();
@@ -59,43 +44,26 @@ public class SettingsBindingService {
       return instance;
    }
 
-   private Class<? extends EnhancedMapBindingFactory> factoryClass = null;
-
    /**
-    * When {@link #setFactoryClass(java.lang.Class) a custom factory is set} return a new instance of this class,
-    * otherwise return the first external implementation of {@link EnhancedMapBindingFactory} found that is not built in or
-    * return {@link EnhancedMapBindingFactoryImpl}.
+    * Return the first implementation of {@link EnhancedMapBindingFactory} found that is valid according to all
+    * {@link SettingsFactoryValidator}s, or return null. When no validator is published return the first {@link EnhancedMapBindingFactory} found.
     *
-    * @see #setFactoryClass(java.lang.Class)
     * @return
     */
    public EnhancedMapBindingFactory getFactory() {
-      if (factoryClass != null) {
-         try {
-            return factoryClass.newInstance();
-         } catch (InstantiationException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         } catch (IllegalAccessException ex) {
-            throw new VectorPrintRuntimeException(ex);
+      for (EnhancedMapBindingFactory f : factories) {
+         boolean ok = true;
+         boolean noValidatorFound = true;
+         for (SettingsFactoryValidator validator : validators) {
+            noValidatorFound = false;
+            if (!validator.isValid(f)) {
+               ok = false;
+               break;
+            }
          }
+         if (ok||noValidatorFound) return f;
       }
-      EnhancedMapBindingFactory factory = new EnhancedMapBindingFactoryImpl();
-      for (EnhancedMapBindingFactory f : loader) {
-         return f;
-      }
-      return factory;
-   }
-
-   /**
-    * when a factory is set here it will be used instead of one found by ServiceLoader.
-    *
-    * @see Feature
-    * @see SettingsFromJAXB
-    * @param factoryClass
-    */
-   public SettingsBindingService setFactoryClass(Class<? extends EnhancedMapBindingFactory> factoryClass) {
-      this.factoryClass = factoryClass;
-      return this;
+      return null;
    }
 
 }

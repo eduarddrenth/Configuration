@@ -93,6 +93,7 @@ import static com.vectorprint.ArrayHelper.isArrayEqual;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
+import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import org.junit.Before;
 
 /**
@@ -108,7 +109,8 @@ public class PropertyTest {
 
    @Before
    public void setUp() throws IOException {
-      ParamBindingService.getInstance().setFactoryClass(null);
+      SpecificClassValidator.setClazz(null);
+      com.vectorprint.configuration.binding.parameters.SpecificClassValidator.setClazz(null);
    }
 
    @Test
@@ -752,7 +754,8 @@ public class PropertyTest {
    @Test
    public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
-      ParameterizableBindingFactory factoryImpl = ParamBindingService.getInstance().setFactoryClass(ParameterizableBindingFactoryJson.class).getFactory();
+      com.vectorprint.configuration.binding.parameters.SpecificClassValidator.setClazz(ParameterizableBindingFactoryJson.class);
+      ParameterizableBindingFactory factoryImpl = ParamBindingService.getInstance().getFactory();
       EnhancedMap settings = new Settings();
       settings.put("staticBoolean", "true");
       settings.put("P.c.set_value", "'red'");

@@ -1,0 +1,2 @@
+com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactoryImpl
+com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson

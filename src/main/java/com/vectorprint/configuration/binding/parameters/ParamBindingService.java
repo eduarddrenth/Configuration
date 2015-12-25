@@ -34,21 +34,22 @@ package com.vectorprint.configuration.binding.parameters;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.VectorPrintRuntimeException;
 import java.util.ServiceLoader;
 
 /**
  * Singleton provider of {@link ParameterizableBindingFactory} instances. This class uses spi ({@link ServiceLoader#load(java.lang.Class)
- * })
+ * }) to find instances of {@link ParameterizableBindingFactory} and of {@link ParamFactoryValidator}.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParamBindingService {
 
-   private final ServiceLoader<ParameterizableBindingFactory> loader;
+   private final ServiceLoader<ParameterizableBindingFactory> factories;
+   private final ServiceLoader<ParamFactoryValidator> validators;
 
    private ParamBindingService() {
-      loader = ServiceLoader.load(ParameterizableBindingFactory.class);
+      factories = ServiceLoader.load(ParameterizableBindingFactory.class);
+      validators = ServiceLoader.load(ParamFactoryValidator.class);
    }
 
    private static final ParamBindingService instance = new ParamBindingService();
@@ -58,34 +59,25 @@ public class ParamBindingService {
    }
 
    /**
-    * When {@link #setFactoryClass(java.lang.Class) a custom factory is set} return a new instance of this class,
-    * otherwise return the first external implementation of {@link ParameterizableBindingFactory} found that is not built in or
-    * return {@link ParameterizableBindingFactoryImpl}.
+    * Return the first implementation of {@link ParameterizableBindingFactory} found that is valid according to all
+    * {@link ParamFactoryValidator}s, or return null. When no validator is published return the first {@link ParameterizableBindingFactory} found.
     *
-    * @see #setFactoryClass(java.lang.Class)
     * @return
     */
    public ParameterizableBindingFactory getFactory() {
-      if (factoryClass != null) {
-         try {
-            return factoryClass.newInstance();
-         } catch (InstantiationException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         } catch (IllegalAccessException ex) {
-            throw new VectorPrintRuntimeException(ex);
+      for (ParameterizableBindingFactory f : factories) {
+         boolean ok = true;
+         boolean noValidatorFound = true;
+         for (ParamFactoryValidator validator : validators) {
+            noValidatorFound = false;
+            if (!validator.isValid(f)) {
+               ok = false;
+               break;
+            }
          }
+         if (ok||noValidatorFound) return f;
       }
-      ParameterizableBindingFactory factory = new ParameterizableBindingFactoryImpl();
-      for (ParameterizableBindingFactory f : loader) {
-         return f;
-      }
-      return factory;
-   }
-   private Class<? extends ParameterizableBindingFactory> factoryClass = null;
-
-   public ParamBindingService setFactoryClass(Class<? extends ParameterizableBindingFactory> factoryClass) {
-      this.factoryClass = factoryClass;
-      return this;
+      return null;
    }
 
 

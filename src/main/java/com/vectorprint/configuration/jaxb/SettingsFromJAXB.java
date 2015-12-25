@@ -34,7 +34,6 @@ package com.vectorprint.configuration.jaxb;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.configuration.generated.jaxb.Featuretype;
@@ -45,6 +44,7 @@ import com.vectorprint.configuration.Settings;
 import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
+import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
@@ -62,6 +62,7 @@ import javax.xml.bind.JAXBException;
 
 /**
  * Threadsafe mapper for translating xml into application settings with features
+ *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class SettingsFromJAXB {
@@ -104,7 +105,8 @@ public class SettingsFromJAXB {
                   URL[] urls = SettingsBindingService.getInstance().getFactory().getBindingHelper().convert(ArrayHelper.toArray(f.getUrl()), URL[].class);
                   Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(forName, EnhancedMap.class, URL[].class);
                   if (ParsingProperties.class.isAssignableFrom(forName)) {
-                        ParsingProperties.setFactory(SettingsBindingService.getInstance().setFactoryClass((Class<? extends EnhancedMapBindingFactory>) Class.forName(f.getFactoryClass())).getFactory());
+                     SpecificClassValidator.setClazz((Class<? extends EnhancedMapBindingFactory>) Class.forName(f.getFactoryClass()));
+                     ParsingProperties.setFactory(SettingsBindingService.getInstance().getFactory());
                   }
                   settings = constructor.newInstance(settings, urls);
                } else {
