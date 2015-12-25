@@ -15,20 +15,22 @@
  */
 package com.vectorprint.configuration.binding.settings;
 
-import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.annotation.Feature;
-import com.vectorprint.configuration.binding.parameters.ParamFactoryValidator;
-import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
-import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Singleton provider of {@link EnhancedMapBindingFactory} instances. This class uses spi ({@link ServiceLoader#load(java.lang.Class)
- * })
+ * }) to find instances of {@link EnhancedMapBindingFactory} and of {@link SettingsFactoryValidator}. Every factory found is validated by all validators found,
+ * the first valid factory is returned.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class SettingsBindingService {
+   
+   private static final Logger LOGGER = Logger.getLogger(SettingsBindingService.class.getName());
 
    private final ServiceLoader<EnhancedMapBindingFactory> factories;
    private final ServiceLoader<SettingsFactoryValidator> validators;
@@ -57,6 +59,9 @@ public class SettingsBindingService {
          for (SettingsFactoryValidator validator : validators) {
             noValidatorFound = false;
             if (!validator.isValid(f)) {
+               if (LOGGER.isLoggable(Level.FINE)) {
+                  LOGGER.fine(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
+               }
                ok = false;
                break;
             }
@@ -66,4 +71,27 @@ public class SettingsBindingService {
       return null;
    }
 
+   /**
+    * 
+    * @return a list of factories found through SPI
+    */
+   public List<Class<? extends EnhancedMapBindingFactory>> getFactoriesKnown() {
+      List<Class<? extends EnhancedMapBindingFactory>> l = new ArrayList<>();
+      for (EnhancedMapBindingFactory f : factories) {
+         l.add(f.getClass());
+      }
+      return l;
+   }
+
+   /**
+    * 
+    * @return a list of validators found through SPI
+    */
+   public List<Class<? extends SettingsFactoryValidator>> getValidatorsKnown() {
+      List<Class<? extends SettingsFactoryValidator>> l = new ArrayList<>();
+      for (SettingsFactoryValidator f : validators) {
+         l.add(f.getClass());
+      }
+      return l;
+   }
 }

@@ -17,8 +17,9 @@
 package com.vectorprint.configuration.binding.parameters;
 
 /**
- * Used by {@link ParamBindingService}, you can publish your implementations through SPI
- * @author Eduard Drenth at VectorPrint.nl
+ * Used by {@link ParamBindingService} to validate factories. Create implementations and publish them through SPI.
+
+* @author Eduard Drenth at VectorPrint.nl
  */
 public interface ParamFactoryValidator {
    

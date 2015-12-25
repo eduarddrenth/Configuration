@@ -17,7 +17,7 @@
 package com.vectorprint.configuration.binding.settings;
 
 /**
- *
+ * Used by {@link SettingsBindingService} to validate factories. Create implementations and publish them through SPI.
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface SettingsFactoryValidator {

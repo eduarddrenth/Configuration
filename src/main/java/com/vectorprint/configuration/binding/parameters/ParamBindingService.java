@@ -34,15 +34,22 @@ package com.vectorprint.configuration.binding.parameters;
  * limitations under the License.
  * #L%
  */
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Singleton provider of {@link ParameterizableBindingFactory} instances. This class uses spi ({@link ServiceLoader#load(java.lang.Class)
- * }) to find instances of {@link ParameterizableBindingFactory} and of {@link ParamFactoryValidator}.
+ * }) to find instances of {@link ParameterizableBindingFactory} and of {@link ParamFactoryValidator}. Every factory found is validated by all validators found,
+ * the first valid factory is returned.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParamBindingService {
+
+   private static final Logger LOGGER = Logger.getLogger(ParamBindingService.class.getName());
 
    private final ServiceLoader<ParameterizableBindingFactory> factories;
    private final ServiceLoader<ParamFactoryValidator> validators;
@@ -71,6 +78,9 @@ public class ParamBindingService {
          for (ParamFactoryValidator validator : validators) {
             noValidatorFound = false;
             if (!validator.isValid(f)) {
+               if (LOGGER.isLoggable(Level.FINE)) {
+                  LOGGER.fine(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
+               }
                ok = false;
                break;
             }
@@ -80,5 +90,28 @@ public class ParamBindingService {
       return null;
    }
 
+   /**
+    * 
+    * @return a list of factories found through SPI
+    */
+   public List<Class<? extends ParameterizableBindingFactory>> getFactoriesKnown() {
+      List<Class<? extends ParameterizableBindingFactory>> l = new ArrayList<>();
+      for (ParameterizableBindingFactory f : factories) {
+         l.add(f.getClass());
+      }
+      return l;
+   }
+
+   /**
+    * 
+    * @return a list of validators found through SPI
+    */
+   public List<Class<? extends ParamFactoryValidator>> getValidatorsKnown() {
+      List<Class<? extends ParamFactoryValidator>> l = new ArrayList<>();
+      for (ParamFactoryValidator f : validators) {
+         l.add(f.getClass());
+      }
+      return l;
+   }
 
 }
