@@ -73,19 +73,9 @@ public class ParamBindingService {
     */
    public ParameterizableBindingFactory getFactory() {
       for (ParameterizableBindingFactory f : factories) {
-         boolean ok = true;
-         boolean noValidatorFound = true;
-         for (ParamFactoryValidator validator : validators) {
-            noValidatorFound = false;
-            if (!validator.isValid(f)) {
-               if (LOGGER.isLoggable(Level.FINE)) {
-                  LOGGER.fine(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
-               }
-               ok = false;
-               break;
-            }
+         if (isValid(f)) {
+            return f;
          }
-         if (ok||noValidatorFound) return f;
       }
       return null;
    }
@@ -98,6 +88,36 @@ public class ParamBindingService {
       List<Class<? extends ParameterizableBindingFactory>> l = new ArrayList<>();
       for (ParameterizableBindingFactory f : factories) {
          l.add(f.getClass());
+      }
+      return l;
+   }
+   
+   public boolean isValid(ParameterizableBindingFactory f ) {
+         boolean ok = true;
+         boolean noValidatorFound = true;
+         for (ParamFactoryValidator validator : validators) {
+            noValidatorFound = false;
+            if (!validator.isValid(f)) {
+               if (LOGGER.isLoggable(Level.FINE)) {
+                  LOGGER.fine(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
+               }
+               ok = false;
+               break;
+            }
+         }
+         return ok||noValidatorFound;
+   }
+
+   /**
+    * 
+    * @return a list of valid factories found through SPI
+    */
+   public List<Class<? extends ParameterizableBindingFactory>> getValidFactories() {
+      List<Class<? extends ParameterizableBindingFactory>> l = new ArrayList<>();
+      for (ParameterizableBindingFactory f : factories) {
+         if (isValid(f)) {
+            l.add(f.getClass());
+         }
       }
       return l;
    }

@@ -64,6 +64,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 
@@ -200,10 +201,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                         if (notifyWrapping) {
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
-                        if (ParsingProperties.class.isInstance(feat)) {
-                           Class<? extends EnhancedMapBindingFactory> factoryClass = feat.factoryClass();
-                           SpecificClassValidator.setClazz(factoryClass);
-                           ParsingProperties.setFactory(SettingsBindingService.getInstance().getFactory());
+                        if (ParsingProperties.class.isInstance(dec)&&!feat.factoryClass().equals(EnhancedMapBindingFactoryImpl.class)) {
+                           SpecificClassValidator.setClazz(feat.factoryClass());
                         }
                         settings = constructor.newInstance(settings, urls);
                      }

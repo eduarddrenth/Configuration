@@ -36,6 +36,7 @@ package com.vectorprint.configuration.annotation;
  */
 
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
@@ -85,9 +86,7 @@ public @interface SettingsField {
    boolean observable() default false;
 
    /**
-    * When urls are supplied properties will be loaded from it, using {@link EnhancedMapBindingFactoryImpl#getDefaultFactory()
-    * } for syntax. You have control over the syntax used through {@link EnhancedMapBindingFactoryImpl#getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.BindingHelper, boolean)
-    * }, or by using {@link #features() } instead of this urls construct.
+    * When urls are supplied properties will be loaded from it, using {@link SettingsBindingService#getFactory() }.
     *
     * @see ParsingProperties
     * @return

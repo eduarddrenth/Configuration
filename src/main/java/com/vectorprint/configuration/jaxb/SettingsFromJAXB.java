@@ -106,7 +106,6 @@ public class SettingsFromJAXB {
                   Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(forName, EnhancedMap.class, URL[].class);
                   if (ParsingProperties.class.isAssignableFrom(forName)) {
                      SpecificClassValidator.setClazz((Class<? extends EnhancedMapBindingFactory>) Class.forName(f.getFactoryClass()));
-                     ParsingProperties.setFactory(SettingsBindingService.getInstance().getFactory());
                   }
                   settings = constructor.newInstance(settings, urls);
                } else {

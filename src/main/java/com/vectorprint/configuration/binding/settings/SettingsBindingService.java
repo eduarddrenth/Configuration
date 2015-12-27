@@ -54,6 +54,14 @@ public class SettingsBindingService {
     */
    public EnhancedMapBindingFactory getFactory() {
       for (EnhancedMapBindingFactory f : factories) {
+         if (isValid(f)) {
+            return f;
+         }
+      }
+      return null;
+   }
+   
+   public boolean isValid(EnhancedMapBindingFactory f ) {
          boolean ok = true;
          boolean noValidatorFound = true;
          for (SettingsFactoryValidator validator : validators) {
@@ -66,9 +74,7 @@ public class SettingsBindingService {
                break;
             }
          }
-         if (ok||noValidatorFound) return f;
-      }
-      return null;
+         return ok||noValidatorFound;
    }
 
    /**
@@ -79,6 +85,20 @@ public class SettingsBindingService {
       List<Class<? extends EnhancedMapBindingFactory>> l = new ArrayList<>();
       for (EnhancedMapBindingFactory f : factories) {
          l.add(f.getClass());
+      }
+      return l;
+   }
+
+   /**
+    * 
+    * @return a list of valid factories found through SPI
+    */
+   public List<Class<? extends EnhancedMapBindingFactory>> getValidFactories() {
+      List<Class<? extends EnhancedMapBindingFactory>> l = new ArrayList<>();
+      for (EnhancedMapBindingFactory f : factories) {
+         if (isValid(f)) {
+            l.add(f.getClass());
+         }
       }
       return l;
    }

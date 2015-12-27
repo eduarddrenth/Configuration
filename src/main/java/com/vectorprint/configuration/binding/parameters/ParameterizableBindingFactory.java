@@ -39,8 +39,8 @@ package com.vectorprint.configuration.binding.parameters;
 import java.io.Reader;
 
 /**
- *
- * @see ParameterizableBindingFactoryImpl#getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.parameters.ParamBindingHelper, boolean) 
+ * {@link ParamBindingService} finds implementations through SPI.
+ * @see ParamBindingService
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface ParameterizableBindingFactory {

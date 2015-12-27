@@ -37,9 +37,6 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.annotation.Feature;
-import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
@@ -63,6 +60,7 @@ import java.util.Map;
 
 /**
  * This decorator supports loading properties from streams, urls or files and saving to a url.
+ * Uses {@link SettingsBindingService#getFactory() }.
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParsingProperties extends AbstractPropertiesDecorator {
@@ -72,17 +70,6 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
    private final List<String> trailingComment = new ArrayList<String>(0);
    
-   private static transient EnhancedMapBindingFactory factory = SettingsBindingService.getInstance().getFactory();
-
-   /**
-    * If need to override the {@link SettingsBindingService#getFactory() factory found by the service}.
-    * This may also be called from {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } when your {@link SettingsField} has {@link Feature}s.
-    * @param factory 
-    */
-   public static void setFactory(EnhancedMapBindingFactory factory) {
-      ParsingProperties.factory = factory;
-   }
-
    public ParsingProperties(EnhancedMap properties) throws IOException {
       super(properties);
    }
@@ -155,7 +142,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    protected void loadFromReader(Reader in) throws IOException {
       BufferedReader bi = new BufferedReader(in);
       try {
-         factory.getParser(bi).parse(this);
+         SettingsBindingService.getInstance().getFactory().getParser(bi).parse(this);
       } finally {
          bi.close();
       }
@@ -168,7 +155,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws IOException
     */
    public void addFromURL(String url) throws IOException {
-      addFromURL(factory.getBindingHelper().convert(url, URL.class));
+      addFromURL(SettingsBindingService.getInstance().getFactory().getBindingHelper().convert(url, URL.class));
    }
    
    /**
@@ -212,7 +199,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
             o = conn.getOutputStream();
          }
          osw  = new OutputStreamWriter(new BufferedOutputStream(o));
-         factory.getSerializer().serialize(this, osw);
+         SettingsBindingService.getInstance().getFactory().getSerializer().serialize(this, osw);
       } finally {
          if (osw != null) {
             osw.close();
@@ -266,7 +253,6 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
       parsingProperties.commentBeforeKeys.putAll(commentBeforeKeys);
       parsingProperties.propertyUrls = propertyUrls;
       parsingProperties.trailingComment.addAll(trailingComment);
-      parsingProperties.factory = factory;
       return parsingProperties;
    }
 }

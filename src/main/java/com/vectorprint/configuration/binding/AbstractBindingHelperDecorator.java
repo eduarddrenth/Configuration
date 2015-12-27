@@ -39,8 +39,6 @@ package com.vectorprint.configuration.binding;
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
 import static com.vectorprint.configuration.binding.BindingHelper.BOOLEAN_PARSER;
-import static com.vectorprint.configuration.binding.BindingHelper.BYTE_PARSER;
-import static com.vectorprint.configuration.binding.BindingHelper.CHAR_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.CLASS_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.COLOR_PARSER;
 import static com.vectorprint.configuration.binding.BindingHelper.DATE_PARSER;
@@ -61,7 +59,7 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 /**
- * The decoration pattern is advised if you need different behaviour on top of the two implementaions
+ * The decoration pattern is advised if you need different behaviour on top of the two implementations
  * of the BindingHelper interface offered by this library.
  * @param <T>
  * @see ParameterizableBindingFactory

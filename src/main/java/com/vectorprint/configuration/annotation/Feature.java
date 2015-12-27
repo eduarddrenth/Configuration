@@ -38,6 +38,7 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
+import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
@@ -65,7 +66,7 @@ public @interface Feature {
    public Class<? extends AbstractPropertiesDecorator> clazz();
    /**
     * decorators may need input for their functionality, a URL to retrieve help info for example.
-    * setting this argument requires a constructor with {@link EnhancedMap} and URL[].
+    * setting this argument requires a constructor with {@link EnhancedMap} and URL[] as arguments.
     * @see ParsingProperties
     * @see HelpSupportedProperties
     * @return 
@@ -74,6 +75,7 @@ public @interface Feature {
    
    /**
     * @see ParsingProperties
+    * @see SpecificClassValidator
     * @return 
     */
    public Class<? extends EnhancedMapBindingFactory> factoryClass() default EnhancedMapBindingFactoryImpl.class;

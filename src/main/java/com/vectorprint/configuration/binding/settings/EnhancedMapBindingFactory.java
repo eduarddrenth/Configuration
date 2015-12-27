@@ -40,7 +40,8 @@ import com.vectorprint.configuration.binding.BindingHelper;
 import java.io.Reader;
 
 /**
- * @see EnhancedMapBindingFactoryImpl#getFactory(java.lang.Class, java.lang.Class, com.vectorprint.configuration.binding.BindingHelper, boolean) 
+ * {@link SettingsBindingService} finds implementations through SPI.
+ * @see SettingsBindingService
  * @author Eduard Drenth at VectorPrint.nl
  */
 public interface EnhancedMapBindingFactory {
