@@ -63,7 +63,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static com.vectorprint.ClassHelper.findConstructor;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
@@ -234,7 +233,6 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                if (!executeSetter(field, obj, settings, isStatic)) {
                   field.set(obj, settings);
                }
-               return;
             } catch (IllegalArgumentException ex) {
                throw new VectorPrintRuntimeException(ex);
             } catch (IllegalAccessException ex) {

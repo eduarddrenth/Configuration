@@ -23,15 +23,15 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
+import static com.vectorprint.ArrayHelper.isArrayEqual;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
-import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
 import java.util.Observable;
 import java.util.logging.Logger;
-import static com.vectorprint.ArrayHelper.isArrayEqual;
-import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 
 /**
  *
@@ -67,9 +67,13 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       this.key = key;
    }
 
+   /**
+    * 
+    * @return help text appended with default value if it is set
+    */
    @Override
    public String getHelp() {
-      return help;
+      return def==null?help:help + " (" +ParamBindingService.getInstance().getFactory().getBindingHelper().serializeValue(def) + ")";
    }
 
    public void setHelp(String help) {

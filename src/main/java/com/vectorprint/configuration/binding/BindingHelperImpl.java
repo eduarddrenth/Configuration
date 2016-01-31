@@ -27,6 +27,20 @@ package com.vectorprint.configuration.binding;
 //~--- non-JDK imports --------------------------------------------------------
 import com.vectorprint.VectorPrintRuntimeException;
 import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
+import static com.vectorprint.configuration.binding.BindingHelper.BOOLEAN_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.BYTE_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.CHAR_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.CLASS_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.COLOR_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.DATE_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.DOUBLE_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.FILE_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.FLOAT_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.INT_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.LONG_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.REGEX_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.SHORT_PARSER;
+import static com.vectorprint.configuration.binding.BindingHelper.URL_PARSER;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
@@ -37,9 +51,10 @@ import java.util.regex.Pattern;
 
 //~--- JDK imports ------------------------------------------------------------
 /**
- * Responsible for converting Strings into (atomic) values and vise versa and for escaping meaningful characters for a certain syntax.
- * Use this default implementation in {@link AbstractBindingHelperDecorator#AbstractBindingHelperDecorator(com.vectorprint.configuration.binding.BindingHelper) } when extending it.
- * 
+ * Responsible for converting Strings into (atomic) values and vise versa and for escaping meaningful characters for a
+ * certain syntax. Use this default implementation in {@link AbstractBindingHelperDecorator#AbstractBindingHelperDecorator(com.vectorprint.configuration.binding.BindingHelper)
+ * } when extending it.
+ *
  * Threadsafe: it is safe to call the available methods from different threads at the same time on one instance of this
  * class.
  *
@@ -49,7 +64,8 @@ import java.util.regex.Pattern;
 public class BindingHelperImpl implements BindingHelper {
 
    /**
-    * preferably use {@link ParameterizableBindingFactory#getBindingHelper() } or {@link EnhancedMapBindingFactory#getBindingHelper() }
+    * preferably use {@link ParameterizableBindingFactory#getBindingHelper() } or {@link EnhancedMapBindingFactory#getBindingHelper()
+    * }
     */
    public BindingHelperImpl() {
    }
@@ -64,13 +80,16 @@ public class BindingHelperImpl implements BindingHelper {
     */
    @Override
    public <T> T convert(String[] values, Class<T> clazz) {
-      if (values==null|values.length==0) {
+      if (values == null | values.length == 0) {
          return null;
       }
       if (!clazz.isArray()) {
          throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
       }
       Object o = null;
+      if (String[].class.equals(clazz)) {
+         return (T) values;
+      }
       if (URL[].class.equals(clazz)) {
          o = parseURLValues(values);
       } else if (float[].class.equals(clazz)) {
@@ -131,11 +150,13 @@ public class BindingHelperImpl implements BindingHelper {
     */
    @Override
    public <T> T convert(String value, Class<T> clazz) {
-      if (value==null||value.isEmpty()) {
+      if (value == null || value.isEmpty()) {
          return null;
       }
       Object o = null;
-      if (Boolean.class.equals(clazz)) {
+      if (String.class.equals(clazz)) {
+         o = value;
+      } else if (Boolean.class.equals(clazz)) {
          o = BOOLEAN_PARSER.convert(value);
       } else if (Byte.class.equals(clazz)) {
          o = BYTE_PARSER.convert(value);
@@ -169,8 +190,6 @@ public class BindingHelperImpl implements BindingHelper {
          o = Long.parseLong(value);
       } else if (Color.class.equals(clazz)) {
          o = COLOR_PARSER.convert(value);
-      } else if (String.class.equals(clazz)) {
-         o = value;
       } else if (URL.class.equals(clazz)) {
          o = URL_PARSER.convert(value);
       } else if (File.class.equals(clazz)) {
@@ -194,18 +213,20 @@ public class BindingHelperImpl implements BindingHelper {
    }
 
    /**
-    * Escapes {@link #setEscapeChars(char[]) characters} to be escaped.
+    * Escapes {@link #setEscapeChars(char[]) characters} to be escaped. There is no magic, this method simply puts a \
+    * before characters to be escaped. This works fine when serializing values that are the result of parsing a String
+    * with special characters.
     *
     * @param value
     * @return
     */
    public final String escape(String value) {
-      if (chars==null||chars.length==0||value==null||value.isEmpty()) {
+      if (chars == null || chars.length == 0 || value == null || value.isEmpty()) {
          return value;
       }
       String s = value;
       for (char c : chars) {
-         s = value.replace(String.valueOf(c), "\\"+c);
+         s = s.replace(String.valueOf(c), "\\" + c);
       }
       return s;
    }
@@ -216,12 +237,13 @@ public class BindingHelperImpl implements BindingHelper {
    public void setEscapeChars(char[] chars) {
       this.chars = chars;
    }
-   
+
    private char separator = ',';
-   
+
    /**
     * default is ","
-    * @param separator 
+    *
+    * @param separator
     */
    @Override
    public void setArrayValueSeparator(char separator) {
@@ -275,111 +297,109 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(v).append(separator);
          }
-      } else {
-         if (short[].class.isInstance(value)) {
-            short[] s = (short[]) value;
-            if (s.length == 0) {
-               return null;
+      } else if (short[].class.isInstance(value)) {
+         short[] s = (short[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
+            sb.append(String.valueOf(s[i])).append(separator);
+         }
+      } else if (int[].class.isInstance(value)) {
+         int[] s = (int[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-         } else if (int[].class.isInstance(value)) {
-            int[] s = (int[]) value;
-            if (s.length == 0) {
-               return null;
+            sb.append(String.valueOf(s[i])).append(separator);
+         }
+      } else if (long[].class.isInstance(value)) {
+         long[] s = (long[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
+            sb.append(String.valueOf(s[i])).append(separator);
+         }
+      } else if (float[].class.isInstance(value)) {
+         float[] s = (float[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-         } else if (long[].class.isInstance(value)) {
-            long[] s = (long[]) value;
-            if (s.length == 0) {
-               return null;
+            sb.append(String.valueOf(s[i])).append(separator);
+         }
+      } else if (double[].class.isInstance(value)) {
+         double[] s = (double[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
+            sb.append(String.valueOf(s[i])).append(separator);
+         }
+      } else if (byte[].class.isInstance(value)) {
+         byte[] s = (byte[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-         } else if (float[].class.isInstance(value)) {
-            float[] s = (float[]) value;
-            if (s.length == 0) {
-               return null;
+            sb.append(String.valueOf(s[i])).append(separator);
+         }
+      } else if (boolean[].class.isInstance(value)) {
+         boolean[] s = (boolean[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
+            sb.append(String.valueOf(s[i])).append(separator);
+         }
+      } else if (char[].class.isInstance(value)) {
+         char[] s = (char[]) value;
+         if (s.length == 0) {
+            return null;
+         }
+         int l = s.length;
+         for (int i = 0;; i++) {
+            if (i == l - 1) {
+               sb.append(String.valueOf(s[i]));
+               break;
             }
-         } else if (double[].class.isInstance(value)) {
-            double[] s = (double[]) value;
-            if (s.length == 0) {
-               return null;
-            }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
-            }
-         } else if (byte[].class.isInstance(value)) {
-            byte[] s = (byte[]) value;
-            if (s.length == 0) {
-               return null;
-            }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
-            }
-         } else if (boolean[].class.isInstance(value)) {
-            boolean[] s = (boolean[]) value;
-            if (s.length == 0) {
-               return null;
-            }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
-            }
-         } else if (char[].class.isInstance(value)) {
-            char[] s = (char[]) value;
-            if (s.length == 0) {
-               return null;
-            }
-            int l = s.length;
-            for (int i = 0;; i++) {
-               if (i == l - 1) {
-                  sb.append(String.valueOf(s[i]));
-                  break;
-               }
-               sb.append(String.valueOf(s[i])).append(separator);
-            }
+            sb.append(String.valueOf(s[i])).append(separator);
          }
       }
       return sb.toString();

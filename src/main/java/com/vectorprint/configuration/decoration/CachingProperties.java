@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -42,14 +43,11 @@ import java.util.regex.Pattern;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class CachingProperties extends AbstractPropertiesDecorator {
+   
+   private static final Logger LOGGER = Logger.getLogger(CachingProperties.class.getName());
 
    public CachingProperties(EnhancedMap settings) {
       super(settings);
-   }
-
-   @Override
-   public EnhancedMap clone() {
-      return super.clone();
    }
 
    private Map<String, Object> cache = new HashMap<String, Object>();
@@ -79,13 +77,15 @@ public class CachingProperties extends AbstractPropertiesDecorator {
             if (!checkPrimitive(clazz, cache.get(key).getClass())) {
                Class c = cache.get(key).getClass();
                cache.remove(key);
-               throw new VectorPrintRuntimeException(String.format("class for %s in cache is %s, this does not match requested class: %s. Removed from cache.",
+               cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
+               LOGGER.warning(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
                    key, c.getName(), clazz.getName()));
             }
          } else if (!clazz.isInstance(cache.get(key))) {
             Class c = cache.get(key).getClass();
             cache.remove(key);
-            throw new VectorPrintRuntimeException(String.format("class for %s in cache is %s, this does not match requested class: %s. Removed from cache.",
+            cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
+            LOGGER.warning(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
                 key, c.getName(), clazz.getName()));
          }
       }

@@ -201,7 +201,7 @@ public class ParameterizableImpl implements Parameterizable {
 
    @Override
    public String toString() {
-      return "ParameterizableImpl{" + "parameters=" + parameters + '}';
+      return getClass().getSimpleName() + "{" + "parameters=" + parameters + '}';
    }
 
    public EnhancedMap getSettings() {

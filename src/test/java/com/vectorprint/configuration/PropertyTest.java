@@ -24,13 +24,22 @@ package com.vectorprint.configuration;
  * #L%
  */
 import com.vectorprint.ArrayHelper;
+import static com.vectorprint.ArrayHelper.isArrayEqual;
 import com.vectorprint.ClassHelper;
-import com.vectorprint.testing.ThreadTester;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.BindingHelper;
+import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
+import com.vectorprint.configuration.binding.parameters.ParamBindingService;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
+import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
+import com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
+import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
+import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.Changes;
@@ -44,6 +53,8 @@ import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.ThreadSafeProperties;
 import com.vectorprint.configuration.decoration.visiting.ParsingVisitor;
+import com.vectorprint.configuration.generated.parser.ParseException;
+import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
 import com.vectorprint.configuration.parameters.BooleanParameter;
 import com.vectorprint.configuration.parameters.CharPasswordParameter;
 import com.vectorprint.configuration.parameters.FloatArrayParameter;
@@ -52,15 +63,11 @@ import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
-import com.vectorprint.configuration.generated.parser.ParseException;
-import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
-import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
-import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
-import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
+import com.vectorprint.configuration.parameters.StringParameter;
 import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
+import com.vectorprint.testing.ThreadTester;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -86,15 +93,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static com.vectorprint.ArrayHelper.isArrayEqual;
-import com.vectorprint.configuration.binding.parameters.ParamBindingService;
-import com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson;
-import com.vectorprint.configuration.binding.settings.SettingsBindingService;
-import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
-import org.junit.Before;
 
 /**
  *
@@ -608,6 +610,17 @@ public class PropertyTest {
 
       deserialized.getGenericProperty(null, Color[].class, "markcolors");
    }
+   
+   @Test
+   public void testEscaping() {
+      String s = "data=<-here\\, (realy\\)\\|\\|";
+      ParameterizableBindingFactory factory = ParamBindingService.getInstance().getFactory();
+      EscapingBindingHelper ebh = new EscapingBindingHelper();
+      ParameterizableParser parser = factory.getParser(new StringReader(""));
+      Serializable value = parser.parseAsParameterValue(s, new StringParameter("s", "help"));
+      String serialized = ebh.serializeValue(value);
+      assertEquals(s, serialized);
+   }
 
    @Test
    public void testSerializableParameters() throws IOException, VectorPrintException, ParseException, InterruptedException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -632,7 +645,6 @@ public class PropertyTest {
                final Parameter deserialized = (Parameter) oin.readObject();
                if (p.getValueClass().equals(int[].class)) {
                   IntArrayParameter ip = (IntArrayParameter) p;
-                  IntArrayParameter dip = (IntArrayParameter) deserialized;
                   assertArrayEquals((int[]) ip.getValue(), (int[]) deserialized.getValue());
                }
 
