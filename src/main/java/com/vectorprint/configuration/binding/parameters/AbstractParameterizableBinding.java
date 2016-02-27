@@ -41,7 +41,6 @@ import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.parameters.CharPasswordParameter;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
-import com.vectorprint.configuration.parameters.ParameterizableImpl;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
@@ -75,18 +74,16 @@ public abstract class AbstractParameterizableBinding<T> implements Parameterizab
     */
    @Override
    public void initParameterizable(Parameterizable parameterizable) {
-      if (!(parameterizable instanceof ParameterizableImpl)) {
-         try {
-            ParamAnnotationProcessorImpl.PAP.initParameters(parameterizable);
-         } catch (NoSuchMethodException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         } catch (InstantiationException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         } catch (IllegalAccessException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         } catch (InvocationTargetException ex) {
-            throw new VectorPrintRuntimeException(ex);
-         }
+      try {
+         ParamAnnotationProcessorImpl.PAP.initParameters(parameterizable);
+      } catch (NoSuchMethodException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (InstantiationException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (IllegalAccessException ex) {
+         throw new VectorPrintRuntimeException(ex);
+      } catch (InvocationTargetException ex) {
+         throw new VectorPrintRuntimeException(ex);
       }
       if (parameterizable instanceof Configurable) {
          ((Configurable) parameterizable).initSettings(settings);

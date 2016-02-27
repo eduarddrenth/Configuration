@@ -64,6 +64,7 @@ import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parameters.StringParameter;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
@@ -735,8 +736,9 @@ public class PropertyTest {
    }
 
    @Test
-   public void testParmeterizable() throws IOException, ParseException {
+   public void testParmeterizable() throws IOException, ParseException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
       Parameterizable p = new P();
+      ParamAnnotationProcessorImpl.PAP.initParameters(p);
       assertEquals(p.getClass(), p.getParameter("b", BooleanParameter.class).getDeclaringClass());
       assertEquals("v", p.getParameter("s", String.class).getDefault());
       assertEquals("v", p.getValue("s", String.class));

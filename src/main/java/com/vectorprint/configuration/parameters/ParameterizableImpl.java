@@ -31,6 +31,7 @@ import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.decoration.CachingProperties;
+import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
@@ -42,34 +43,20 @@ import java.util.Observable;
 import java.util.logging.Logger;
 
 /**
- * This implementation contains static {@link EnhancedMap settings}, which will be initialized in {@link ParameterizableParser#parseParameterizable() } and used in {@link #addParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Class) }.
- * If 
+ * When constructed from {@link ParameterizableParser#parseParameterizable()} settings and parameter annotations will be
+ * processed, otherwise you may want to do that programmatically.
+ *
+ * @see SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap)
+ * @see ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable)
+ * @see ParameterizableParser#parseParameterizable()
+ *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class ParameterizableImpl implements Parameterizable {
 
    public static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
    protected static final Logger logger = Logger.getLogger(ParameterizableImpl.class.getName());
-   private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
-
-   /**
-    * will call {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable)
-    * } and {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) }.
-    */
-   public ParameterizableImpl() {
-      sap.initSettings(this, settings);
-      try {
-         paramProcessor.initParameters(this);
-      } catch (NoSuchMethodException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      }
-   }
+   private static final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    private final Map<String, Parameter> parameters = new HashMap<String, Parameter>(5) {
       @Override
@@ -89,18 +76,23 @@ public class ParameterizableImpl implements Parameterizable {
       public void clear() {
       }
    };
-   
+
+   /**
+    * will be initialized from parsing {@link ParameterizableParserImpl}
+    */
    @SettingsField
-   private static EnhancedMap settings = new CachingProperties(new Settings(0));
+   private EnhancedMap settings = new CachingProperties(new Settings(0));
 
    /**
     * Adds the parameter to this Parameterizable and registers this Parameterizable with the Parameter as Observer.
-    * Calls {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) }
+    * Calls {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap)
+    * }
     * on the parameter class and the parameter object. Sets the {@link Parameter#getDeclaringClass() declaring class}
+    *
     * @param parameter
     */
    @Override
-   public void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass) {
+   public final void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass) {
       sap.initSettings(parameter.getClass(), settings);
       sap.initSettings(parameter, settings);
       parameters.put(parameter.getKey(), parameter);
@@ -122,7 +114,10 @@ public class ParameterizableImpl implements Parameterizable {
 
    @Override
    public <TYPE extends Serializable> TYPE getValue(String key, Class<TYPE> T) {
-         return (TYPE) parameters.get(key).getValue();
+      if (!parameters.containsKey(key)) {
+         throw new VectorPrintRuntimeException(String.format("parameter %s not found in %s", key, getClass()));
+      }
+      return (TYPE) parameters.get(key).getValue();
    }
 
    @Override
@@ -132,7 +127,7 @@ public class ParameterizableImpl implements Parameterizable {
 
    /**
     *
-    * @return 
+    * @return
     */
    @Override
    public Parameterizable clone() {
@@ -166,12 +161,13 @@ public class ParameterizableImpl implements Parameterizable {
 
    /**
     * does nothing
+    *
     * @param o
-    * @param arg 
+    * @param arg
     */
    @Override
    public void update(Observable o, Object arg) {
-      
+
    }
 
    @Override
@@ -204,12 +200,30 @@ public class ParameterizableImpl implements Parameterizable {
       return getClass().getSimpleName() + "{" + "parameters=" + parameters + '}';
    }
 
+   /**
+    * Returns settings for this Parameterizable. 
+    * @return 
+    */
    public EnhancedMap getSettings() {
       return settings;
    }
-
-   public static void clearStaticSettings() {
-      settings = null;
-   }
    
+   /**
+    * Calls {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } (only when settings argument is not null) and 
+    * {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }. This method is meant to be called when
+    * this object is not the result of parsing, see {@link ParameterizableParser#parseParameterizable() }.
+    * @param settings
+    * @throws NoSuchMethodException
+    * @throws InstantiationException
+    * @throws IllegalAccessException
+    * @throws InvocationTargetException 
+    */
+   public void initialize(EnhancedMap settings) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+      if (settings!=null) {
+         this.settings = settings;
+         sap.initSettings(this, settings);
+      }
+      paramProcessor.initParameters(this);
+   }
+
 }

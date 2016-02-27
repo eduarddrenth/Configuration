@@ -60,7 +60,7 @@ PARSER_BEGIN(ParameterizableParserImpl)
          Shape(bordercolor=#663322,color=#11aa55,borderwidth=2,SHAPE=bezier,fill=true,background=false,points=60|20|90|20|75|40,close=false)
       * <pre>
       *
-      * Annotations will be processed, {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)} will be called on the class.
+      * Annotations will be processed, {@link SettingsAnnotationProcessor#initSettings(Object,EnhancedMap)} will be called on the class and the object.
       * Parameterizables and Parameters will be initialized and default values for parameters will initialized from settings, see
       * {@link ParameterHelper#findKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap, com.vectorprint.configuration.binding.parameters.ParameterHelper.SUFFIX)}
       */
@@ -270,6 +270,7 @@ throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, Ins
          sap.initSettings(c,settings);
       }
       parameterizable = (Parameterizable)c.newInstance();
+      sap.initSettings(parameterizable,settings);
       initParameterizable(parameterizable);
    }
    (

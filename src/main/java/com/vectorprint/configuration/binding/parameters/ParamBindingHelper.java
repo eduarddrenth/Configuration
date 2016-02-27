@@ -47,11 +47,11 @@ public interface ParamBindingHelper extends BindingHelper {
 
    /**
     * call this from {@link ParameterizableSerializer} to give applications a chance to manipulate values before
-    * serialization
+    * serialization.
     *
     * @param <TYPE>
     * @param p
-    * @param useDefault
+    * @param useDefault when true call {@link Parameter#getDefault() }, otherwise {@link Parameter#getValue() } 
     * @return
     */
    <TYPE extends Serializable> TYPE getValueToSerialize(Parameter<TYPE> p, boolean useDefault);

@@ -24,9 +24,9 @@ package com.vectorprint.configuration.annotation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,9 +34,13 @@ package com.vectorprint.configuration.annotation;
  * limitations under the License.
  * #L%
  */
+import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
+import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
+import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
@@ -62,10 +66,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static com.vectorprint.ClassHelper.findConstructor;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
-import com.vectorprint.configuration.binding.settings.SettingsBindingService;
-import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 
 /**
  * This implementation will try to call a setter for a field first when injecting a value from settings, when this fails
@@ -85,11 +85,11 @@ import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
-   
+
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
-   
+
    private EnhancedMap settingsUsed = null;
-   
+
    private final Set objects = new HashSet();
 
    /**
@@ -103,12 +103,18 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
     */
    @Override
    public boolean initSettings(Object o, EnhancedMap settings) {
+      if (settings == null || settings.isEmpty()) {
+         if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("settings null or empty, no initialization");
+         }
+         return false;
+      }
       if (settingsUsed == null) {
          settingsUsed = settings;
       } else if (o instanceof Class && objects.contains(o) && settingsUsed.equals(settings)) {
          // only check for classes, because equals of objects may be very expensive
          if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(String.format("assuming, based on equals, settings for %s already initialized with %s", settings, o));
+            LOGGER.fine(String.format("assuming, based on equals, settings for %s already initialized with %s", o, settings));
          }
          return false;
       }
@@ -118,7 +124,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
       }
       return true;
    }
-   
+
    private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
       Field[] declaredFields = c.getDeclaredFields();
       if (LOGGER.isLoggable(Level.FINE)) {
@@ -159,7 +165,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      apd.accept(new PreparingVisitor(apkv));
                   }
                }
-               
+
                if (set.observable()) {
                   if (!hasProps(settings, ObservableProperties.class)) {
                      if (notifyWrapping) {
@@ -200,7 +206,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                         if (notifyWrapping) {
                            LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
-                        if (ParsingProperties.class.isInstance(dec)&&!feat.factoryClass().equals(EnhancedMapBindingFactoryImpl.class)) {
+                        if (ParsingProperties.class.isInstance(dec) && !feat.factoryClass().equals(EnhancedMapBindingFactoryImpl.class)) {
                            SpecificClassValidator.setClazz(feat.factoryClass());
                         }
                         settings = constructor.newInstance(settings, urls);
@@ -277,7 +283,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          initSettings(c.getSuperclass(), obj, eh, notifyWrapping);
       }
    }
-   
+
    private boolean executeSetter(Field f, Object o, Object value, boolean isStatic) {
       try {
          if (LOGGER.isLoggable(Level.FINE)) {
@@ -310,9 +316,9 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
       }
       return false;
    }
-   
+
    private boolean hasProps(EnhancedMap settings, Class<? extends AbstractPropertiesDecorator> clazz) {
       return settings instanceof AbstractPropertiesDecorator && ((AbstractPropertiesDecorator) settings).hasProperties(clazz);
    }
-   
+
 }

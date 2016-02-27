@@ -43,11 +43,11 @@ import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.parameters.AbstractParameterizableBinding;
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
-import com.vectorprint.configuration.parameters.Parameter;
-import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.generated.parser.JSONParser;
 import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.generated.parser.ParseException;
+import com.vectorprint.configuration.parameters.Parameter;
+import com.vectorprint.configuration.parameters.Parameterizable;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -222,6 +222,8 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
             } catch (IllegalAccessException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
+            // init instance settings
+            sap.initSettings(parameterizable, settings);
             initParameterizable(parameterizable);
             if (next.getValue() != null) {
                if (next.getValue() instanceof List) {

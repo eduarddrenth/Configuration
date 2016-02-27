@@ -40,6 +40,7 @@ import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
+import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import java.io.Serializable;
 
 /**
@@ -81,8 +82,9 @@ public interface ParameterizableParser<T> {
     * <ul>
     * <li>extend {@link AbstractParameterizableParser}</li>
     * <li>{@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) }
-    * on the Parameterizable class</li>
-    * <li>create an instance of the Parameterizable class</li>
+    * on the Parameterizable class and object</li>
+    * <li>{@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }
+    * on the Parameterizable object</li>
     * <li>call {@link #initParameterizable(com.vectorprint.configuration.parameters.Parameterizable) } on the abstract</li>
     * <li>call {@link #initParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Object) } for each parameter found.
     * In this method you can call {@link ParamBindingHelper#setValueOrDefault(com.vectorprint.configuration.parameters.Parameter, java.io.Serializable, boolean) }
