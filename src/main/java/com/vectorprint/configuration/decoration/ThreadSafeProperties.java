@@ -46,7 +46,7 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
       if (properties == null) {
          throw new IllegalArgumentException("properties may not be null");
       }
-      propsFromThread = new InheritableThreadLocal<EnhancedMap>();
+      propsFromThread = new InheritableThreadLocal<>();
       propsFromThread.set(properties);
    }
 
@@ -147,7 +147,7 @@ public class ThreadSafeProperties extends AbstractPropertiesDecorator implements
    private void readObject(java.io.ObjectInputStream s)
        throws IOException, ClassNotFoundException {
       s.defaultReadObject();
-      propsFromThread = new InheritableThreadLocal<EnhancedMap>();
+      propsFromThread = new InheritableThreadLocal<>();
       propsFromThread.set((EnhancedMap) s.readObject());
    }
 

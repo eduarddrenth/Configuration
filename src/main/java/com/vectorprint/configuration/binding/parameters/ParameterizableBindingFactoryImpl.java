@@ -55,9 +55,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
    static {
       try {
          constructor = ParameterizableParserImpl.class.getConstructor(Reader.class);
-      } catch (NoSuchMethodException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (NoSuchMethodException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -73,15 +71,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
          ParameterizableParser newInstance = constructor.newInstance(input);
          newInstance.setBindingHelper(getBindingHelper());
          return newInstance;
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -98,15 +88,7 @@ public class ParameterizableBindingFactoryImpl implements ParameterizableBinding
          ParameterizableSerializer ps = (ParameterizableSerializer) constructor.newInstance(r);
          ps.setBindingHelper(getBindingHelper());
          return ps;
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }

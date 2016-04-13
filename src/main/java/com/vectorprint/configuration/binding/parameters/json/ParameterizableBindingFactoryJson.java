@@ -56,9 +56,7 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
    static {
       try {
          constructor = JSONSupport.class.getConstructor(Reader.class);
-      } catch (NoSuchMethodException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (NoSuchMethodException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -75,15 +73,7 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
          ParameterizableParser newInstance = constructor.newInstance(input);
          newInstance.setBindingHelper(getBindingHelper());
          return newInstance;
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -100,13 +90,7 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
          ParameterizableSerializer ps = serializerClass.newInstance();
          ps.setBindingHelper(getBindingHelper());
          return ps;
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }

@@ -66,9 +66,9 @@ public final class Settings extends HashMap<String, String[]>
       ps.println("settings wrapped by " + decorators.toString());
    }
    private String id;
-   private final Map<String, PropertyHelp> help = new HashMap<String, PropertyHelp>(50);
+   private final Map<String, PropertyHelp> help = new HashMap<>(50);
    private final List<Class<? extends AbstractPropertiesDecorator>> decorators
-       = new ArrayList<Class<? extends AbstractPropertiesDecorator>>(3);
+       = new ArrayList<>(3);
    private AbstractPropertiesDecorator outermostWrapper;
 
    /**
@@ -647,7 +647,7 @@ public final class Settings extends HashMap<String, String[]>
       return AbstractBindingHelperDecorator.parseDateValues(getStringProperties(null, key));
    }
 
-   private final Collection<String> unused = new HashSet<String>(25);
+   private final Collection<String> unused = new HashSet<>(25);
 
    @Override
    public Collection<String> getUnusedKeys() {
@@ -659,7 +659,7 @@ public final class Settings extends HashMap<String, String[]>
       return Collections.unmodifiableCollection(unused);
    }
 
-   private final Collection<String> notPresent = new HashSet<String>(25);
+   private final Collection<String> notPresent = new HashSet<>(25);
 
    @Override
    public Collection<String> getKeysNotPresent() {

@@ -155,16 +155,12 @@ public interface BindingHelper {
             try {
                // assume name
                f = Color.class.getField(value);
-            } catch (NoSuchFieldException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (SecurityException ex) {
+            } catch (NoSuchFieldException | SecurityException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
             try {
                return (Color) f.get(null);
-            } catch (IllegalArgumentException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
          }

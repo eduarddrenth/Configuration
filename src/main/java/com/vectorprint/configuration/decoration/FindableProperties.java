@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class FindableProperties extends AbstractPropertiesDecorator {
 
-   private static final Map<String, EnhancedMap> findableProperties = new HashMap<String, EnhancedMap>(6);
+   private static final Map<String, EnhancedMap> findableProperties = new HashMap<>(6);
 
    /**
     * 

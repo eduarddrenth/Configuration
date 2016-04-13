@@ -102,7 +102,7 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
             throw new VectorPrintRuntimeException(EXAMPLE_SUPPORTED_JSON_SYNTAX);
          }
          List l = (List) values;
-         List<String> sl = new ArrayList<String>(l.size());
+         List<String> sl = new ArrayList<>(l.size());
          for (Object o : l) {
             sl.add(String.valueOf(o));
          }
@@ -147,7 +147,7 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
       StringBuilder sb = new StringBuilder();
       sb.append("{'").append(p.getClass().getSimpleName()).append("': ");
       if (!p.getParameters().isEmpty()) {
-         Collection<Parameter> c = new ArrayList<Parameter>(p.getParameters().size());
+         Collection<Parameter> c = new ArrayList<>(p.getParameters().size());
          for (Parameter par : p.getParameters().values()) {
             if ((include(par))) {
                c.add(par);
@@ -217,9 +217,7 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
             }
             try {
                parameterizable = (Parameterizable) c.newInstance();
-            } catch (InstantiationException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
             // init instance settings

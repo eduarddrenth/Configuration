@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  */
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
 
-   private Set<Observer> observers = new HashSet<Observer>(1);
+   private Set<Observer> observers = new HashSet<>(1);
    
    private static final Logger LOGGER = Logger.getLogger(ObservableProperties.class.getName());
 
@@ -105,8 +105,8 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
 
    @Override
    public void putAll(Map<? extends String, ? extends String[]> m) {
-      List<String> added = new ArrayList<String>(m.size());
-      List<String> changed = new ArrayList<String>(m.size());
+      List<String> added = new ArrayList<>(m.size());
+      List<String> changed = new ArrayList<>(m.size());
       for (Map.Entry<? extends String, ? extends String[]> e : m.entrySet()) {
          if (containsKey(e.getKey())) {
             String[] v1 = e.getValue();
@@ -131,7 +131,7 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
 
    @Override
    public void clear() {
-      List<String> gone = new ArrayList<String>(keySet());
+      List<String> gone = new ArrayList<>(keySet());
       super.clear();
       notifyObservers(new Changes(null, null, gone));
    }

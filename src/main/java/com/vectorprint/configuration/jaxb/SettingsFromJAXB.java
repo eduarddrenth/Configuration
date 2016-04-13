@@ -114,18 +114,8 @@ public class SettingsFromJAXB {
                }
             }
          }
-      } catch (ClassNotFoundException classNotFoundException) {
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException | IllegalArgumentException | InvocationTargetException classNotFoundException) {
          throw new VectorPrintException(classNotFoundException);
-      } catch (InstantiationException instantiationException) {
-         throw new VectorPrintException(instantiationException);
-      } catch (IllegalAccessException illegalAccessException) {
-         throw new VectorPrintException(illegalAccessException);
-      } catch (IOException iOException) {
-         throw new VectorPrintException(iOException);
-      } catch (IllegalArgumentException illegalArgumentException) {
-         throw new VectorPrintException(illegalArgumentException);
-      } catch (InvocationTargetException invocationTargetException) {
-         throw new VectorPrintException(invocationTargetException);
       }
       return settings;
    }

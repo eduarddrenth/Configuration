@@ -23,7 +23,6 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.awt.Color;
 import java.io.File;
@@ -39,7 +38,7 @@ import java.util.regex.Pattern;
 
 /**
  * A Caching {@link EnhancedMap}, when the cache contains a value of a different type then the type requested the value
- * is removed from cache and a {@link VectorPrintRuntimeException} is thrown.
+ * is replaced in cache and a warning is logged.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
@@ -51,7 +50,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
       super(settings);
    }
 
-   private Map<String, Object> cache = new HashMap<String, Object>();
+   private Map<String, Object> cache = new HashMap<>();
 
    @Override
    public Date[] getDateProperties(Date[] defaultValue, String... keys) {

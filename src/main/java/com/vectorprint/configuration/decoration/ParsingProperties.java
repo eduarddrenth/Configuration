@@ -66,9 +66,9 @@ import java.util.Map;
 public class ParsingProperties extends AbstractPropertiesDecorator {
 
 
-   private List<URL> propertyUrls = new ArrayList<URL>(3);
-   private final Map<String, List<String>> commentBeforeKeys = new HashMap<String, List<String>>(50);
-   private final List<String> trailingComment = new ArrayList<String>(0);
+   private List<URL> propertyUrls = new ArrayList<>(3);
+   private final Map<String, List<String>> commentBeforeKeys = new HashMap<>(50);
+   private final List<String> trailingComment = new ArrayList<>(0);
    
    public ParsingProperties(EnhancedMap properties) throws IOException {
       super(properties);
@@ -140,11 +140,8 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws IOException
     */
    protected void loadFromReader(Reader in) throws IOException {
-      BufferedReader bi = new BufferedReader(in);
-      try {
+      try (BufferedReader bi = new BufferedReader(in)) {
          SettingsBindingService.getInstance().getFactory().getParser(bi).parse(this);
-      } finally {
-         bi.close();
       }
    }
    
@@ -225,7 +222,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
 
    public List<String> getCommentBeforeKey(String key) {
       if (!commentBeforeKeys.containsKey(key)) {
-         commentBeforeKeys.put(key, new ArrayList<String>(1));
+         commentBeforeKeys.put(key, new ArrayList<>(1));
       }
       return commentBeforeKeys.get(key);
    }
@@ -236,7 +233,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
 
    public EnhancedMap addCommentBeforeKey(String key, String comment) {
       if (!commentBeforeKeys.containsKey(key)) {
-         commentBeforeKeys.put(key, new ArrayList<String>(1));
+         commentBeforeKeys.put(key, new ArrayList<>(1));
       }
       commentBeforeKeys.get(key).add(comment);
       return this;

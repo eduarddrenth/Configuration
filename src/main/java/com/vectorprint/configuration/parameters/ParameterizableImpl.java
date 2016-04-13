@@ -139,17 +139,7 @@ public class ParameterizableImpl implements Parameterizable {
             p.setValue(getParameters().get(p.getKey()).getValue());
          }
          return pi;
-      } catch (NoSuchMethodException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
+      } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }

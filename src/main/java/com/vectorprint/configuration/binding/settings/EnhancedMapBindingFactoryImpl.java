@@ -58,9 +58,7 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
    static {
       try {
          constructor = PropertiesParser.class.getConstructor(Reader.class);
-      } catch (NoSuchMethodException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (NoSuchMethodException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -76,15 +74,7 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
    public EnhancedMapParser getParser(Reader input) {
       try {
          return constructor.newInstance(input);
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -95,15 +85,7 @@ public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory 
    public EnhancedMapSerializer getSerializer() {
       try {
          return (EnhancedMapSerializer) constructor.newInstance(r);
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (SecurityException ex) {
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }

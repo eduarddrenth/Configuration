@@ -46,7 +46,7 @@ public class SortedProperties extends AbstractPropertiesDecorator {
    
    @Override
    public Set<Entry<String, String[]>> entrySet() {
-      TreeSet<Entry<String, String[]>> treeSet = new TreeSet<Entry<String, String[]>>(ECOMP);
+      TreeSet<Entry<String, String[]>> treeSet = new TreeSet<>(ECOMP);
       treeSet.addAll(super.entrySet());
       return treeSet;
    }

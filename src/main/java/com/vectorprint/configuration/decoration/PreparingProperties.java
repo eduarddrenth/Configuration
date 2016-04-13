@@ -88,11 +88,11 @@ public class PreparingProperties extends AbstractPropertiesDecorator implements 
          }
       }
    }
-   private final List<PrepareKeyValue<String, String[]>> observers = new LinkedList<PrepareKeyValue<String, String[]>>();
+   private final List<PrepareKeyValue<String, String[]>> observers = new LinkedList<>();
 
    @Override
    public String[] put(String key, String[] value) {
-      KeyValue<String, String[]> prepared = new KeyValue<String, String[]>(key, value);
+      KeyValue<String, String[]> prepared = new KeyValue<>(key, value);
       prepareKeyValue(prepared);
       return super.put(prepared.getKey(), prepared.getValue());
    }

@@ -13,9 +13,9 @@ package com.vectorprint.configuration.parameters;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,12 +68,12 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    * 
+    *
     * @return help text appended with default value if it is set
     */
    @Override
    public String getHelp() {
-      return def==null?help:help + " (" +ParamBindingService.getInstance().getFactory().getBindingHelper().serializeValue(def) + ")";
+      return def == null ? help : help + " (" + ParamBindingService.getInstance().getFactory().getBindingHelper().serializeValue(def) + ")";
    }
 
    public void setHelp(String help) {
@@ -87,7 +87,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
     */
    @Override
    public TYPE getValue() {
-      return value!=null?value:def;
+      return value != null ? value : def;
    }
 
    @Override
@@ -97,8 +97,9 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    /**
     * Sets the value and notifies Observers
+    *
     * @param value the value
-    * @return 
+    * @return
     */
    @Override
    public Parameter<TYPE> setValue(TYPE value) {
@@ -110,8 +111,9 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    /**
     * Sets the value and notifies Observers
+    *
     * @param value the default value
-    * @return 
+    * @return
     */
    @Override
    public Parameter<TYPE> setDefault(TYPE value) {
@@ -123,18 +125,19 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    /**
     * uses {@link #valueToString(java.io.Serializable) }
-    * @return 
+    *
+    * @return
     */
    @Override
    public final String toString() {
-      return getClass().getSimpleName()+"{" + "key=" + key + ", value=" + valueToString(value) + ", def=" + valueToString(def) + ", help=" + help + ", declaringClass=" + declaringClass + '}';
+      return getClass().getSimpleName() + "{" + "key=" + key + ", value=" + valueToString(value) + ", def=" + valueToString(def) + ", help=" + help + ", declaringClass=" + declaringClass + '}';
    }
-
 
    /**
     * Uses {@link BindingHelper#serializeValue(java.lang.Object) }.
+    *
     * @param value
-    * @return 
+    * @return
     */
    protected String valueToString(TYPE value) {
       StringBuilder sb = new StringBuilder(15);
@@ -152,23 +155,14 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    public Parameter<TYPE> clone() {
       try {
          ParameterImpl<TYPE> o = (ParameterImpl<TYPE>) super.clone();
-         o.help=help;
-         o.key=key;
+         o.help = help;
+         o.key = key;
          o.valueClass = valueClass;
-         o.declaringClass=declaringClass;
+         o.declaringClass = declaringClass;
          return o.setDefault(def).setValue(value);
-      } catch (SecurityException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalArgumentException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (CloneNotSupportedException ex) {
+      } catch (SecurityException | IllegalArgumentException | CloneNotSupportedException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
-   }
-
-   @Override
-   public void addObserver(Parameterizable o) {
-      super.addObserver(o);
    }
 
    @Override
@@ -177,10 +171,12 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    * Called from {@link ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable)}.
-    * 
+    * Called from
+    * {@link ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable)}.
+    *
     * Call this if you don't use annotations and want to know the declaring class
-    * @param declaringClass 
+    *
+    * @param declaringClass
     */
    public void setDeclaringClass(Class<? extends Parameterizable> declaringClass) {
       this.declaringClass = declaringClass;
@@ -198,10 +194,11 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    /**
-    * NB! calls {@link #getValue() }, 
-    * @see ParameterHelper#isArrayEqual(java.lang.Class, java.lang.Object, java.lang.Object) 
+    * NB! calls {@link #getValue() },
+    *
+    * @see ParameterHelper#isArrayEqual(java.lang.Class, java.lang.Object, java.lang.Object)
     * @param obj
-    * @return 
+    * @return
     */
    @Override
    public boolean equals(Object obj) {
@@ -247,5 +244,5 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       }
       return true;
    }
-   
+
 }

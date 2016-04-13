@@ -56,17 +56,11 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
     * @param url
     */
    protected void initHelp(URL... urls) {
-      Map<String, PropertyHelp> h = new HashMap<String, PropertyHelp>(150);
+      Map<String, PropertyHelp> h = new HashMap<>(150);
       for (URL url : urls) {
          try {
             new HelpParser(url.openStream()).parse(h);
-         } catch (TokenMgrError iOException) {
-            super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
-            log.log(Level.WARNING, HELPFORMAT, iOException);
-         } catch (ParseException iOException) {
-            super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
-            log.log(Level.WARNING, HELPFORMAT, iOException);
-         } catch (IOException iOException) {
+         } catch (TokenMgrError | ParseException | IOException iOException) {
             super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
             log.log(Level.WARNING, HELPFORMAT, iOException);
          }

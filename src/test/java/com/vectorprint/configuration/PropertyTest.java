@@ -13,9 +13,9 @@ package com.vectorprint.configuration;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,6 +30,7 @@ import com.vectorprint.VectorPrintException;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
+import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
@@ -120,7 +121,7 @@ public class PropertyTest {
    public void testMultiThreadProps() throws Exception {
       final PropCreator pc = new PropCreator();
       ThreadTester.testInThread(pc);
-      Collection<Runnable> toRun = new HashSet<Runnable>(1);
+      Collection<Runnable> toRun = new HashSet<>(1);
       toRun.add(new Runnable() {
          @Override
          public void run() {
@@ -153,9 +154,7 @@ public class PropertyTest {
             assertTrue(mtp.containsKey("stoponerror"));
             assertEquals("true", mtp.getProperty("stoponerror"));
             assertTrue(mtp.getBooleanProperty(false, "stoponerror"));
-         } catch (IOException ex) {
-            Logger.getLogger(PropertyTest.class.getName()).log(Level.SEVERE, null, ex);
-         } catch (VectorPrintRuntimeException ex) {
+         } catch (IOException | VectorPrintRuntimeException ex) {
             Logger.getLogger(PropertyTest.class.getName()).log(Level.SEVERE, null, ex);
          }
       }
@@ -270,7 +269,7 @@ public class PropertyTest {
       assertNull(os.changes.getChanged());
       assertTrue(os.changes.getAdded().contains("testerdetest"));
 
-      Map<String, String[]> mm = new HashMap<String, String[]>(2);
+      Map<String, String[]> mm = new HashMap<>(2);
       mm.put("marks", new String[]{"weerveranderd"});
       mm.put("nogeennieuwe", new String[]{"bla"});
       mtp.putAll(mm);
@@ -299,6 +298,7 @@ public class PropertyTest {
       // test config using one backslash for escaping
       assertEquals(2, mtp.getStringProperties(null, "splittest").length);
    }
+
    @Test
    public void testRemoveProperty() throws IOException, ParseException {
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
@@ -337,7 +337,7 @@ public class PropertyTest {
           + File.separator + "run.properties");
       final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
       assertNotNull(mtp.getProperty("stoponerror"));
-      assertNotNull(mtp.getStringProperties(null,"marks"));
+      assertNotNull(mtp.getStringProperties(null, "marks"));
       assertNotNull(mtp.getProperty("stoponerror"));
       assertTrue(mtp.containsValue(new String[]{"true"}));
       assertTrue(mtp.values().contains(new String[]{"7"}));
@@ -375,7 +375,7 @@ public class PropertyTest {
 
       NoEmptyValues emtiesNOTOK = new NoEmptyValues();
 
-      List<PrepareKeyValue<String, String[]>> observers = new LinkedList<PrepareKeyValue<String, String[]>>();
+      List<PrepareKeyValue<String, String[]>> observers = new LinkedList<>();
 
       try {
          new PreparingProperties(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"), observers);
@@ -413,7 +413,7 @@ public class PropertyTest {
       assertTrue(vp.containsKey("m"));
       assertEquals("m", vp.getPropertyNoDefault("m"));
    }
-   
+
    @Test
    public void testFindProperties() throws IOException, VectorPrintException, ParseException {
       new FindableProperties(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"));
@@ -432,6 +432,7 @@ public class PropertyTest {
       assertTrue(vp.containsKey("m"));
       assertEquals("m", vp.getPropertyNoDefault("m"));
    }
+
    @Test
    public void testRecordUnused() throws IOException, ParseException {
       EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
@@ -558,8 +559,7 @@ public class PropertyTest {
       }
       long nocaching = System.currentTimeMillis() - start;
 
-
-      assertTrue(String.format("caching not faster: %d <= %d", caching, nocaching), caching  < nocaching);
+      assertTrue(String.format("caching not faster: %d <= %d", caching, nocaching), caching < nocaching);
 
       cache.put("tt", "racing");
       cache.getPropertyNoDefault("tt");
@@ -583,9 +583,9 @@ public class PropertyTest {
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
 
       ByteArrayOutputStream bo = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(bo);
-      oos.writeObject(mtp);
-      oos.close();
+      try (ObjectOutputStream oos = new ObjectOutputStream(bo)) {
+         oos.writeObject(mtp);
+      }
 
       ObjectInputStream oin = new ObjectInputStream(new ByteArrayInputStream(bo.toByteArray()));
 
@@ -611,7 +611,7 @@ public class PropertyTest {
 
       deserialized.getGenericProperty(null, Color[].class, "markcolors");
    }
-   
+
    @Test
    public void testEscaping() {
       String s = "data=<-here\\, (realy\\)\\|\\|";
@@ -637,9 +637,9 @@ public class PropertyTest {
                }
 
                ByteArrayOutputStream bo = new ByteArrayOutputStream();
-               ObjectOutputStream oos = new ObjectOutputStream(bo);
-               oos.writeObject(p);
-               oos.close();
+               try (ObjectOutputStream oos = new ObjectOutputStream(bo)) {
+                  oos.writeObject(p);
+               }
 
                ObjectInputStream oin = new ObjectInputStream(new ByteArrayInputStream(bo.toByteArray()));
 
@@ -703,17 +703,17 @@ public class PropertyTest {
                      }
                      BindingHelper stringConversion = ParamBindingService.getInstance().getFactory().getBindingHelper();
                      String conf = stringConversion.serializeValue(p.getValue());
-                     
+
                      if (conf != null && !"".equals(conf)) {
-                        
+
                         Serializable parseAsParameterValue = ParamBindingService.getInstance().getFactory().getParser(new StringReader("")).parseAsParameterValue(conf, p);
                         if (p.getValueClass().isArray()) {
                            if (!isArrayEqual(p.getValue(), parseAsParameterValue)) {
                               System.out.println("");
                            }
-                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(),p.getValue(),parseAsParameterValue),isArrayEqual(p.getValue(), parseAsParameterValue));
+                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(), p.getValue(), parseAsParameterValue), isArrayEqual(p.getValue(), parseAsParameterValue));
                         } else {
-                              assertEquals(String.valueOf(p.getValue()), String.valueOf(parseAsParameterValue));
+                           assertEquals(String.valueOf(p.getValue()), String.valueOf(parseAsParameterValue));
                         }
                      }
                   } catch (NumberFormatException runtimeException) {
@@ -764,7 +764,7 @@ public class PropertyTest {
       assertEquals(sp, sp2);
 
    }
-   
+
    @Test
    public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
@@ -778,15 +778,15 @@ public class PropertyTest {
       P p = (P) op.parseParameterizable();
       int i = p.getValue("a", int[].class)[0];
       int j = p.getValue("a", int[].class)[1];
-      assertEquals(i,1);
-      assertEquals(j,2);
+      assertEquals(i, 1);
+      assertEquals(j, 2);
       assertTrue(p.getValue("b", Boolean.class));
-      assertEquals(Color.red,p.getValue("c", Color.class));
+      assertEquals(Color.red, p.getValue("c", Color.class));
       assertTrue(p.isFf());
       p.setValue("e", EnumParam.E.E);
       Writer w = new StringWriter();
       factoryImpl.getSerializer().serialize(p, w);
-      
+
       System.out.println(w.toString());
 
       op = factoryImpl.getParser(new StringReader(w.toString())).
@@ -795,7 +795,7 @@ public class PropertyTest {
       p.setValue("c", Color.red);
       assertEquals(pp, p);
    }
-   
+
    private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    @Test
@@ -836,7 +836,7 @@ public class PropertyTest {
       vp.accept(new ParsingVisitor(f.getU()));
       assertTrue(vp.containsKey("dataclass"));
    }
-   
+
    @Test
    public void testXMLSettings() throws Exception {
       EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings.xml"));
@@ -846,9 +846,15 @@ public class PropertyTest {
       assertTrue(apd.hasProperties(CachingProperties.class));
       assertTrue(apd.hasProperties(HelpSupportedProperties.class));
       assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
-      assertEquals(settings.getHelp("stoponerror").getExplanation(),"wat een mooie\n" +
-"help tekst\n" +
-"\n" +
-"is dit");
+      assertEquals(settings.getHelp("stoponerror").getExplanation(), "wat een mooie\n"
+          + "help tekst\n"
+          + "\n"
+          + "is dit");
+   }
+
+   @Test
+   public void testColor() {
+      String colorToHex = AbstractBindingHelperDecorator.colorToHex(Color.red);
+      assertEquals("#ff0000", colorToHex);
    }
 }

@@ -76,13 +76,7 @@ public abstract class AbstractParameterizableBinding<T> implements Parameterizab
    public void initParameterizable(Parameterizable parameterizable) {
       try {
          ParamAnnotationProcessorImpl.PAP.initParameters(parameterizable);
-      } catch (NoSuchMethodException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InstantiationException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (IllegalAccessException ex) {
-         throw new VectorPrintRuntimeException(ex);
-      } catch (InvocationTargetException ex) {
+      } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
       if (parameterizable instanceof Configurable) {

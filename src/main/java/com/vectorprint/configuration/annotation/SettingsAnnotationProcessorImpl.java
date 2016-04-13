@@ -222,26 +222,14 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                if (!isStatic && obj instanceof DecoratorVisitor && settings instanceof AbstractPropertiesDecorator) {
                   ((AbstractPropertiesDecorator) settings).accept((DecoratorVisitor) obj);
                }
-            } catch (IOException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (SecurityException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (InstantiationException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (IllegalAccessException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (IllegalArgumentException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (InvocationTargetException ex) {
+            } catch (IOException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
             try {
                if (!executeSetter(field, obj, settings, isStatic)) {
                   field.set(obj, settings);
                }
-            } catch (IllegalArgumentException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
          }
@@ -271,9 +259,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      field.set(obj, v);
                   }
                }
-            } catch (IllegalArgumentException ex) {
-               throw new VectorPrintRuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
          }

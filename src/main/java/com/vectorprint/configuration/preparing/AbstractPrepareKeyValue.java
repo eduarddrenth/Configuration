@@ -33,7 +33,7 @@ import java.util.Set;
 public abstract class AbstractPrepareKeyValue implements PrepareKeyValue<String, String[]> {
 
    private static final long serialVersionUID = 1;
-   private Set<String> keysToSkip = new HashSet<String>(3);
+   private Set<String> keysToSkip = new HashSet<>(3);
 
    /**
     * returns true when the key should not be skipped
