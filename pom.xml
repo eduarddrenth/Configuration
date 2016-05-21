@@ -30,7 +30,7 @@
          <comments>A business-friendly OSS license</comments>
       </license>
    </licenses>
-   <url>http://www.vectorprint.nl</url>
+   <url>https://github.com/eduarddrenth/Configuration/wiki</url>
    <distributionManagement>
       <repository>
          <id>ossrh</id>
@@ -42,10 +42,14 @@
       <url>http://www.vectorprint.nl</url>
    </ciManagement>
    <scm>
-      <url>https://java.net/projects/vectoprintconfig/sources/subversion/show</url>
-      <connection>scm:svn:https://svn.java.net/svn/vectoprintconfig~subversion/trunk</connection>
-      <developerConnection>scm:svn:https://svn.java.net/svn/vectoprintconfig~subversion/trunk</developerConnection>
+      <url>https://github.com/eduarddrenth/Configuration</url>
+      <connection>scm:git:https://github.com/eduarddrenth/Configuration</connection>
+      <developerConnection>scm:git:https://github.com/eduarddrenth/Configuration</developerConnection>
    </scm>
+   <issueManagement>
+      <system>github</system>
+      <url>https://github.com/eduarddrenth/Configuration/issues</url>
+   </issueManagement>
    <developers>
       <developer>
          <email>eduarddrenth@gmail.com</email>
@@ -57,12 +61,12 @@
          </roles>
       </developer>
    </developers>
-    
+
    <organization>
       <name>VectorPrint</name>
       <url>http://www.vectorprint.nl</url>
    </organization>
-  
+
    <build>
       <plugins>
          <plugin>
@@ -85,7 +89,7 @@
                   <artifactId>umlgraph</artifactId>
                   <version>5.6</version>
                </docletArtifact>
-               <additionalparam>-views</additionalparam>   
+               <additionalparam>-views</additionalparam>
                <additionalparam>-all -collapsible  -inferdep -inferrel -inferreltype composed -hide (java.*) -collpackages java.util.*</additionalparam>
                <useStandardDocletOptions>true</useStandardDocletOptions>
             </configuration>-->
@@ -124,7 +128,7 @@
             <version>2.5.2</version>
             <configuration>
                <releaseProfiles>release</releaseProfiles>
-               <goals>deploy</goals>         
+               <goals>deploy</goals>
             </configuration>
          </plugin>
          <plugin>
@@ -138,10 +142,10 @@
                   </ignores>
                   <excludes>
                      <exclude>com/vectorprint/configuration/parser/*.class</exclude>
-                  </excludes>               
+                  </excludes>
                </instrumentation>
             </configuration>
-         </plugin>        
+         </plugin>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>jaxb2-maven-plugin</artifactId>
@@ -164,7 +168,7 @@
          </plugin>
       </plugins>
    </build>
-    
+
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
