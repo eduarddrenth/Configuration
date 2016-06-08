@@ -73,7 +73,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
     */
    @Override
    public String getHelp() {
-      return def == null ? help : help + " (" + ParamBindingService.getInstance().getFactory().getBindingHelper().serializeValue(def) + ")";
+      return def == null ? help : help + " (default: " + ParamBindingService.getInstance().getFactory().getBindingHelper().serializeValue(def) + ")";
    }
 
    public void setHelp(String help) {
