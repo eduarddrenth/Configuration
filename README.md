@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/com.vectorprint/Config.svg)](https://maven-badges.herokuapp.com/maven-central/com.vectorprint/Config)
+
 This project is about configuration of applications and about parameterization of Objects.
 
 This library offers annotations (and annotation processors), parsers, typing, observing changes, serialization,
