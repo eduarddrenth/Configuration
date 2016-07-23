@@ -63,10 +63,6 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       return key;
    }
 
-   public void setKey(String key) {
-      this.key = key;
-   }
-
    /**
     *
     * @return help text appended with default value if it is set

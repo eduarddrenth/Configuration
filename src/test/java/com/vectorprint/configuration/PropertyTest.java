@@ -614,7 +614,7 @@ public class PropertyTest {
 
    @Test
    public void testEscaping() {
-      String s = "data=<-here\\, (realy\\)\\|\\|";
+      String s = "<-here\\, (realy\\)\\|\\|";
       ParameterizableBindingFactory factory = ParamBindingService.getInstance().getFactory();
       EscapingBindingHelper ebh = new EscapingBindingHelper();
       ParameterizableParser parser = factory.getParser(new StringReader(""));

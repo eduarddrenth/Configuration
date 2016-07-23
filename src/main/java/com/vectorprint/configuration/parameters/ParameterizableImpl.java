@@ -13,9 +13,9 @@ package com.vectorprint.configuration.parameters;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -191,25 +191,29 @@ public class ParameterizableImpl implements Parameterizable {
    }
 
    /**
-    * Returns settings for this Parameterizable. 
-    * @return 
+    * Returns settings for this Parameterizable.
+    *
+    * @return
     */
    public EnhancedMap getSettings() {
       return settings;
    }
-   
+
    /**
-    * Calls {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) } (only when settings argument is not null) and 
-    * {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }. This method is meant to be called when
-    * this object is not the result of parsing, see {@link ParameterizableParser#parseParameterizable() }.
+    * Calls {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap)
+    * } (only when settings argument is not null) and
+    * {@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }. This
+    * method is meant to be called when this object is not the result of parsing, see {@link ParameterizableParser#parseParameterizable()
+    * }.
+    *
     * @param settings
     * @throws NoSuchMethodException
     * @throws InstantiationException
     * @throws IllegalAccessException
-    * @throws InvocationTargetException 
+    * @throws InvocationTargetException
     */
    public void initialize(EnhancedMap settings) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-      if (settings!=null) {
+      if (settings != null) {
          this.settings = settings;
          sap.initSettings(this, settings);
       }

@@ -24,9 +24,9 @@ package com.vectorprint.configuration.binding.parameters;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,6 @@ package com.vectorprint.configuration.binding.parameters;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.binding.BindingHelper;
@@ -44,11 +43,12 @@ import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProces
 import java.io.Serializable;
 
 /**
- * Interface describing how to get from a syntax to a Parameterizable and vise versa. You can for example generate a (javacc) parser that
- * implements this interface, or implement this interface and use a (javacc) parser under the hood. You are recommended to
- * extend {@link AbstractParameterizableParser} and use a {@link BindingHelper}. The BindingHelper will be responsible for
- converting Strings into (atomic) values and vise versa, for setting values and defaults of parameters during or after parsing
- and for escaping meaningful characters for a certain syntax.
+ * Interface describing how to get from a syntax to a Parameterizable and vise versa. You can for example generate a
+ * (javacc) parser that implements this interface, or implement this interface and use a (javacc) parser under the hood.
+ * You are recommended to extend {@link AbstractParameterizableParser} and use a {@link BindingHelper}. The
+ * BindingHelper will be responsible for converting Strings into (atomic) values and vise versa, for setting values and
+ * defaults of parameters during or after parsing and for escaping meaningful characters for a certain syntax.
+ *
  * @param <T>
  * @see BindingHelper
  * @see ParameterizableBindingFactory
@@ -85,12 +85,16 @@ public interface ParameterizableParser<T> {
     * on the Parameterizable class and object</li>
     * <li>{@link ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable) }
     * on the Parameterizable object</li>
-    * <li>call {@link #initParameterizable(com.vectorprint.configuration.parameters.Parameterizable) } on the abstract</li>
-    * <li>call {@link #initParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Object) } for each parameter found.
-    * In this method you can call {@link ParamBindingHelper#setValueOrDefault(com.vectorprint.configuration.parameters.Parameter, java.io.Serializable, boolean) }
+    * <li>call {@link #initParameterizable(com.vectorprint.configuration.parameters.Parameterizable) } on the
+    * abstract</li>
+    * <li>call {@link #initParameter(com.vectorprint.configuration.parameters.Parameter, java.lang.Object) } for each
+    * parameter found. In this method you can call {@link ParamBindingHelper#setValueOrDefault(com.vectorprint.configuration.parameters.Parameter, java.io.Serializable, boolean)
+    * }
     * after turning the Object into the type needed by the Parameter.
     * </li>
-    * <li>finally you may want to set (default) values for parameters using {@link ParameterHelper#findKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap, com.vectorprint.configuration.binding.parameters.ParameterHelper.SUFFIX) }, {@link #parseAsParameterValue(java.lang.String, com.vectorprint.configuration.parameters.Parameter) } and {@link ParamBindingHelper#setValueOrDefault(com.vectorprint.configuration.parameters.Parameter, java.io.Serializable, boolean)  }.</li>
+    * <li>finally you may want to set (default) values for parameters using {@link ParameterHelper#findKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap, com.vectorprint.configuration.binding.parameters.ParameterHelper.SUFFIX) }, {@link #parseAsParameterValue(java.lang.String, com.vectorprint.configuration.parameters.Parameter)
+    * } and {@link ParamBindingHelper#setValueOrDefault(com.vectorprint.configuration.parameters.Parameter, java.io.Serializable, boolean)
+    * }.</li>
     * </ul>
     *
     * @return
@@ -99,23 +103,26 @@ public interface ParameterizableParser<T> {
 
    /**
     * Call this when the parsing process instantiated a Parameterizable
-    * @param parameterizable 
+    *
+    * @param parameterizable
     */
    void initParameterizable(Parameterizable parameterizable);
 
    /**
     * Call this when the parsing process found and instantiated a Parameter
+    *
     * @param parameter
-    * @param value 
+    * @param value
     */
    void initParameter(Parameter parameter, T value);
-   
+
    /**
-    * Useful when looking for {@link ParameterHelper#findKey(java.lang.String, java.lang.Class, com.vectorprint.configuration.EnhancedMap, com.vectorprint.configuration.binding.parameters.ParameterHelper.SUFFIX) (default) values} for a parameter. With the result you can call {@link ParamBindingHelper#setValueOrDefault(com.vectorprint.configuration.parameters.Parameter, java.io.Serializable, boolean) } 
+    * try to parse a String into a value for a parameter
+    *
     * @param <TYPE>
     * @param valueToParse
     * @param parameter
-    * @return 
+    * @return
     */
    <TYPE extends Serializable> TYPE parseAsParameterValue(String valueToParse, Parameter<TYPE> parameter);
 
