@@ -340,7 +340,7 @@ public class PropertyTest {
       assertNotNull(mtp.getStringProperties(null, "marks"));
       assertNotNull(mtp.getProperty("stoponerror"));
       assertTrue(mtp.containsValue(new String[]{"true"}));
-      assertTrue(mtp.values().contains(new String[]{"7"}));
+      assertTrue(mtp.containsValue(new String[]{"7"}));
       assertTrue(mtp.keySet().contains("stoponerror"));
       assertTrue(mtp.keySet().contains("marks"));
       ThreadTester.testInThread(new Runnable() {

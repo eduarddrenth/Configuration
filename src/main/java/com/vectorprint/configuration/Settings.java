@@ -30,6 +30,8 @@ import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import java.awt.Color;
 import java.io.File;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -49,17 +51,17 @@ import java.util.regex.Pattern;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public final class Settings extends HashMap<String, String[]>
-    implements EnhancedMap {
+public final class Settings implements EnhancedMap {
 
    private static final long serialVersionUID = 1;
    private static final Logger log = Logger.getLogger(Settings.class.getName());
+   private Map<String, String[]> data = new HashMap<>(10);
 
    @Override
    public void listProperties(PrintStream ps) {
       ps.println("settings with id " + getId() + ":");
       ps.println();
-      for (Map.Entry<String, String[]> entry : super.entrySet()) {
+      for (Map.Entry<String, String[]> entry : data.entrySet()) {
          ps.println(entry.getKey() + "=" + (entry.getValue() != null ? Arrays.asList(entry.getValue()) : ""));
       }
       ps.println("");
@@ -76,7 +78,6 @@ public final class Settings extends HashMap<String, String[]>
     *
     */
    public Settings() {
-      super();
    }
 
    /**
@@ -86,7 +87,7 @@ public final class Settings extends HashMap<String, String[]>
     * @param loadFactor
     */
    public Settings(int initialCapacity, float loadFactor) {
-      super(initialCapacity, loadFactor);
+      data = new HashMap<>(initialCapacity, loadFactor);
    }
 
    /**
@@ -95,7 +96,7 @@ public final class Settings extends HashMap<String, String[]>
     * @param initialCapacity
     */
    public Settings(int initialCapacity) {
-      super(initialCapacity);
+      data = new HashMap<>(initialCapacity);
    }
 
    /**
@@ -104,7 +105,10 @@ public final class Settings extends HashMap<String, String[]>
     * @param map
     */
    public Settings(Map<String, String[]> map) {
-      super(map);
+      if (map instanceof EnhancedMap) {
+         throw new IllegalArgumentException("instance of " + EnhancedMap.class.getName() + " not allowed");
+      }
+      data = map;
    }
 
    private void debug(Object val, String... keys) {
@@ -162,14 +166,14 @@ public final class Settings extends HashMap<String, String[]>
    @Override
    public final String[] get(Object key) {
       unused.remove(key);
-      return super.get(key);
+      return data.get(key);
    }
 
    @Override
    public String getPropertyNoDefault(String... keys) {
       String key = getFirstKeyPresent(keys);
       if (log.isLoggable(Level.FINE)) {
-         debug((key != null) ? super.get(key) : null, false, key);
+         debug((key != null) ? data.get(key) : null, false, key);
       }
       return getFirst(key);
    }
@@ -540,7 +544,7 @@ public final class Settings extends HashMap<String, String[]>
    @Override
    public final String[] put(String key, String[] value) {
       unused.add(key);
-      return super.put(key, value);
+      return data.put(key, value);
    }
 
    @Override
@@ -549,13 +553,13 @@ public final class Settings extends HashMap<String, String[]>
       notPresent.clear();
       help.clear();
       decorators.clear();
-      super.clear();
+      data.clear();
    }
 
    @Override
    public final String[] remove(Object key) {
       unused.remove(key);
-      return super.remove(key);
+      return data.remove(key);
    }
 
    private void init(Settings vp) {
@@ -568,7 +572,17 @@ public final class Settings extends HashMap<String, String[]>
 
    @Override
    public Settings clone() {
-      Settings vp = (Settings) super.clone();
+      Settings vp = new Settings();
+      if (data instanceof Cloneable) {
+         try {
+            Method m = data.getClass().getMethod("clone");
+            vp.data = (Map<String, String[]>) m.invoke(data, null);
+         } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException | SecurityException ex) {
+            throw new VectorPrintRuntimeException(ex);
+         }
+      } else {
+         vp.data.putAll(data);
+      }
       init(vp);
       return vp;
    }
@@ -770,7 +784,7 @@ public final class Settings extends HashMap<String, String[]>
    @Override
    public boolean containsValue(Object value) {
       if (value == null) {
-         return super.containsValue(null);
+         return data.containsValue(null);
       }
       if (String[].class.equals(value.getClass())) {
 
@@ -785,6 +799,41 @@ public final class Settings extends HashMap<String, String[]>
 
    private EnhancedMapBindingFactory getFactory() {
       return SettingsBindingService.getInstance().getFactory();
+   }
+
+   @Override
+   public int size() {
+      return data.size();
+   }
+
+   @Override
+   public boolean isEmpty() {
+      return data.isEmpty();
+   }
+
+   @Override
+   public boolean containsKey(Object key) {
+      return data.containsKey(key);
+   }
+
+   @Override
+   public void putAll(Map<? extends String, ? extends String[]> m) {
+      data.putAll(m);
+   }
+
+   @Override
+   public Set<String> keySet() {
+      return data.keySet();
+   }
+
+   @Override
+   public Collection<String[]> values() {
+      return data.values();
+   }
+
+   @Override
+   public Set<Entry<String, String[]>> entrySet() {
+      return data.entrySet();
    }
 
 }
