@@ -483,14 +483,11 @@ public final class Settings implements EnhancedMap {
       if (getClass() != obj.getClass()) {
          return false;
       }
-      if (!super.equals(obj)) {
-         return false;
-      }
       final Settings other = (Settings) obj;
       if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
          return false;
       }
-      return true;
+      return Objects.equals(data, other.data);
    }
 
    @Override
