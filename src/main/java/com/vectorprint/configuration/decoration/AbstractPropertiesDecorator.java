@@ -13,9 +13,9 @@ package com.vectorprint.configuration.decoration;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,12 +23,12 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.Settings;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
+import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +42,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Base class for all decorators that add functionality to {@link Settings}. All implemented methods just call the embedded
- * {@link EnhancedMap}.
+ * Base class for all decorators that add functionality to {@link Settings}. All implemented methods just call the
+ * embedded {@link EnhancedMap}.
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
@@ -52,7 +52,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    private EnhancedMap settings;
 
    /**
-    * Will call {@link Settings#addDecorator(java.lang.Class) } and 
+    * Will call {@link Settings#addDecorator(java.lang.Class) } and
     * {@link Settings#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }
     *
     * @param settings may not be null
@@ -86,12 +86,12 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
     */
    @Override
    public boolean getBooleanProperty(Boolean defaultValue, String... keys) {
-      return settings.getBooleanProperty( defaultValue,keys);
+      return settings.getBooleanProperty(defaultValue, keys);
    }
 
    @Override
    public Color getColorProperty(Color defaultValue, String... keys) {
-      return settings.getColorProperty(defaultValue,keys);
+      return settings.getColorProperty(defaultValue, keys);
    }
 
    @Override
@@ -388,7 +388,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
     *
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
-    * @return 
+    * @return
     * @throws ClassNotFoundException
     */
    @Override
@@ -400,7 +400,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
     *
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
-    * @return 
+    * @return
     * @throws ClassNotFoundException
     */
    @Override
@@ -460,7 +460,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    }
 
    /**
-    * for serialization, writes the embedded settings to the stream, call this in subclasses after you have doen your
+    * for serialization, writes the embedded settings to the stream, call this in subclasses after you have done your
     * own serialization
     *
     * @param s

@@ -52,7 +52,7 @@ import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
-import com.vectorprint.configuration.decoration.ThreadSafeProperties;
+import com.vectorprint.configuration.decoration.ThreadBoundProperties;
 import com.vectorprint.configuration.decoration.visiting.ParsingVisitor;
 import com.vectorprint.configuration.generated.parser.ParseException;
 import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
@@ -144,12 +144,12 @@ public class PropertyTest {
 
    private class PropCreator implements Runnable {
 
-      private ThreadSafeProperties mtp;
+      private ThreadBoundProperties mtp;
 
       @Override
       public void run() {
          try {
-            mtp = new ThreadSafeProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
+            mtp = new ThreadBoundProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
                 + File.separator + "run.properties"));
             assertTrue(mtp.containsKey("stoponerror"));
             assertEquals("true", mtp.getProperty("stoponerror"));
@@ -335,7 +335,7 @@ public class PropertyTest {
       ParsingProperties mp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
-      final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
+      final ThreadBoundProperties mtp = new ThreadBoundProperties(mp);
       assertNotNull(mtp.getProperty("stoponerror"));
       assertNotNull(mtp.getStringProperties(null, "marks"));
       assertNotNull(mtp.getProperty("stoponerror"));
@@ -356,7 +356,7 @@ public class PropertyTest {
       ParsingProperties mp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
-      final ThreadSafeProperties mtp = new ThreadSafeProperties(mp);
+      final ThreadBoundProperties mtp = new ThreadBoundProperties(mp);
       assertFalse(mtp.containsKey("bla"));
       mtp.put("bla", "bla");
       ThreadTester.testInThread(new Runnable() {
@@ -509,23 +509,23 @@ public class PropertyTest {
    @Test
    public void testDecorators() throws IOException, VectorPrintException, ParseException {
       Settings vp = new Settings();
-      AbstractPropertiesDecorator mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(vp, "src/test/resources/config"
+      AbstractPropertiesDecorator mtp = new ThreadBoundProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(vp, "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
       assertTrue(mtp.hasProperties(FindableProperties.class));
       assertTrue(mtp.hasProperties(HelpSupportedProperties.class));
-      assertTrue(mtp.hasProperties(ThreadSafeProperties.class));
+      assertTrue(mtp.hasProperties(ThreadBoundProperties.class));
       assertTrue(mtp.hasProperties(ParsingProperties.class));
       assertTrue(mtp.hasProperties(Settings.class));
 
       assertTrue(vp.getDecorators().get(2).equals(FindableProperties.class));
       assertTrue(vp.getDecorators().get(1).equals(HelpSupportedProperties.class));
-      assertTrue(vp.getDecorators().get(3).equals(ThreadSafeProperties.class));
+      assertTrue(vp.getDecorators().get(3).equals(ThreadBoundProperties.class));
       assertTrue(vp.getDecorators().get(0).equals(ParsingProperties.class));
 
-      assertTrue(vp.getOutermostWrapper() instanceof ThreadSafeProperties);
+      assertTrue(vp.getOutermostWrapper() instanceof ThreadBoundProperties);
 
       try {
-         new ThreadSafeProperties(mtp);
+         new ThreadBoundProperties(mtp);
          fail("expected exception, decorating with a certain class only allowed once");
       } catch (VectorPrintRuntimeException vectorPrintRuntimeException) {
       }
@@ -534,7 +534,7 @@ public class PropertyTest {
    @Test
    public void testHiding() {
       try {
-         AbstractPropertiesDecorator mtp = new CachingProperties(new ThreadSafeProperties(new Settings()));
+         AbstractPropertiesDecorator mtp = new CachingProperties(new ThreadBoundProperties(new Settings()));
          fail("caching hides threadsafety");
       } catch (VectorPrintRuntimeException e) {
          System.out.println(e.getMessage());
@@ -579,7 +579,7 @@ public class PropertyTest {
    @Test
    public void testSerializable() throws IOException, VectorPrintException, ParseException, InterruptedException, ClassNotFoundException {
       FindableProperties.clearStaticReferences();
-      EnhancedMap mtp = new ThreadSafeProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
+      EnhancedMap mtp = new ThreadBoundProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
 
       ByteArrayOutputStream bo = new ByteArrayOutputStream();
