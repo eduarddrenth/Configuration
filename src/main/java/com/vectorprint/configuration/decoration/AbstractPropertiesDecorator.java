@@ -34,8 +34,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -67,7 +69,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       }
       this.settings = settings;
       accept(new Hiding(this));
-      accept(new WrapperOveriew(getFirstDecorationAware()));
+      accept(new DecoratorOveriew(getDecorationAwares()));
    }
 
    /**
@@ -268,11 +270,12 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       return false;
    }
 
-   private final DecorationAware getFirstDecorationAware() {
+   private final DecorationAware[] getDecorationAwares() {
       EnhancedMap inner = settings;
+      List<DecorationAware> l = new ArrayList<>(1);
       while (inner != null) {
          if (inner instanceof DecorationAware) {
-            return (DecorationAware) inner;
+            l.add((DecorationAware) inner);
          }
          if (inner instanceof AbstractPropertiesDecorator) {
             inner = ((AbstractPropertiesDecorator) inner).settings;
@@ -280,7 +283,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
             inner = null;
          }
       }
-      throw new VectorPrintRuntimeException(String.format("no %s found", DecorationAware.class.getName()));
+      return l.toArray(new DecorationAware[l.size()]);
    }
 
    /**
@@ -462,12 +465,12 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       s.writeObject(settings);
    }
 
-   private static class WrapperOveriew implements DecoratorVisitor<AbstractPropertiesDecorator> {
+   private static class DecoratorOveriew implements DecoratorVisitor<AbstractPropertiesDecorator> {
 
-      private final DecorationAware vp;
+      private final DecorationAware[] vps;
 
-      public WrapperOveriew(DecorationAware vp) {
-         this.vp = vp;
+      public DecoratorOveriew(DecorationAware... vps) {
+         this.vps = vps;
       }
 
       @Override
@@ -477,9 +480,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
       @Override
       public void visit(AbstractPropertiesDecorator e) {
-         if (!vp.getDecorators().contains(e.getClass())) {
-            vp.addDecorator(e.getClass());
-            vp.setOutermostDecorator(e);
+         for (DecorationAware vp : vps) {
+            if (!vp.getDecorators().contains(e.getClass())) {
+               vp.addDecorator(e.getClass());
+               vp.setOutermostDecorator(e);
+            }
          }
       }
 
