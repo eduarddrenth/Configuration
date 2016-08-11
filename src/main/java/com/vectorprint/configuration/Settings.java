@@ -19,6 +19,7 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
+import com.vectorprint.configuration.decoration.DecorationAware;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;

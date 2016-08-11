@@ -26,7 +26,6 @@ package com.vectorprint.configuration.decoration;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
-import com.vectorprint.configuration.Settings;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import java.awt.Color;
@@ -42,7 +41,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Base class for all decorators that add functionality to {@link Settings}. All implemented methods just call the
+ * Base class for all decorators that add functionality to {@link EnhancedMap}. All implemented methods just call the
  * embedded {@link EnhancedMap}.
  *
  * @author Eduard Drenth at VectorPrint.nl
@@ -52,13 +51,12 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
    private EnhancedMap settings;
 
    /**
-    * Will call {@link Settings#addDecorator(java.lang.Class) } and
-    * {@link Settings#setOutermostDecorator(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }
+    * Will call {@link DecorationAware#addDecorator(java.lang.Class) } and
+    * {@link DecorationAware#setOutermostDecorator(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }
     *
     * @param settings may not be null
     * @throws VectorPrintRuntimeException when a decorator of this type is already there or when this decorator
-    * {@link HiddenBy hides} another decorator or when the argument is not an instance of {@link Settings} or
-    * {@link AbstractPropertiesDecorator}.
+    * {@link HiddenBy hides} another decorator.
     */
    public AbstractPropertiesDecorator(EnhancedMap settings) {
       if (settings == null) {
@@ -67,15 +65,9 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       if (hasProperties(settings.getClass())) {
          throw new VectorPrintRuntimeException(String.format("settings already in the stack: %s", settings.getClass().getName()));
       }
-      if (!(settings instanceof Settings || settings instanceof AbstractPropertiesDecorator)) {
-         throw new VectorPrintRuntimeException(String.format("%s is not an instance of %s or %s",
-             settings.getClass().getName(),
-             Settings.class.getName(),
-             AbstractPropertiesDecorator.class.getName()));
-      }
       this.settings = settings;
       accept(new Hiding(this));
-      accept(new WrapperOveriew(getApplicationSettings()));
+      accept(new WrapperOveriew(getFirstDecorationAware()));
    }
 
    /**
@@ -276,11 +268,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       return false;
    }
 
-   private final Settings getApplicationSettings() {
+   private final DecorationAware getFirstDecorationAware() {
       EnhancedMap inner = settings;
       while (inner != null) {
-         if (inner instanceof Settings) {
-            return (Settings) inner;
+         if (inner instanceof DecorationAware) {
+            return (DecorationAware) inner;
          }
          if (inner instanceof AbstractPropertiesDecorator) {
             inner = ((AbstractPropertiesDecorator) inner).settings;
@@ -288,7 +280,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
             inner = null;
          }
       }
-      throw new VectorPrintRuntimeException(String.format("no %s found", Settings.class.getName()));
+      throw new VectorPrintRuntimeException(String.format("no %s found", DecorationAware.class.getName()));
    }
 
    /**
@@ -472,9 +464,9 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    private static class WrapperOveriew implements DecoratorVisitor<AbstractPropertiesDecorator> {
 
-      private final Settings vp;
+      private final DecorationAware vp;
 
-      public WrapperOveriew(Settings vp) {
+      public WrapperOveriew(DecorationAware vp) {
          this.vp = vp;
       }
 

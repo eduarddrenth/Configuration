@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vectorprint.configuration;
+package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
