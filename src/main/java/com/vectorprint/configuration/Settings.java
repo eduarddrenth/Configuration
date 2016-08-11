@@ -57,13 +57,13 @@ public final class Settings implements EnhancedMap {
 
    private static final long serialVersionUID = 1;
    private static final Logger log = Logger.getLogger(Settings.class.getName());
-   private final Map<String, String[]> data;
+   private final Map<String, String[]> backingMap;
 
    @Override
    public void listProperties(PrintStream ps) {
       ps.println("settings with id " + getId() + ":");
       ps.println();
-      for (Map.Entry<String, String[]> entry : data.entrySet()) {
+      for (Map.Entry<String, String[]> entry : backingMap.entrySet()) {
          ps.println(entry.getKey() + "=" + (entry.getValue() != null ? Arrays.asList(entry.getValue()) : ""));
       }
       ps.println("");
@@ -80,7 +80,7 @@ public final class Settings implements EnhancedMap {
     *
     */
    public Settings() {
-      data = new HashMap<>();
+      backingMap = new HashMap<>();
    }
 
    /**
@@ -90,7 +90,7 @@ public final class Settings implements EnhancedMap {
     * @param loadFactor
     */
    public Settings(int initialCapacity, float loadFactor) {
-      data = new HashMap<>(initialCapacity, loadFactor);
+      backingMap = new HashMap<>(initialCapacity, loadFactor);
    }
 
    /**
@@ -99,7 +99,7 @@ public final class Settings implements EnhancedMap {
     * @param initialCapacity
     */
    public Settings(int initialCapacity) {
-      data = new HashMap<>(initialCapacity);
+      backingMap = new HashMap<>(initialCapacity);
    }
 
    /**
@@ -112,7 +112,7 @@ public final class Settings implements EnhancedMap {
       if (map instanceof EnhancedMap) {
          throw new IllegalArgumentException("instance of " + EnhancedMap.class.getName() + " not allowed");
       }
-      data = map;
+      backingMap = map;
    }
 
    private void debug(Object val, String... keys) {
@@ -170,14 +170,14 @@ public final class Settings implements EnhancedMap {
    @Override
    public final String[] get(Object key) {
       unused.remove(key);
-      return data.get(key);
+      return backingMap.get(key);
    }
 
    @Override
    public String getPropertyNoDefault(String... keys) {
       String key = getFirstKeyPresent(keys);
       if (log.isLoggable(Level.FINE)) {
-         debug((key != null) ? data.get(key) : null, false, key);
+         debug((key != null) ? backingMap.get(key) : null, false, key);
       }
       return getFirst(key);
    }
@@ -491,7 +491,7 @@ public final class Settings implements EnhancedMap {
       if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
          return false;
       }
-      return Objects.equals(data, other.data);
+      return Objects.equals(backingMap, other.backingMap);
    }
 
    @Override
@@ -545,7 +545,7 @@ public final class Settings implements EnhancedMap {
    @Override
    public final String[] put(String key, String[] value) {
       unused.add(key);
-      return data.put(key, value);
+      return backingMap.put(key, value);
    }
 
    @Override
@@ -554,13 +554,13 @@ public final class Settings implements EnhancedMap {
       notPresent.clear();
       help.clear();
       decorators.clear();
-      data.clear();
+      backingMap.clear();
    }
 
    @Override
    public final String[] remove(Object key) {
       unused.remove(key);
-      return data.remove(key);
+      return backingMap.remove(key);
    }
 
    private void init(Settings vp) {
@@ -580,16 +580,16 @@ public final class Settings implements EnhancedMap {
    @Override
    public Settings clone() {
       Settings vp;
-      if (data instanceof Cloneable) {
+      if (backingMap instanceof Cloneable) {
          try {
-            Method m = data.getClass().getMethod("clone");
-            vp = new Settings((Map<String, String[]>) m.invoke(data, null));
+            Method m = backingMap.getClass().getMethod("clone");
+            vp = new Settings((Map<String, String[]>) m.invoke(backingMap, null));
          } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException | SecurityException ex) {
             throw new VectorPrintRuntimeException(ex);
          }
       } else {
          vp = new Settings();
-         vp.data.putAll(data);
+         vp.backingMap.putAll(backingMap);
       }
       init(vp);
       return vp;
@@ -792,7 +792,7 @@ public final class Settings implements EnhancedMap {
    @Override
    public boolean containsValue(Object value) {
       if (value == null) {
-         return data.containsValue(null);
+         return backingMap.containsValue(null);
       }
       if (String[].class.equals(value.getClass())) {
 
@@ -811,37 +811,37 @@ public final class Settings implements EnhancedMap {
 
    @Override
    public int size() {
-      return data.size();
+      return backingMap.size();
    }
 
    @Override
    public boolean isEmpty() {
-      return data.isEmpty();
+      return backingMap.isEmpty();
    }
 
    @Override
    public boolean containsKey(Object key) {
-      return data.containsKey(key);
+      return backingMap.containsKey(key);
    }
 
    @Override
    public void putAll(Map<? extends String, ? extends String[]> m) {
-      data.putAll(m);
+      backingMap.putAll(m);
    }
 
    @Override
    public Set<String> keySet() {
-      return data.keySet();
+      return backingMap.keySet();
    }
 
    @Override
    public Collection<String[]> values() {
-      return data.values();
+      return backingMap.values();
    }
 
    @Override
    public Set<Entry<String, String[]>> entrySet() {
-      return data.entrySet();
+      return backingMap.entrySet();
    }
 
 }
