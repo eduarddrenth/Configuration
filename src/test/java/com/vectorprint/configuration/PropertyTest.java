@@ -522,7 +522,7 @@ public class PropertyTest {
       assertTrue(vp.getDecorators().get(3).equals(ThreadBoundProperties.class));
       assertTrue(vp.getDecorators().get(0).equals(ParsingProperties.class));
 
-      assertTrue(vp.getOutermostWrapper() instanceof ThreadBoundProperties);
+      assertTrue(vp.getOutermostDecorator() instanceof ThreadBoundProperties);
 
       try {
          new ThreadBoundProperties(mtp);

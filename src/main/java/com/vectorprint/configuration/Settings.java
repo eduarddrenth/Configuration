@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public final class Settings implements EnhancedMap {
+public final class Settings implements EnhancedMap, DecorationAware {
 
    private static final long serialVersionUID = 1;
    private static final Logger log = Logger.getLogger(Settings.class.getName());
@@ -73,7 +73,7 @@ public final class Settings implements EnhancedMap {
    private final Map<String, PropertyHelp> help = new HashMap<>(50);
    private final List<Class<? extends AbstractPropertiesDecorator>> decorators
        = new ArrayList<>(3);
-   private AbstractPropertiesDecorator outermostWrapper;
+   private AbstractPropertiesDecorator outermostDecorator;
 
    /**
     * Creates a backing map {@link HashMap#HashMap() ) }.
@@ -738,49 +738,25 @@ public final class Settings implements EnhancedMap {
       return AbstractBindingHelperDecorator.parseClassValues(getStringProperties(keys, null));
    }
 
-   /**
-    * @see AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
-    * @return a list of decorators that wrap these settings
-    */
+   @Override
    public List<Class<? extends AbstractPropertiesDecorator>> getDecorators() {
       return decorators;
    }
 
-   /**
-    * Called by {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
-    * }
-    * to build a list of wrappers for these settings. When wrapped your code should call methods on the outermost
-    * wrapper only, if you don't, functionality of wrappers will not be called. The preferred way to achieve this is to
-    * use the {@link SettingsField} annotation in conjunction with a call to {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) }
-    * }.
-    *
-    * @param clazz
-    */
+   @Override
    public void addDecorator(Class<? extends AbstractPropertiesDecorator> clazz) {
       decorators.add(clazz);
    }
 
-   /**
-    * Set by {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
-    * }, if it is not null use it instead of these settings.
-    *
-    * @see SettingsAnnotationProcessor
-    * @return
-    */
-   public AbstractPropertiesDecorator getOutermostWrapper() {
-      return outermostWrapper;
+   @Override
+   public AbstractPropertiesDecorator getOutermostDecorator() {
+      return outermostDecorator;
    }
 
-   /**
-    * Called by {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
-    * }.
-    *
-    * @see SettingsAnnotationProcessor
-    * @param outermostWrapper
-    */
-   public void setOutermostWrapper(AbstractPropertiesDecorator outermostWrapper) {
-      this.outermostWrapper = outermostWrapper;
-      log.warning(String.format("NB! Settings wrapped by %s, you should use this instead of %s", outermostWrapper.getClass().getName(),
+   @Override
+   public void setOutermostDecorator(AbstractPropertiesDecorator outermostDecorator) {
+      this.outermostDecorator = outermostDecorator;
+      log.warning(String.format("NB! Settings wrapped by %s, you should use this instead of %s", outermostDecorator.getClass().getName(),
           getClass().getName()));
    }
 

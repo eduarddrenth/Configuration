@@ -94,7 +94,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    /**
     * Look for annotated fields in the Object class, use settings argument to apply settings. NOTE that the settings
-    * argument may be wrapped, you should always use the {@link Settings#getOutermostWrapper() }
+    * argument may be wrapped, you should always use the {@link Settings#getOutermostDecorator() }
     * in that case, and not call the settings argument directly after initialization is performed. When the Object
     * argument is a class only static fields will be processed, otherwise only instance fields.
     *

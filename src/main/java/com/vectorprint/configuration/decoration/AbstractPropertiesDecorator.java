@@ -53,7 +53,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    /**
     * Will call {@link Settings#addDecorator(java.lang.Class) } and
-    * {@link Settings#setOutermostWrapper(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }
+    * {@link Settings#setOutermostDecorator(com.vectorprint.configuration.decoration.AbstractPropertiesDecorator) }
     *
     * @param settings may not be null
     * @throws VectorPrintRuntimeException when a decorator of this type is already there or when this decorator
@@ -487,7 +487,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       public void visit(AbstractPropertiesDecorator e) {
          if (!vp.getDecorators().contains(e.getClass())) {
             vp.addDecorator(e.getClass());
-            vp.setOutermostWrapper(e);
+            vp.setOutermostDecorator(e);
          }
       }
 
