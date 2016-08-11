@@ -19,7 +19,6 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.configuration.decoration.DecorationAware;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
@@ -28,6 +27,7 @@ import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.decoration.DecorationAware;
 import java.awt.Color;
 import java.io.File;
 import java.io.PrintStream;
