@@ -40,8 +40,10 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- * Enhances Java Map with support for data types, debugging info, working with default values in code. You cannot
- * subclass this class, instead subclass {@link AbstractPropertiesDecorator} and wrap an instance of this class.
+ * Enhances Java Map with support for data types, debugging info, working with default values in code. Internally a
+ * backing Map is used which is a HashMap by default. You can provide your own backing map in {@link #Settings(java.util.Map)
+ * }, this may not be an EnhancedMap implementation. You cannot subclass this class, instead subclass
+ * {@link AbstractPropertiesDecorator} and wrap an instance of this class.
  *
  * @see EnhancedMapBindingFactory
  * @see com.vectorprint.configuration.decoration
@@ -55,7 +57,7 @@ public final class Settings implements EnhancedMap {
 
    private static final long serialVersionUID = 1;
    private static final Logger log = Logger.getLogger(Settings.class.getName());
-   private Map<String, String[]> data = new HashMap<>(10);
+   private final Map<String, String[]> data;
 
    @Override
    public void listProperties(PrintStream ps) {
@@ -74,14 +76,15 @@ public final class Settings implements EnhancedMap {
    private AbstractPropertiesDecorator outermostWrapper;
 
    /**
-    * Calls {@link HashMap#HashMap() }
+    * Creates a backing map {@link HashMap#HashMap() ) }.
     *
     */
    public Settings() {
+      data = new HashMap<>();
    }
 
    /**
-    * Calls {@link HashMap#HashMap(int, float) }.
+    * Creates a backing map {@link HashMap#HashMap(int, float) }.
     *
     * @param initialCapacity
     * @param loadFactor
@@ -91,7 +94,7 @@ public final class Settings implements EnhancedMap {
    }
 
    /**
-    * Calls {@link HashMap#HashMap(int) }.
+    * Creates a backing map {@link HashMap#HashMap(int) }.
     *
     * @param initialCapacity
     */
@@ -100,11 +103,12 @@ public final class Settings implements EnhancedMap {
    }
 
    /**
-    * Calls {@link HashMap#HashMap(java.util.Map) ) }.
+    * Uses the provided Map as backing map, throws an IllegalArgumentException if the map is an instance of EnhancedMap.
     *
     * @param map
     */
    public Settings(Map<String, String[]> map) {
+      Objects.requireNonNull(map);
       if (map instanceof EnhancedMap) {
          throw new IllegalArgumentException("instance of " + EnhancedMap.class.getName() + " not allowed");
       }
@@ -231,7 +235,7 @@ public final class Settings implements EnhancedMap {
 
    @Override
    public String getProperty(String defaultValue, String... keys) {
-      if (defaultValue != null && keys == null || keys.length == 0) {
+      if (defaultValue != null && (keys == null || keys.length == 0)) {
          // assume defaultValue is key
          return getPropertyNoDefault(defaultValue);
       }
@@ -567,17 +571,24 @@ public final class Settings implements EnhancedMap {
       vp.decorators.addAll(decorators);
    }
 
+   /**
+    * Creates a new identical Settings object. The backing Map will be cloned by calling clone when the Map is
+    * Cloneable, otherwise putAll is used to copy the backing Map;
+    *
+    * @return an identical copy of these Settings.
+    */
    @Override
    public Settings clone() {
-      Settings vp = new Settings();
+      Settings vp;
       if (data instanceof Cloneable) {
          try {
             Method m = data.getClass().getMethod("clone");
-            vp.data = (Map<String, String[]>) m.invoke(data, null);
+            vp = new Settings((Map<String, String[]>) m.invoke(data, null));
          } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException | SecurityException ex) {
             throw new VectorPrintRuntimeException(ex);
          }
       } else {
+         vp = new Settings();
          vp.data.putAll(data);
       }
       init(vp);
