@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.vectorprint.configuration.decoration.visiting;
 
 /*
@@ -25,9 +24,9 @@ package com.vectorprint.configuration.decoration.visiting;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,32 +34,33 @@ package com.vectorprint.configuration.decoration.visiting;
  * limitations under the License.
  * #L%
  */
-
+import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
 
 /**
  * Add an observable to the stack of decorators if it contains an {@link ObservableProperties}.
- * @see AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) 
+ *
+ * @see AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor)
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class ObservableVisitor implements DecoratorVisitor<ObservableProperties>{
-   
+public class ObservableVisitor implements DecoratorVisitor<ObservableProperties> {
+
    private final Observer observer;
 
    public ObservableVisitor(Observer observer) {
       this.observer = observer;
    }
-   
+
    @Override
    public void visit(ObservableProperties e) {
-         e.addObserver(observer);
+      e.addObserver(observer);
    }
 
    @Override
-   public Class<ObservableProperties> getClazzToVisit() {
-      return ObservableProperties.class;
+   public boolean shouldVisit(EnhancedMap e) {
+      return e instanceof ObservableProperties;
    }
 
 }

@@ -300,7 +300,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
    public final void accept(DecoratorVisitor dv) {
       EnhancedMap inner = this;
       while (inner != null) {
-         if (dv.getClazzToVisit().isInstance(inner)) {
+         if (dv.shouldVisit(inner)) {
             dv.visit(inner);
          }
          if (inner instanceof AbstractPropertiesDecorator) {
@@ -501,29 +501,30 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
       }
 
       @Override
-      public Class<AbstractPropertiesDecorator> getClazzToVisit() {
-         return AbstractPropertiesDecorator.class;
+      public boolean shouldVisit(EnhancedMap e) {
+         return visit && e instanceof AbstractPropertiesDecorator;
       }
 
       @Override
       public void visit(AbstractPropertiesDecorator e) {
-         if (visit) {
-            for (DecorationAware da : das) {
-               if (e == da) {
-                  visit = false;
-                  break;
-               }
-               if (!da.getDecorators().contains(e.getClass())) {
-                  da.addDecorator(e.getClass());
-                  da.setOutermostDecorator(e);
-               }
+         for (DecorationAware da : das) {
+            if (e.equals(da)) {
+               // this AbstractPropertiesDecorator and the ones to come (from accept) do not wrap da
+               // other DecorationAwares in the list have already been visited, so this construct
+               // doesn't cause loss of information
+               visit = false;
+               break;
+            }
+            if (!da.getDecorators().contains(e.getClass())) {
+               da.addDecorator(e.getClass());
+               da.setOutermostDecorator(e);
             }
          }
       }
 
    }
 
-   private static class Hiding implements DecoratorVisitor<EnhancedMap> {
+   private static class Hiding implements DecoratorVisitor<HiddenBy> {
 
       private final AbstractPropertiesDecorator settings;
 
@@ -532,18 +533,16 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
       }
 
       @Override
-      public Class<EnhancedMap> getClazzToVisit() {
-         return EnhancedMap.class;
+      public void visit(HiddenBy e) {
+         if (e.hiddenBy(settings.getClass())) {
+            throw new VectorPrintRuntimeException(String.format("%s hides %s",
+                settings.getClass().getName(), e.getClass().getName()));
+         }
       }
 
       @Override
-      public void visit(EnhancedMap e) {
-         if (e instanceof HiddenBy) {
-            if (((HiddenBy) e).hiddenBy(settings.getClass())) {
-               throw new VectorPrintRuntimeException(String.format("%s hides %s",
-                   settings.getClass().getName(), e.getClass().getName()));
-            }
-         }
+      public boolean shouldVisit(EnhancedMap e) {
+         return e instanceof HiddenBy;
       }
 
    }

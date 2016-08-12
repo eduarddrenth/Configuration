@@ -15,7 +15,6 @@
  */
 package com.vectorprint.configuration.decoration;
 
-import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsField;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import java.util.List;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public interface DecorationAware extends EnhancedMap {
+public interface DecorationAware {
 
    /**
     * Called from {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)

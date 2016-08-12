@@ -511,25 +511,28 @@ public class PropertyTest {
       Settings vp = new Settings();
       HelpSupportedProperties helpSupportedProperties = new HelpSupportedProperties(new ParsingProperties(vp, "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"));
+
       assertEquals(2, vp.getDecorators().size());
       assertTrue(helpSupportedProperties.getDecorators().isEmpty());
+
       AbstractPropertiesDecorator mtp = new ThreadBoundProperties(new FindableProperties(helpSupportedProperties));
+
       assertTrue(mtp.hasProperties(FindableProperties.class));
       assertTrue(mtp.hasProperties(HelpSupportedProperties.class));
       assertTrue(mtp.hasProperties(ThreadBoundProperties.class));
       assertTrue(mtp.hasProperties(ParsingProperties.class));
       assertTrue(mtp.hasProperties(Settings.class));
 
-      assertTrue(vp.getDecorators().get(2).equals(FindableProperties.class));
-      assertTrue(vp.getDecorators().get(1).equals(HelpSupportedProperties.class));
-      assertTrue(vp.getDecorators().get(3).equals(ThreadBoundProperties.class));
       assertTrue(vp.getDecorators().get(0).equals(ParsingProperties.class));
+      assertTrue(vp.getDecorators().get(1).equals(HelpSupportedProperties.class));
+      assertTrue(vp.getDecorators().get(2).equals(FindableProperties.class));
+      assertTrue(vp.getDecorators().get(3).equals(ThreadBoundProperties.class));
 
       assertTrue(vp.getOutermostDecorator() instanceof ThreadBoundProperties);
       assertEquals(4, vp.getDecorators().size());
       assertEquals(2, helpSupportedProperties.getDecorators().size());
-      assertTrue(helpSupportedProperties.getDecorators().get(1).equals(ThreadBoundProperties.class));
       assertTrue(helpSupportedProperties.getDecorators().get(0).equals(FindableProperties.class));
+      assertTrue(helpSupportedProperties.getDecorators().get(1).equals(ThreadBoundProperties.class));
 
       try {
          new ThreadBoundProperties(mtp);
