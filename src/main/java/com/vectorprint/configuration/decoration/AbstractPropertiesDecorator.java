@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -48,9 +49,12 @@ import java.util.regex.Pattern;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public abstract class AbstractPropertiesDecorator implements EnhancedMap {
+public abstract class AbstractPropertiesDecorator implements EnhancedMap, DecorationAware {
 
    private EnhancedMap settings;
+   private AbstractPropertiesDecorator outermostDecorator;
+   private final List<Class<? extends AbstractPropertiesDecorator>> decorators = new ArrayList<>(2);
+   protected static final Logger log = Logger.getLogger(AbstractPropertiesDecorator.class.getName());
 
    /**
     * Will call {@link DecorationAware#addDecorator(java.lang.Class) } and
@@ -288,7 +292,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
    /**
     * traverse the stack of settings decorators and visit all that are instances of {@link DecoratorVisitor#getClazzToVisit()
-    * }. {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap) } will be called
+    * }. {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap) } will be called.
     *
     * @param dv
     * @see SettingsAnnotationProcessorImpl
@@ -465,9 +469,32 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
       s.writeObject(settings);
    }
 
+   @Override
+   public List<Class<? extends AbstractPropertiesDecorator>> getDecorators() {
+      return decorators;
+   }
+
+   @Override
+   public void addDecorator(Class<? extends AbstractPropertiesDecorator> clazz) {
+      decorators.add(clazz);
+   }
+
+   @Override
+   public AbstractPropertiesDecorator getOutermostDecorator() {
+      return outermostDecorator;
+   }
+
+   @Override
+   public void setOutermostDecorator(AbstractPropertiesDecorator outermostDecorator) {
+      this.outermostDecorator = outermostDecorator;
+      log.warning(String.format("NB! %s decorated by %s, you should use this instead of %s", getClass().getName(), outermostDecorator.getClass().getName(),
+          getClass().getName()));
+   }
+
    private static class DecoratorOveriew implements DecoratorVisitor<AbstractPropertiesDecorator> {
 
       private final DecorationAware[] vps;
+      private boolean visit = true;
 
       public DecoratorOveriew(DecorationAware... vps) {
          this.vps = vps;
@@ -480,10 +507,16 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap {
 
       @Override
       public void visit(AbstractPropertiesDecorator e) {
-         for (DecorationAware vp : vps) {
-            if (!vp.getDecorators().contains(e.getClass())) {
-               vp.addDecorator(e.getClass());
-               vp.setOutermostDecorator(e);
+         if (visit) {
+            for (DecorationAware vp : vps) {
+               if (e == vp) {
+                  visit = false;
+                  break;
+               }
+               if (!vp.getDecorators().contains(e.getClass())) {
+                  vp.addDecorator(e.getClass());
+                  vp.setOutermostDecorator(e);
+               }
             }
          }
       }
