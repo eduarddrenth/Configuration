@@ -69,7 +69,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
          throw new VectorPrintRuntimeException("settings may not be null");
       }
       if (hasProperties(settings.getClass())) {
-         throw new VectorPrintRuntimeException(String.format("settings already in the stack: %s", settings.getClass().getName()));
+         throw new VectorPrintRuntimeException(String.format("%s already in the stack", settings.getClass().getName()));
       }
       this.settings = settings;
       accept(new Hiding(this));
@@ -493,11 +493,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
 
    private static class DecoratorOveriew implements DecoratorVisitor<AbstractPropertiesDecorator> {
 
-      private final DecorationAware[] vps;
+      private final DecorationAware[] das;
       private boolean visit = true;
 
-      public DecoratorOveriew(DecorationAware... vps) {
-         this.vps = vps;
+      public DecoratorOveriew(DecorationAware... das) {
+         this.das = das;
       }
 
       @Override
@@ -508,14 +508,14 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
       @Override
       public void visit(AbstractPropertiesDecorator e) {
          if (visit) {
-            for (DecorationAware vp : vps) {
-               if (e == vp) {
+            for (DecorationAware da : das) {
+               if (e == da) {
                   visit = false;
                   break;
                }
-               if (!vp.getDecorators().contains(e.getClass())) {
-                  vp.addDecorator(e.getClass());
-                  vp.setOutermostDecorator(e);
+               if (!da.getDecorators().contains(e.getClass())) {
+                  da.addDecorator(e.getClass());
+                  da.setOutermostDecorator(e);
                }
             }
          }
