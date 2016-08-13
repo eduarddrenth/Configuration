@@ -566,7 +566,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
    private void init(Settings vp) {
       vp.help.putAll(help);
-      vp.unused.addAll(unused);
+      vp.unused.addAll(keySet());
       vp.id = id;
       vp.notPresent.addAll(notPresent);
       vp.decorators.addAll(decorators);
