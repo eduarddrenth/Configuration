@@ -570,11 +570,13 @@ public final class Settings implements EnhancedMap, DecorationAware {
       vp.id = id;
       vp.notPresent.addAll(notPresent);
       vp.decorators.addAll(decorators);
+      vp.outermostDecorator = outermostDecorator;
    }
 
    /**
-    * Creates a new identical Settings object. The backing Map will be cloned by calling clone when the Map is
-    * Cloneable, otherwise putAll is used to copy the backing Map;
+    * Creates a new identical Settings object. Note that the id of the clone will equal that of the original. The
+    * backing Map will be cloned by calling clone when it is Cloneable, otherwise newInstance and putAll are used to
+    * clone the backing Map. The {@link #getOutermostDecorator() outermostDecorator} will be copied, not cloned.
     *
     * @return an identical copy of these Settings.
     */

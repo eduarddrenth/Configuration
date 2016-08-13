@@ -242,6 +242,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
       return settings.entrySet();
    }
 
+   /**
+    * clone this decorator and its contained EnhancedMap.
+    *
+    * @return
+    */
    @Override
    public EnhancedMap clone() {
       try {

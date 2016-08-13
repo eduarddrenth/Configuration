@@ -502,9 +502,12 @@ public class PropertyTest {
    public void testClone() throws IOException, ParseException {
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
+      new CachingProperties(mtp);
       ParsingProperties clone = (ParsingProperties) mtp.clone();
       assertEquals(clone, mtp);
       assertEquals(clone.getCommentBeforeKey("marks"), mtp.getCommentBeforeKey("marks"));
+      assertNotNull(mtp.getOutermostDecorator());
+      assertEquals(mtp.getOutermostDecorator(), clone.getOutermostDecorator());
    }
 
    @Test
