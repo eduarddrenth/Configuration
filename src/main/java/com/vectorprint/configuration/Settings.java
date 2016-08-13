@@ -589,7 +589,11 @@ public final class Settings implements EnhancedMap, DecorationAware {
             throw new VectorPrintRuntimeException(ex);
          }
       } else {
-         vp = new Settings();
+         try {
+            vp = new Settings(backingMap.getClass().newInstance());
+         } catch (IllegalAccessException | InstantiationException ex) {
+            throw new VectorPrintRuntimeException(ex);
+         }
          vp.backingMap.putAll(backingMap);
       }
       init(vp);

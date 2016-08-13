@@ -93,6 +93,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.*;
@@ -866,5 +867,13 @@ public class PropertyTest {
    public void testColor() {
       String colorToHex = AbstractBindingHelperDecorator.colorToHex(Color.red);
       assertEquals("#ff0000", colorToHex);
+   }
+
+   @Test
+   public void testDifferentMap() {
+      EnhancedMap map = new Settings(new ConcurrentHashMap<>());
+      map.put("key", "value");
+      EnhancedMap clone = map.clone();
+      assertEquals("value", clone.getProperty("key"));
    }
 }
