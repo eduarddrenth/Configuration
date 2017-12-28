@@ -374,7 +374,7 @@ public class PropertyTest {
    public void testHandleEmptyValues() throws IOException, ParseException {
       new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
 
-      NoEmptyValues emtiesNOTOK = (NoEmptyValues) new NoEmptyValues().setOptIn(false);
+      NoEmptyValues emtiesNOTOK = (NoEmptyValues) new NoEmptyValues();
 
       List<PrepareKeyValue<String, String[]>> observers = new LinkedList<>();
 

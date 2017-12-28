@@ -32,6 +32,10 @@ import com.vectorprint.VectorPrintRuntimeException;
  */
 public class NoEmptyValues extends AbstractPrepareKeyValue {
 
+    public NoEmptyValues() {
+        setOptIn(false);
+    }
+
    @Override
    public void prepare(KeyValue<String, String[]> keyValue) {
       if (keyValue.getValue() == null || keyValue.getValue().length == 0 || keyValue.getValue()[0] == null || keyValue.getValue()[0].isEmpty()) {

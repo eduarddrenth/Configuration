@@ -55,6 +55,8 @@ public @interface PreProcess {
    
    Class<? extends AbstractPrepareKeyValue> preProcessorClass();
    
-   String[] keysToSkip() default {};
+   String[] keys() default {};
+   
+   boolean optIn() default true;
    
 }

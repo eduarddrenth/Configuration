@@ -160,7 +160,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      settings = new PreparingProperties(settings);
                   }
                   for (PreProcess pp : set.preprocessors()) {
-                     AbstractPrepareKeyValue apkv = pp.preProcessorClass().newInstance().addKeys(pp.keysToSkip());
+                     AbstractPrepareKeyValue apkv = pp.preProcessorClass().newInstance().addKeys(pp.keys()).setOptIn(pp.optIn());
                      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
                      apd.accept(new PreparingVisitor(apkv));
                   }
