@@ -34,7 +34,7 @@
       </xs:attribute>
       <xs:attribute name="observable" default="false" type="xs:boolean">
          <xs:annotation>
-            <xs:documentation>by default settings will not be obervable, if they are you can add observables to the settings</xs:documentation>
+            <xs:documentation>by default settings will not be obervable, if they are you can add observers to the settings</xs:documentation>
          </xs:annotation>
       </xs:attribute>
    </xs:complexType>
