@@ -374,7 +374,7 @@ public class PropertyTest {
    public void testHandleEmptyValues() throws IOException, ParseException {
       new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
 
-      NoEmptyValues emtiesNOTOK = new NoEmptyValues();
+      NoEmptyValues emtiesNOTOK = (NoEmptyValues) new NoEmptyValues().setOptIn(false);
 
       List<PrepareKeyValue<String, String[]>> observers = new LinkedList<>();
 
@@ -394,7 +394,7 @@ public class PropertyTest {
       } catch (VectorPrintRuntimeException ex) {
       }
 
-      emtiesNOTOK.addKeysToSkip("empty").addKeysToSkip("klantlogo");
+      emtiesNOTOK.addKeys("empty").addKeys("klantlogo");
       try {
          new PreparingProperties(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"), observers);
       } catch (VectorPrintRuntimeException ex) {
@@ -424,7 +424,7 @@ public class PropertyTest {
    @Test
    public void testTrim() throws IOException, ParseException {
       PreparingProperties vp = new PreparingProperties(new Settings());
-      vp.addObserver(new TrimKeyValue());
+      vp.addObserver(new TrimKeyValue().setOptIn(false));
       EnhancedMapBindingFactory embf = SettingsBindingService.getInstance().getFactory();
       embf.getParser(new StringReader("t=\nd=\nn=\nm=m ")).parse(vp);
       assertTrue(vp.containsKey("t"));
@@ -854,6 +854,36 @@ public class PropertyTest {
    @Test
    public void testXMLSettings() throws Exception {
       EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings.xml"));
+      assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%'");
+      assertTrue(settings instanceof AbstractPropertiesDecorator);
+      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
+      assertTrue(apd.hasProperties(CachingProperties.class));
+      assertTrue(apd.hasProperties(HelpSupportedProperties.class));
+      assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
+      assertEquals(settings.getHelp("stoponerror").getExplanation(), "wat een mooie\n"
+          + "help tekst\n"
+          + "\n"
+          + "is dit");
+   }
+
+   @Test
+   public void testXMLSettings2() throws Exception {
+      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings2.xml"));
+      assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%' ");
+      assertTrue(settings instanceof AbstractPropertiesDecorator);
+      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
+      assertTrue(apd.hasProperties(CachingProperties.class));
+      assertTrue(apd.hasProperties(HelpSupportedProperties.class));
+      assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
+      assertEquals(settings.getHelp("stoponerror").getExplanation(), "wat een mooie\n"
+          + "help tekst\n"
+          + "\n"
+          + "is dit");
+   }
+   
+   @Test
+   public void testXMLSettings3() throws Exception {
+      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings3.xml"));
       assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%'");
       assertTrue(settings instanceof AbstractPropertiesDecorator);
       AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;

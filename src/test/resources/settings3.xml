@@ -27,8 +27,8 @@ limitations under the License.
    <ns1:feature classname="com.vectorprint.configuration.decoration.HelpSupportedProperties">
       <ns1:url>src/test/resources/help.properties</ns1:url>
    </ns1:feature>
-   <ns1:preprocessor preprocessorclassname="com.vectorprint.configuration.preparing.TrimKeyValue" optIn="false">
-      <ns1:keys></ns1:keys>
+   <ns1:preprocessor preprocessorclassname="com.vectorprint.configuration.preparing.TrimKeyValue">
+      <ns1:keys>percentageformat</ns1:keys>
    </ns1:preprocessor>
 
 </ns1:settings>

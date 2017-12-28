@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<xs:schema version="1.0" targetNamespace="http://www.vectorprint.nl/config/settings/1.5"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vpconfig="http://www.vectorprint.nl/config/settings/1.5"
+<xs:schema version="1.0" targetNamespace="http://www.vectorprint.nl/config/settings/1.6"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vpconfig="http://www.vectorprint.nl/config/settings/1.6"
            elementFormDefault="qualified" attributeFormDefault="unqualified">
    <xs:annotation>
       <xs:documentation>Schema for Settings in applications.</xs:documentation>
@@ -68,15 +68,20 @@
          <xs:documentation>a preprocessor preprocesses keys and / or values before addition.</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-         <xs:element name="keysToSkip" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+         <xs:element name="keys" type="xs:string" minOccurs="0" maxOccurs="unbounded">
             <xs:annotation>
-               <xs:documentation>you can exclude certain keys from preprocessing</xs:documentation>
+               <xs:documentation>you can in- or exclude (depending on optIn) certain keys from preprocessing</xs:documentation>
             </xs:annotation>
          </xs:element>
       </xs:sequence>
       <xs:attribute name="preprocessorclassname" use="required" type="xs:string">
          <xs:annotation>
             <xs:documentation>the preprocessor must be a subclass of AbstractPrepareKeyValue</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="optIn" default="true" type="xs:boolean">
+         <xs:annotation>
+            <xs:documentation>determines if a key should be preprocessed when registered or when not registered</xs:documentation>
          </xs:annotation>
       </xs:attribute>
    </xs:complexType>

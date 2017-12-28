@@ -78,9 +78,9 @@ public class SettingsFromJAXB {
             settings = new PreparingProperties(settings);
             for (Preprocessortype p : settingstype.getPreprocessor()) {
                Class<? extends AbstractPrepareKeyValue> c = (Class<? extends AbstractPrepareKeyValue>) Class.forName(p.getPreprocessorclassname());
-               AbstractPrepareKeyValue apv = c.newInstance();
-               if (!p.getKeysToSkip().isEmpty()) {
-                  apv.addKeysToSkip(ArrayHelper.toArray(p.getKeysToSkip()));
+               AbstractPrepareKeyValue apv = c.newInstance().setOptIn(p.isOptIn());
+               if (!p.getKeys().isEmpty()) {
+                  apv.addKeys(ArrayHelper.toArray(p.getKeys()));
                }
                ((PreparingProperties) settings).accept(new PreparingVisitor(apv));
             }

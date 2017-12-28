@@ -33,18 +33,20 @@ import java.util.Set;
 public abstract class AbstractPrepareKeyValue implements PrepareKeyValue<String, String[]> {
 
    private static final long serialVersionUID = 1;
-   private Set<String> keysToSkip = new HashSet<>(3);
+   private Set<String> keys = new HashSet<>(3);
+   private boolean optIn = true;
 
    /**
-    * returns true when the key should not be skipped
+    * returns true when optIn is true (the default) and the key is registered or when optIn is false and the key isn't registered
     *
-    * @see #addKeyToSkip(java.io.Serializable) 
+    * @see #addKeys(java.io.Serializable)
+    * @see #setOptIn(boolean) 
     * @param keyValue 
     * @return
     */
    @Override
    public boolean shouldPrepare(KeyValue<String, String[]> keyValue) {
-      return !keysToSkip.contains(keyValue.getKey());
+      return (optIn && keys.contains(keyValue.getKey())) || (!optIn && !keys.contains(keyValue.getKey()));
    }
 
    /**
@@ -53,10 +55,21 @@ public abstract class AbstractPrepareKeyValue implements PrepareKeyValue<String,
     * @param keys
     * @return
     */
-   public AbstractPrepareKeyValue addKeysToSkip(String... keys) {
+   public AbstractPrepareKeyValue addKeys(String... keys) {
       for (String k : keys) {
-         keysToSkip.add(k);
+         this.keys.add(k);
       }
       return this;
    }
+
+    public boolean isOptIn() {
+        return optIn;
+    }
+
+    public AbstractPrepareKeyValue setOptIn(boolean optIn) {
+        this.optIn = optIn;
+        return this;
+    }
+   
+   
 }
