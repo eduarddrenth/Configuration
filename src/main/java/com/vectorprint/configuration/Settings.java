@@ -629,7 +629,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     */
    public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
       String key = shouldUseDefault(defaultValue, keys);
-      return getGenericProperty(key, defaultValue, clazz, keys);
+      return getGenericProperty(key, defaultValue, clazz);
    }
 
    /**
@@ -642,7 +642,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     * @return value of the setting or the default value
     * @throws VectorPrintRuntimeException when no value is found and defaultValue is null
     */
-   private <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz, String... keys) {
+   private <T> T getGenericProperty(String key, T defaultValue, Class<T> clazz) {
       if (key == null) {
          return defaultValue;
       } else if (clazz.isArray()) {
