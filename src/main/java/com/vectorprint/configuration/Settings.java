@@ -175,12 +175,11 @@ public final class Settings implements EnhancedMap, DecorationAware {
    }
 
    @Override
-   public String getPropertyNoDefault(String... keys) {
-      String key = getFirstKeyPresent(keys);
+   public String getPropertyNoDefault(String key) {
       if (log.isLoggable(Level.FINE)) {
          debug((key != null) ? backingMap.get(key) : null, false, key);
       }
-      return getFirst(key);
+      return getFirst(getFirstKeyPresent(key));
    }
 
    private String getFirstKeyPresent(String... keys) {
@@ -191,6 +190,9 @@ public final class Settings implements EnhancedMap, DecorationAware {
          if (containsKey(keys[0])) {
             if (log.isLoggable(Level.FINE)) {
                log.fine(String.format("Returning key \"%s\" from %s, it was first found in settings", keys[0], Arrays.asList(keys)));
+            }
+            if (notPresent.contains(keys[0])) {
+               notPresent.remove(keys[0]);
             }
             return keys[0];
          } else {
@@ -204,6 +206,9 @@ public final class Settings implements EnhancedMap, DecorationAware {
          if (containsKey(k)) {
             if (log.isLoggable(Level.FINE)) {
                log.fine(String.format("Returning key \"%s\" from %s, it was first found in settings", k, Arrays.asList(keys)));
+            }
+            if (notPresent.contains(keys[0])) {
+               notPresent.remove(keys[0]);
             }
             return k;
          } else if (!notPresent.contains(k)) {
@@ -272,7 +277,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
       if (key == null) {
          return defaultValue;
       }
-      return getFactory().getBindingHelper().convert(getPropertyNoDefault(keys), Float.class);
+      return getFactory().getBindingHelper().convert(getPropertyNoDefault(key), Float.class);
    }
 
    @Override

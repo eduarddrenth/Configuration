@@ -129,9 +129,9 @@ public class ThreadBoundProperties extends AbstractPropertiesDecorator implement
    }
 
    @Override
-   public String getPropertyNoDefault(String... keys) {
+   public String getPropertyNoDefault(String key) {
       checkThread("getProperty");
-      return super.getPropertyNoDefault(keys);
+      return super.getPropertyNoDefault(key);
    }
 
    private void writeObject(java.io.ObjectOutputStream s)

@@ -79,7 +79,7 @@ public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializa
 
    long getLongProperty(Long defaultValue, String... keys);
 
-   String getPropertyNoDefault(String... keys);
+   String getPropertyNoDefault(String key);
 
    String getProperty(String defaultValue, String... keys);
 
