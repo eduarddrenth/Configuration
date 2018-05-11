@@ -265,11 +265,6 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public String getPropertyNoDefault(String key) {
-      return fromCache(null, String.class, key);
-   }
-
-   @Override
    public long getLongProperty(Long defaultValue, String... keys) {
       return fromCache(defaultValue, long.class, keys);
    }

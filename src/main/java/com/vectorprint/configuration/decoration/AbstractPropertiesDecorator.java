@@ -113,11 +113,6 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
    }
 
    @Override
-   public String getPropertyNoDefault(String key) {
-      return settings.getPropertyNoDefault(key);
-   }
-
-   @Override
    public String getProperty(String defaultValue, String... keys) {
       return settings.getProperty(defaultValue, keys);
    }

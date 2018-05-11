@@ -248,12 +248,12 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
             for (Parameter pa : parameterizable.getParameters().values()) {
                String key = ParameterHelper.findKey(pa.getKey(), parameterizable.getClass(), getSettings(), ParameterHelper.SUFFIX.set_default);
                if (key != null) {
-                  Serializable values = parseAsParameterValue(getSettings().getPropertyNoDefault(key), pa);
+                  Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
                   bindingHelper.setValueOrDefault(pa, values, true);
                }
                key = ParameterHelper.findKey(pa.getKey(), parameterizable.getClass(), getSettings(), ParameterHelper.SUFFIX.set_value);
                if (key != null) {
-                  Serializable values = parseAsParameterValue(getSettings().getPropertyNoDefault(key), pa);
+                  Serializable values = parseAsParameterValue(getSettings().getProperty(key), pa);
                   bindingHelper.setValueOrDefault(pa, values, false);
                }
             }

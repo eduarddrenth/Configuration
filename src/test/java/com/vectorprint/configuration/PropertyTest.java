@@ -412,7 +412,7 @@ public class PropertyTest {
       assertTrue(vp.containsKey("d"));
       assertTrue(vp.containsKey("n"));
       assertTrue(vp.containsKey("m"));
-      assertEquals("m", vp.getPropertyNoDefault("m"));
+      assertEquals("m", vp.getProperty("m"));
    }
 
    @Test
@@ -431,7 +431,7 @@ public class PropertyTest {
       assertTrue(vp.containsKey("d"));
       assertTrue(vp.containsKey("n"));
       assertTrue(vp.containsKey("m"));
-      assertEquals("m", vp.getPropertyNoDefault("m"));
+      assertEquals("m", vp.getProperty("m"));
    }
 
    @Test
@@ -439,7 +439,7 @@ public class PropertyTest {
       EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
       assertTrue(vp.getUnusedKeys().contains("small"));
       assertTrue(vp.getUnusedKeys().contains("bigbold"));
-      vp.getPropertyNoDefault("small");
+      vp.getProperty("small");
       assertFalse(vp.getUnusedKeys().contains("small"));
       assertTrue(vp.getUnusedKeys().contains("bigbold"));
       vp.remove("bigbold");
@@ -457,10 +457,10 @@ public class PropertyTest {
       EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
       assertFalse(vp.getKeysNotPresent().contains("small"));
       assertFalse(vp.getKeysNotPresent().contains("bigbold"));
-      vp.getProperty("smalllll");
+      vp.getProperty("","smalllll");
       assertTrue(vp.getKeysNotPresent().contains("smalllll"));
       vp.remove("bigbold");
-      vp.getProperty("bigbold");
+      vp.getProperty("","bigbold");
       assertTrue(vp.getKeysNotPresent().contains("bigbold"));
       vp.clear();
       assertFalse(vp.getKeysNotPresent().contains("small"));
@@ -576,7 +576,7 @@ public class PropertyTest {
       assertTrue(String.format("caching not faster: %d <= %d", caching, nocaching), caching < nocaching);
 
       cache.put("tt", "racing");
-      cache.getPropertyNoDefault("tt");
+      cache.getProperty("tt");
       try {
          cache.getStringProperties(null, "tt");
       } catch (VectorPrintRuntimeException e) {
@@ -674,7 +674,7 @@ public class PropertyTest {
       ParameterizableParser objectParser = ParamBindingService.getInstance().getFactory().getParser(new StringReader(""));
       ParamBindingService.getInstance().getFactory().getBindingHelper().setValueOrDefault(
           parameter,
-          (TYPE) objectParser.parseAsParameterValue(settings.getPropertyNoDefault(parameter.getKey()), parameter),
+          (TYPE) objectParser.parseAsParameterValue(settings.getProperty(parameter.getKey()), parameter),
           false);
    }
 
@@ -854,7 +854,7 @@ public class PropertyTest {
    @Test
    public void testXMLSettings() throws Exception {
       EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings.xml"));
-      assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%'");
+      assertEquals(settings.getProperty("percentageformat"), "#'%'");
       assertTrue(settings instanceof AbstractPropertiesDecorator);
       AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
       assertTrue(apd.hasProperties(CachingProperties.class));
@@ -869,7 +869,7 @@ public class PropertyTest {
    @Test
    public void testXMLSettings2() throws Exception {
       EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings2.xml"));
-      assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%' ");
+      assertEquals(settings.getProperty("percentageformat"), "#'%' ");
       assertTrue(settings instanceof AbstractPropertiesDecorator);
       AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
       assertTrue(apd.hasProperties(CachingProperties.class));
@@ -884,7 +884,7 @@ public class PropertyTest {
    @Test
    public void testXMLSettings3() throws Exception {
       EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings3.xml"));
-      assertEquals(settings.getPropertyNoDefault("percentageformat"), "#'%'");
+      assertEquals(settings.getProperty("percentageformat"), "#'%'");
       assertTrue(settings instanceof AbstractPropertiesDecorator);
       AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
       assertTrue(apd.hasProperties(CachingProperties.class));
