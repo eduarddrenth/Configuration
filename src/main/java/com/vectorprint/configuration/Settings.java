@@ -242,11 +242,11 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * determine the {@link #determineKey(java.lang.String...) key to be used}, call {@link #handleNoValue(java.lang.String...) } when no key is found
      * and no default is given.
      *
-     * @param defaultVal the value of defaultVal
+     * @param defaultVal a default value
      * @param keys the keys to look for
      * @return the key to be used or null to use a default value
      */
-    private String getKey(Object defaultVal, String... keys) {
+    protected String getKey(Object defaultVal, String... keys) {
         String key = determineKey(keys);
         if (key == null) {
             if (defaultVal == null) {
@@ -389,62 +389,62 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseURLValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseURLValues(get(key));
     }
 
     @Override
     public File[] getFileProperties(File[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseFileValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseFileValues(get(key));
     }
 
     @Override
     public float[] getFloatProperties(float[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseFloatValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseFloatValues(get(key));
     }
 
     @Override
     public char[] getCharProperties(char[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseCharValues(getStringProperties(keys, null));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseCharValues(get(key));
 
     }
 
     @Override
     public short[] getShortProperties(short[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseShortValues(getStringProperties(keys, null));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseShortValues(get(key));
     }
 
     @Override
     public byte[] getByteProperties(byte[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseByteValues(getStringProperties(keys, null));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseByteValues(get(key));
     }
 
     @Override
     public double[] getDoubleProperties(double[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseDoubleValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseDoubleValues(get(key));
     }
 
     @Override
     public int[] getIntegerProperties(int[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseIntValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseIntValues(get(key));
     }
 
     @Override
     public boolean[] getBooleanProperties(boolean[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseBooleanValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseBooleanValues(get(key));
     }
 
     @Override
     public Color[] getColorProperties(Color[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseColorValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseColorValues(get(key));
     }
 
     /**
@@ -516,7 +516,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public long[] getLongProperties(long[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseLongValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseLongValues(get(key));
     }
 
     @Override
@@ -648,7 +648,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public Date[] getDateProperties(Date[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseDateValues(getStringProperties(null, key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseDateValues(get(key));
     }
 
     private final Collection<String> unused = new HashSet<>(25);
@@ -692,7 +692,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseRegexValues(getStringProperties(keys, null));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseRegexValues(get(key));
     }
 
     /**
@@ -705,7 +705,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseClassValues(getStringProperties(keys, null));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseClassValues(get(key));
     }
 
     @Override
