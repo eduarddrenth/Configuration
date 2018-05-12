@@ -24,6 +24,7 @@ package com.vectorprint.configuration.decoration;
  * #L%
  */
 import com.vectorprint.configuration.EnhancedMap;
+import com.vectorprint.configuration.annotation.InjectInEEProperties;
 import com.vectorprint.configuration.annotation.Property;
 import java.awt.Color;
 import java.io.File;
@@ -33,14 +34,20 @@ import java.util.Date;
 import java.util.regex.Pattern;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * A EE Producer of properties allowing you to use @Inject in combination with {@link Property}.
+ * 
+ * @see InjectInEEProperties
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
+@Singleton
 public class EEProperties extends AbstractPropertiesDecorator {
-
+    
+    @Inject @InjectInEEProperties
     public EEProperties(EnhancedMap properties) {
         super(properties);
     }

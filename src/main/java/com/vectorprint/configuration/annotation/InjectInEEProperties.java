@@ -41,22 +41,23 @@ import static java.lang.annotation.ElementType.FIELD;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
 /**
- * Use together with @Inject, {@link EEProperties} will provide values;
+ * Use together with @Produce and {@link InjectionPoint} to provide {@link EEProperties#EEProperties(com.vectorprint.configuration.EnhancedMap) } with properties.
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier
 @Retention(RUNTIME)
-@Target({FIELD,ElementType.METHOD})
-public @interface Property {
+@Target({FIELD,ElementType.METHOD,ElementType.CONSTRUCTOR})
+public @interface InjectInEEProperties {
    
     /**
-     * one or more keys to lookup a setting, the first setting found will be used.
+     * a key to use in your EnhancedMap producing method
      * @return 
      */
-   @Nonbinding String[] keys() default {};
+   @Nonbinding String key() default "";
    
 }
