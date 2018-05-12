@@ -47,8 +47,8 @@ import javax.inject.Singleton;
 @Singleton
 public class EEProperties extends AbstractPropertiesDecorator {
     
-    @Inject @InjectInEEProperties
-    public EEProperties(EnhancedMap properties) {
+    @Inject
+    public EEProperties(@InjectInEEProperties EnhancedMap properties) {
         super(properties);
     }
     

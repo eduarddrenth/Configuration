@@ -51,7 +51,7 @@ import javax.inject.Qualifier;
  */
 @Qualifier
 @Retention(RUNTIME)
-@Target({FIELD,ElementType.METHOD,ElementType.CONSTRUCTOR})
+@Target({FIELD,ElementType.METHOD,ElementType.PARAMETER})
 public @interface InjectInEEProperties {
    
     /**
