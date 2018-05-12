@@ -38,7 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * A EE Producer of properties allowing you to use @Inject in combination with {@link Property}.
+ * A singleton EE Producer of properties allowing you to use @Inject in combination with {@link Property}.
  * 
  * @see InjectInEEProperties
  *
