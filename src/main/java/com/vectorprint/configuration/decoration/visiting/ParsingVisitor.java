@@ -35,7 +35,6 @@ package com.vectorprint.configuration.decoration.visiting;
  * #L%
  */
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import java.io.IOException;
 import java.net.URL;
@@ -44,17 +43,12 @@ import java.net.URL;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class ParsingVisitor implements DecoratorVisitor<ParsingProperties> {
+public class ParsingVisitor extends AbstractVisitor<ParsingProperties> {
 
    private final URL url;
 
    public ParsingVisitor(URL url) {
       this.url = url;
-   }
-
-   @Override
-   public boolean shouldVisit(EnhancedMap e) {
-      return e instanceof ParsingProperties;
    }
 
    /**

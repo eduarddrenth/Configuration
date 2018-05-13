@@ -34,7 +34,6 @@ package com.vectorprint.configuration.decoration.visiting;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 
@@ -42,17 +41,12 @@ import com.vectorprint.configuration.preparing.PrepareKeyValue;
  *
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class PreparingVisitor implements DecoratorVisitor<PreparingProperties> {
+public class PreparingVisitor extends AbstractVisitor<PreparingProperties> {
 
    private final PrepareKeyValue pkv;
 
    public PreparingVisitor(PrepareKeyValue pkv) {
       this.pkv = pkv;
-   }
-
-   @Override
-   public boolean shouldVisit(EnhancedMap e) {
-      return e instanceof PreparingProperties;
    }
 
    /**

@@ -34,7 +34,6 @@ package com.vectorprint.configuration.decoration.visiting;
  * limitations under the License.
  * #L%
  */
-import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
@@ -45,7 +44,7 @@ import com.vectorprint.configuration.decoration.Observer;
  * @see AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor)
  * @author Eduard Drenth at VectorPrint.nl
  */
-public class ObservableVisitor implements DecoratorVisitor<ObservableProperties> {
+public class ObservableVisitor extends AbstractVisitor<ObservableProperties> {
 
    private final Observer observer;
 
@@ -58,9 +57,5 @@ public class ObservableVisitor implements DecoratorVisitor<ObservableProperties>
       e.addObserver(observer);
    }
 
-   @Override
-   public boolean shouldVisit(EnhancedMap e) {
-      return e instanceof ObservableProperties;
-   }
 
 }
