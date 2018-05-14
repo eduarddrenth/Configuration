@@ -261,7 +261,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     /**
-     * throws a VectorPrintRuntimeException
+     * throws a {@link NoValueException}
      * @param keys
      */
     protected void handleNoValue(String... keys) {
