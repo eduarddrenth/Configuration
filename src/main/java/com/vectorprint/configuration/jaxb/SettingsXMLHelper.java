@@ -47,79 +47,84 @@ import org.xml.sax.SAXException;
 
 /**
  * Threadsafe helper for translating xml to JAXB objects
+ *
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class SettingsXMLHelper {
 
-   private static Logger logger = Logger.getLogger(SettingsXMLHelper.class.getName());
+    private static Logger logger = Logger.getLogger(SettingsXMLHelper.class.getName());
 
-   public static final String XSD = "/xsd/Settings.xsd";
+    public static final String XSD = "/xsd/Settings.xsd";
 
-   private static JAXBContext JAXBCONTEXT = null;
-   private static Schema schema = null;
+    private static JAXBContext JAXBCONTEXT = null;
+    private static Schema schema = null;
 
-   static {
-      try {
-         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         schema = sf.newSchema(new SAXSource(new InputSource(SettingsXMLHelper.class.getResourceAsStream(XSD))));
-         JAXBCONTEXT = JAXBContext.newInstance("com.vectorprint.configuration.generated.jaxb");
-      } catch (JAXBException ex) {
-         logger.log(Level.SEVERE, "failed to load jaxb context", ex);
-      } catch (SAXException ex) {
-         logger.log(Level.SEVERE, "failed to load schema", ex);
-      }
-   }
+    static {
+        try {
+            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            schema = sf.newSchema(new SAXSource(new InputSource(SettingsXMLHelper.class.getResourceAsStream(XSD))));
+            JAXBCONTEXT = JAXBContext.newInstance("com.vectorprint.configuration.generated.jaxb");
+        } catch (JAXBException ex) {
+            logger.log(Level.SEVERE, "failed to load jaxb context", ex);
+        } catch (SAXException ex) {
+            logger.log(Level.SEVERE, "failed to load schema", ex);
+        }
+    }
 
-   public static Settingstype fromXML(Reader xml) throws JAXBException {
-      Unmarshaller um = JAXBCONTEXT.createUnmarshaller();
-      um.setSchema(schema);
-      JAXBElement jb = (JAXBElement) um.unmarshal(xml);
-      return (Settingstype) jb.getValue();
-   }
+    public static Settingstype fromXML(Reader xml) throws JAXBException {
+        Unmarshaller um = JAXBCONTEXT.createUnmarshaller();
+        um.setSchema(schema);
+        JAXBElement jb = (JAXBElement) um.unmarshal(xml);
+        return (Settingstype) jb.getValue();
+    }
 
-   public static JAXBContext getJAXBCONTEXT() {
-      return JAXBCONTEXT;
-   }
+    public static JAXBContext getJAXBCONTEXT() {
+        return JAXBCONTEXT;
+    }
 
-   public static Schema getSchema() {
-      return schema;
-   }
+    public static Schema getSchema() {
+        return schema;
+    }
 
-   public static void validateXml(InputStream xml) throws SAXException, IOException {
-      schema.newValidator().validate(new SAXSource(new InputSource(xml)));
-   }
+    public static void validateXml(InputStream xml) throws SAXException, IOException {
+        schema.newValidator().validate(new SAXSource(new InputSource(xml)));
+    }
 
-   public static void validateXml(Reader xml) throws SAXException, IOException {
-      schema.newValidator().validate(new SAXSource(new InputSource(xml)));
-   }
+    public static void validateXml(Reader xml) throws SAXException, IOException {
+        schema.newValidator().validate(new SAXSource(new InputSource(xml)));
+    }
 
-   public static void validateXml(URL xml) throws SAXException, IOException {
-      validateXml(xml.openStream());
-   }
+    public static void validateXml(URL xml) throws SAXException, IOException {
+        try (InputStream in = xml.openStream()) {
+            validateXml(in);
+        }
+    }
 
-   public static void validateXml(String xml) throws SAXException, IOException {
-      validateXml(new StringReader(xml));
-   }
+    public static void validateXml(String xml) throws SAXException, IOException {
+        try (Reader in = new StringReader(xml)) {
+            validateXml(in);
+        }
+    }
 
-   /**
-    * prints xsd, or validate xml (no exceptions => ok)
-    *
-    * @see #VALIDATE
-    * @param args
-    * @throws IOException
-    */
-   public static void main(String[] args) throws IOException, SAXException {
-      if (args != null && args.length > 0) {
-         validateXml(new URL(args[0]));
-      } else {
-         System.out.println(getXsd());
-      }
-   }
+    /**
+     * prints xsd, or validate xml (no exceptions => ok)
+     *
+     * @see #VALIDATE
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException, SAXException {
+        if (args != null && args.length > 0) {
+            validateXml(new URL(args[0]));
+        } else {
+            System.out.println(getXsd());
+        }
+    }
 
-   public static String getXsd() throws IOException {
-      ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-      IOHelper.load(SettingsXMLHelper.class.getResourceAsStream(XSD), out);
-      return out.toString();
-   }
+    public static String getXsd() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+        IOHelper.load(SettingsXMLHelper.class.getResourceAsStream(XSD), out);
+        return out.toString();
+    }
 
 }
