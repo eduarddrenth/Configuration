@@ -265,7 +265,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * @param keys
      */
     protected void handleNoValue(String... keys) {
-        throw new VectorPrintRuntimeException(Arrays.asList(keys) + " not found and default is null");
+        throw new NoValueException(Arrays.asList(keys) + " not found and default is null");
     }
 
     /**

@@ -42,6 +42,7 @@ import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.decoration.AllowNoValue;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.Changes;
 import com.vectorprint.configuration.decoration.FindableProperties;
@@ -466,6 +467,12 @@ public class PropertyTest {
       assertFalse(vp.getKeysNotPresent().contains("small"));
       assertFalse(vp.getKeysNotPresent().contains("smalllll"));
       assertFalse(vp.getKeysNotPresent().contains("bigbold"));
+   }
+
+   @Test
+   public void testNoValueAllowed() throws IOException, ParseException {
+      EnhancedMap vp = new AllowNoValue(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"));
+      vp.getProperty(null,"smalllll");
    }
 
    @Test
