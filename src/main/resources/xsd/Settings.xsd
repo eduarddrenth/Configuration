@@ -15,7 +15,7 @@
             <xs:annotation>
                <xs:documentation>when you specify urls at this level settings wil be parsed using the current default parser.
                   You can control which parser is the default on the settings factory implementation. Instead you can also
-                  read settings from urls using a feature where can declare the parser that will be used.
+                  read settings from urls using a feature where you can declare the parser that will be used.
                </xs:documentation>
             </xs:annotation>
          </xs:element>
