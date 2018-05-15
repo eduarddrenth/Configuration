@@ -246,7 +246,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * @param keys the keys to look for
      * @return the key to be used or null to use a default value
      */
-    protected String getKey(Object defaultVal, String... keys) {
+    private String getKey(Object defaultVal, String... keys) {
         String key = determineKey(keys);
         if (key == null) {
             if (defaultVal == null) {
@@ -264,24 +264,8 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * throws a {@link NoValueException}
      * @param keys
      */
-    protected void handleNoValue(String... keys) {
+    private void handleNoValue(String... keys) {
         throw new NoValueException(Arrays.asList(keys) + " not found and default is null");
-    }
-
-    /**
-     * adds key to the list of keys requested but not found
-     * @param key 
-     */
-    protected final void keyNotPresent(String key) {
-        notPresent.add(key);
-    }
-
-    /**
-     * removes key from the list of keys requested but not found
-     * @param key 
-     */
-    protected final void keyPresent(String key) {
-        notPresent.remove(key);
     }
 
     /**
@@ -295,7 +279,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * @param keys
      * @return the first key found in settings or null
      */
-    protected String determineKey(String... keys) {
+    private String determineKey(String... keys) {
         if (keys == null || keys.length == 0 || keys[0] == null) {
             throw new VectorPrintRuntimeException("You should provide at least one key");
         }

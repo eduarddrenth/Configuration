@@ -3,7 +3,7 @@
 This project is about configuration of applications and about parameterization of Objects.
 
 This library offers annotations (and annotation processors), parsers, typing, observing changes, serialization,
-cloning and more when working with settings and/or object parameters. Settings and its features can be declared using an xml format.
+cloning and more when working with settings and/or object parameters. Settings and its features can also be declared using (external) xml, also in combination with annotations, in that case xml prevails.
 
 The library offers syntax support for settings and parameters in a loosely coupled manner. You are not restricted to the built in syntaxes, you
 can provide your own.
