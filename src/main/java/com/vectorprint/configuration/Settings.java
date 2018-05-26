@@ -654,6 +654,12 @@ public final class Settings implements EnhancedMap, DecorationAware {
         return Collections.unmodifiableCollection(notPresent);
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        log.warning("not used, possibly obsolete settings: " + getUnusedKeys());
+        super.finalize();
+    }
+
     /**
      *
      * @param defaultValue the value of defaultValue
