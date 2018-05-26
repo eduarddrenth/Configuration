@@ -656,9 +656,16 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     protected void finalize() throws Throwable {
-        log.warning("not used, possibly obsolete settings: " + getUnusedKeys());
+        log.warning("not used, possibly obsolete settings in: " + this + ": " + getUnusedKeys());
         super.finalize();
     }
+
+    @Override
+    public String toString() {
+        return "Settings{" + "id=" + id + ", decorators=" + decorators + '}';
+    }
+    
+    
 
     /**
      *
