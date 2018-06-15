@@ -186,7 +186,7 @@ public interface BindingHelper {
                   throw new VectorPrintRuntimeException(ex);
                }
             }
-            throw new VectorPrintRuntimeException(ex);
+            throw new VectorPrintRuntimeException("file " + val + " does not exist, unable to construct url");
          }
       }
    }
