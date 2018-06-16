@@ -442,6 +442,8 @@ public class PropertyTest {
       assertTrue(vp.getUnusedKeys().contains("bigbold"));
       vp.getProperty("small");
       assertFalse(vp.getUnusedKeys().contains("small"));
+      vp.put("small", "");
+      assertFalse(vp.getUnusedKeys().contains("small"));//an overwrite doesn't add unused again
       assertTrue(vp.getUnusedKeys().contains("bigbold"));
       vp.remove("bigbold");
       assertFalse(vp.getUnusedKeys().contains("small"));
