@@ -505,7 +505,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     public final String[] put(String key, String[] value) {
-        unused.add(key);
+        if (!backingMap.containsKey(key)) unused.add(key);
         return backingMap.put(key, value);
     }
 
@@ -769,7 +769,9 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     public void putAll(Map<? extends String, ? extends String[]> m) {
-        unused.addAll(m.keySet());
+        m.forEach((k, v) -> {
+            if (!backingMap.containsKey(k)) unused.add(k);
+        });
         backingMap.putAll(m);
     }
 
