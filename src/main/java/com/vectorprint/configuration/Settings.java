@@ -116,7 +116,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
         if (map instanceof EnhancedMap) {
             throw new IllegalArgumentException("instance of " + EnhancedMap.class.getName() + " not allowed");
         }
-        backingMap = map;
+        backingMap = new HashMap<>(map);
     }
 
     private void debug(Object val, String... keys) {
@@ -769,7 +769,15 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     public void putAll(Map<? extends String, ? extends String[]> m) {
+        unused.addAll(m.keySet());
         backingMap.putAll(m);
+    }
+
+    @Override
+    public void put(Map<String, String> m) {
+        m.forEach((k, v) -> {
+            put(k, v);
+        });
     }
 
     @Override

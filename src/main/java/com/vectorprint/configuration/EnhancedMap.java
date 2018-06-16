@@ -152,4 +152,6 @@ public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializa
    void setId(String id);
 
    String[] put(String key, String value);
+   
+   void put(Map<String, String> m);
 }

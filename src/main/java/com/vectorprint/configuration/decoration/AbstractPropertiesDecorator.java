@@ -437,6 +437,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
       return settings.put(key, value);
    }
 
+    @Override
+    public void put(Map<String, String> m) {
+        settings.put(m);
+    }
+
    /**
     * checks for equality of the embedded properties in the decorator
     *
