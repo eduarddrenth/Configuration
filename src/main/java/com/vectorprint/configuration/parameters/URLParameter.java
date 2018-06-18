@@ -37,5 +37,10 @@ public class URLParameter extends ParameterImpl<URL> {
       super(key, help, URL.class);
    }
 
+    @Override
+    public Parameter<URL> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 }

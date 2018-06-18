@@ -40,4 +40,9 @@ public class ColorParameter extends ParameterImpl<Color> {
       return value != null ? '#' + Integer.toHexString(value.getRGB()).substring(2) : "";
    }
 
+    @Override
+    public Parameter<Color> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

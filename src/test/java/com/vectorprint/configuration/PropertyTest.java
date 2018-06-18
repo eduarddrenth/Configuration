@@ -508,7 +508,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testClone() throws IOException, ParseException {
+   public void testClone() throws IOException, ParseException, CloneNotSupportedException {
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
       new CachingProperties(mtp);
@@ -565,7 +565,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testCaching() throws IOException, VectorPrintException, ParseException {
+   public void testCaching() throws IOException, VectorPrintException, ParseException, CloneNotSupportedException {
       EnhancedMap noCache = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
       EnhancedMap cache = new CachingProperties(noCache.clone());
@@ -912,7 +912,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testDifferentMap() {
+   public void testDifferentMap() throws CloneNotSupportedException {
       EnhancedMap map = new Settings(new ConcurrentHashMap<>());
       map.put("key", "value");
       EnhancedMap clone = map.clone();

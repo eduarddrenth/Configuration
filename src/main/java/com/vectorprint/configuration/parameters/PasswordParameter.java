@@ -86,7 +86,7 @@ public class PasswordParameter extends ParameterImpl<byte[]> {
    }
 
    @Override
-   public Parameter<byte[]> clone() {
+   public Parameter<byte[]> clone() throws CloneNotSupportedException {
       PasswordParameter cp = (PasswordParameter) super.clone();
       cp.clearAfterGet = clearAfterGet;
       return cp;

@@ -127,7 +127,7 @@ public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializa
 
    public void setHelp(Map<String, PropertyHelp> h);
 
-   public EnhancedMap clone();
+   public EnhancedMap clone() throws CloneNotSupportedException;
 
    /**
     * return a collection of keys not used sofar in the settings.

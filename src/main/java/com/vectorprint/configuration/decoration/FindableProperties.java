@@ -83,7 +83,7 @@ public class FindableProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public EnhancedMap clone() {
+   public EnhancedMap clone() throws CloneNotSupportedException {
       clearStaticReferences();
       return super.clone();
    }

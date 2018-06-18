@@ -82,11 +82,9 @@ public class PreparingProperties extends AbstractPropertiesDecorator implements 
 
    @Override
    public void prepareKeyValue(KeyValue<String, String[]> kv) {
-      for (PrepareKeyValue<String, String[]> pkv : observers) {
-         if (pkv.shouldPrepare(kv)) {
-            pkv.prepare(kv);
-         }
-      }
+       observers.stream().filter((pkv) -> (pkv.shouldPrepare(kv))).forEachOrdered((pkv) -> {
+           pkv.prepare(kv);
+       });
    }
    private final List<PrepareKeyValue<String, String[]>> observers = new LinkedList<>();
 
@@ -99,13 +97,13 @@ public class PreparingProperties extends AbstractPropertiesDecorator implements 
 
    @Override
    public void putAll(Map<? extends String, ? extends String[]> m) {
-      for (Map.Entry<? extends String, ? extends String[]> e : m.entrySet()) {
-         put(e.getKey(), e.getValue());
-      }
+       m.entrySet().forEach((e) -> {
+           put(e.getKey(), e.getValue());
+       });
    }
 
    @Override
-   public EnhancedMap clone() {
+   public EnhancedMap clone() throws CloneNotSupportedException {
       PreparingProperties preparingProperties = (PreparingProperties) super.clone();
       preparingProperties.observers.addAll(observers);
       return preparingProperties;

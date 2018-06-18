@@ -63,7 +63,7 @@ public class ReadonlyProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public EnhancedMap clone() {
+   public EnhancedMap clone() throws CloneNotSupportedException {
       return super.clone();
    }
 

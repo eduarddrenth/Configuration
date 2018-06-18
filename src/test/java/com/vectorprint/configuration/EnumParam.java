@@ -36,6 +36,7 @@ package com.vectorprint.configuration;
  * #L%
  */
 
+import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.ParameterImpl;
 
 /**
@@ -43,6 +44,11 @@ import com.vectorprint.configuration.parameters.ParameterImpl;
  * @author Eduard Drenth at VectorPrint.nl
  */
 public class EnumParam extends ParameterImpl<EnumParam.E>{
+
+    @Override
+    public Parameter<E> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
    public enum E { E }
 
    public EnumParam(String key, String help) {

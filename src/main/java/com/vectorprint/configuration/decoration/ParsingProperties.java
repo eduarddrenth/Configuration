@@ -54,6 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,9 +96,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     */
    public ParsingProperties(EnhancedMap properties, URL... in) throws IOException {
       super(properties);
-      for (URL u : in) {
-         propertyUrls.add(u);
-      }
+      propertyUrls.addAll(Arrays.asList(in));
       setId(propertyUrls.toString());
       loadFromUrls();
    }
@@ -245,7 +244,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public EnhancedMap clone() {
+   public EnhancedMap clone() throws CloneNotSupportedException {
       ParsingProperties parsingProperties = (ParsingProperties) super.clone();
       parsingProperties.commentBeforeKeys.putAll(commentBeforeKeys);
       parsingProperties.propertyUrls = propertyUrls;

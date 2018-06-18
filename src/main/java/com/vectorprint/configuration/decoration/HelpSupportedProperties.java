@@ -68,4 +68,9 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
       super.setHelp(h);
    }
 
+    @Override
+    public EnhancedMap clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -55,6 +55,11 @@ public class SortedProperties extends AbstractPropertiesDecorator {
    public Set<String> keySet() {
       return new TreeSet<>(super.keySet());
    }
+
+    @Override
+    public EnhancedMap clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
    
    
 }

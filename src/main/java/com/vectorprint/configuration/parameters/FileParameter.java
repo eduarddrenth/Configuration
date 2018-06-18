@@ -48,4 +48,9 @@ public class FileParameter extends ParameterImpl<File>{
       super(key, help, File.class);
    }
 
+    @Override
+    public Parameter<File> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

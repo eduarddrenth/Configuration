@@ -130,14 +130,14 @@ public class ParameterizableImpl implements Parameterizable {
     * @return
     */
    @Override
-   public Parameterizable clone() {
+   public Parameterizable clone() throws CloneNotSupportedException {
       try {
          Constructor con = getClass().getConstructor();
          ParameterizableImpl pi = (ParameterizableImpl) con.newInstance();
          paramProcessor.initParameters(pi);
-         for (Parameter p : pi.parameters.values()) {
-            p.setValue(getParameters().get(p.getKey()).getValue());
-         }
+         pi.parameters.values().forEach((p) -> {
+             p.setValue(getParameters().get(p.getKey()).getValue());
+          });
          return pi;
       } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
          throw new VectorPrintRuntimeException(ex);
@@ -179,10 +179,7 @@ public class ParameterizableImpl implements Parameterizable {
          return false;
       }
       final ParameterizableImpl other = (ParameterizableImpl) obj;
-      if (this.parameters != other.parameters && (this.parameters == null || !this.parameters.equals(other.parameters))) {
-         return false;
-      }
-      return true;
+      return !(this.parameters != other.parameters && (this.parameters == null || !this.parameters.equals(other.parameters)));
    }
 
    @Override

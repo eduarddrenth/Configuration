@@ -36,5 +36,10 @@ public class IntParameter extends ParameterImpl<Integer>{
       setDefault(0);
    }
 
+    @Override
+    public Parameter<Integer> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 }

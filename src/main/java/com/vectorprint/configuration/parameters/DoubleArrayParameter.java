@@ -42,4 +42,9 @@ public class DoubleArrayParameter extends ParameterImpl<double[]>{
       return Arrays.toString(value);
    }
 
+    @Override
+    public Parameter<double[]> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

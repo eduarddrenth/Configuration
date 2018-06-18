@@ -41,4 +41,9 @@ public class FloatArrayParameter extends ParameterImpl<float[]>{
    protected String valueToString(float[] value) {
       return Arrays.toString(value);
    }
+
+    @Override
+    public Parameter<float[]> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -83,7 +83,7 @@ public interface Parameterizable extends Cloneable, Observer {
     */
    void addParameter(Parameter parameter, Class<? extends Parameterizable> declaringClass);
 
-   Parameterizable clone();
+   Parameterizable clone() throws CloneNotSupportedException;
 
    /**
     * return true when {@link Parameter#getValue() } is not null.

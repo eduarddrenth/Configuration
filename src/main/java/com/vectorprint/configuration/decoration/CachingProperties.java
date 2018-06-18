@@ -50,7 +50,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
       super(settings);
    }
 
-   private Map<String, Object> cache = new HashMap<>();
+   private final Map<String, Object> cache = new HashMap<>();
 
    @Override
    public Date[] getDateProperties(Date[] defaultValue, String... keys) {
@@ -292,5 +292,10 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    public void clearCache() {
        cache.clear();
    }
+
+    @Override
+    public EnhancedMap clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

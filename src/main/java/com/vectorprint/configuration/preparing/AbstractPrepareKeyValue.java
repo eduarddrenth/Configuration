@@ -23,6 +23,7 @@ package com.vectorprint.configuration.preparing;
  * limitations under the License.
  * #L%
  */
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ import java.util.Set;
 public abstract class AbstractPrepareKeyValue implements PrepareKeyValue<String, String[]> {
 
    private static final long serialVersionUID = 1;
-   private Set<String> keys = new HashSet<>(3);
+   private final Set<String> keys = new HashSet<>(3);
    private boolean optIn = true;
 
    /**
@@ -56,9 +57,7 @@ public abstract class AbstractPrepareKeyValue implements PrepareKeyValue<String,
     * @return
     */
    public AbstractPrepareKeyValue addKeys(String... keys) {
-      for (String k : keys) {
-         this.keys.add(k);
-      }
+       this.keys.addAll(Arrays.asList(keys));
       return this;
    }
 

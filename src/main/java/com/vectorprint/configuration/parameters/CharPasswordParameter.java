@@ -86,7 +86,7 @@ public class CharPasswordParameter extends ParameterImpl<char[]> {
    }
 
    @Override
-   public Parameter<char[]> clone() {
+   public Parameter<char[]> clone() throws CloneNotSupportedException {
       CharPasswordParameter cp = (CharPasswordParameter) super.clone();
       cp.clearAfterGet = clearAfterGet;
       return cp;

@@ -24,7 +24,7 @@ import com.vectorprint.configuration.EnhancedMap;
  */
 public abstract class AbstractVisitor<E extends EnhancedMap> implements DecoratorVisitor<E>{
     
-    private Class clazz = ClassHelper.findParameterClass(0, getClass(), DecoratorVisitor.class);
+    private final Class clazz = ClassHelper.findParameterClass(0, getClass(), DecoratorVisitor.class);
     
     @Override
     public boolean shouldVisit(EnhancedMap e) {

@@ -66,9 +66,9 @@ public final class Settings implements EnhancedMap, DecorationAware {
     public void listProperties(PrintStream ps) {
         ps.println("settings with id " + getId() + ":");
         ps.println();
-        for (Map.Entry<String, String[]> entry : backingMap.entrySet()) {
+        backingMap.entrySet().forEach((entry) -> {
             ps.println(entry.getKey() + "=" + (entry.getValue() != null ? Arrays.asList(entry.getValue()) : ""));
-        }
+        });
         ps.println("");
         ps.println("settings wrapped by " + decorators.toString());
     }
@@ -488,12 +488,12 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public String printHelp() {
         StringBuilder sb = new StringBuilder(1024);
-        for (Map.Entry<String, PropertyHelp> h : help.entrySet()) {
+        help.entrySet().forEach((h) -> {
             sb.append(h.getKey()).append(": ").append(h.getValue().getType())
                     .append("; ")
                     .append(h.getValue().getExplanation())
                     .append(System.getProperty("line.separator"));
-        }
+        });
         return sb.toString();
     }
 
@@ -739,10 +739,8 @@ public final class Settings implements EnhancedMap, DecorationAware {
         }
         if (String[].class.equals(value.getClass())) {
 
-            for (Entry<String, String[]> e : entrySet()) {
-                if (Arrays.equals(e.getValue(), (String[]) value)) {
-                    return true;
-                }
+            if (entrySet().stream().anyMatch((e) -> (Arrays.equals(e.getValue(), (String[]) value)))) {
+                return true;
             }
         }
         return false;

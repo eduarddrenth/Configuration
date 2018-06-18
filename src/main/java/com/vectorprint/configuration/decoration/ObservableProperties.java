@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  */
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
 
-   private Set<Observer> observers = new HashSet<>(1);
+   private final Set<Observer> observers = new HashSet<>(1);
    
    private static final Logger LOGGER = Logger.getLogger(ObservableProperties.class.getName());
 
@@ -75,9 +75,9 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
 
    @Override
    public void notifyObservers(Changes changes) {
-      for (Observer o : observers) {
-         o.update(this, changes);
-      }
+       observers.forEach((o) -> {
+           o.update(this, changes);
+       });
    }
 
    @Override
@@ -107,17 +107,17 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    public void putAll(Map<? extends String, ? extends String[]> m) {
       List<String> added = new ArrayList<>(m.size());
       List<String> changed = new ArrayList<>(m.size());
-      for (Map.Entry<? extends String, ? extends String[]> e : m.entrySet()) {
-         if (containsKey(e.getKey())) {
-            String[] v1 = e.getValue();
-            String[] v2 = get(e.getKey());
-            if ((v1 == null && v2 != null) || (v1 != null && !Arrays.equals(v1, v2))) {
-               changed.add(e.getKey());
-            }
-         } else {
-            added.add(e.getKey());
-         }
-      }
+      m.entrySet().forEach((e) -> {
+          if (containsKey(e.getKey())) {
+              String[] v1 = e.getValue();
+              String[] v2 = get(e.getKey());
+              if ((v1 == null && v2 != null) || (v1 != null && !Arrays.equals(v1, v2))) {
+                  changed.add(e.getKey());
+              }
+          } else {
+              added.add(e.getKey());
+          }
+       });
       super.putAll(m);
       notifyObservers(new Changes(added, changed, null));
    }
@@ -137,7 +137,7 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public EnhancedMap clone() {
+   public EnhancedMap clone() throws CloneNotSupportedException {
       ObservableProperties observableProperties = (ObservableProperties) super.clone();
       observableProperties.observers.addAll(this.observers);
       return observableProperties;

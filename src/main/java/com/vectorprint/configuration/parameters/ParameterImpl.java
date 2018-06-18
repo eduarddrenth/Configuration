@@ -148,7 +148,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    }
 
    @Override
-   public Parameter<TYPE> clone() {
+   public Parameter<TYPE> clone() throws CloneNotSupportedException {
       try {
          ParameterImpl<TYPE> o = (ParameterImpl<TYPE>) super.clone();
          o.help = help;
@@ -156,7 +156,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
          o.valueClass = valueClass;
          o.declaringClass = declaringClass;
          return o.setDefault(def).setValue(value);
-      } catch (SecurityException | IllegalArgumentException | CloneNotSupportedException ex) {
+      } catch (SecurityException | IllegalArgumentException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
@@ -235,10 +235,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if (this.declaringClass != other.declaringClass && (this.declaringClass == null || !this.declaringClass.equals(other.declaringClass))) {
          return false;
       }
-      if ((this.help == null) ? (other.help != null) : !this.help.equals(other.help)) {
-         return false;
-      }
-      return true;
+      return !((this.help == null) ? (other.help != null) : !this.help.equals(other.help));
    }
 
 }

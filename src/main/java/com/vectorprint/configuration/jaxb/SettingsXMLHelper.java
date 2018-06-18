@@ -117,7 +117,6 @@ public class SettingsXMLHelper {
         if (args != null && args.length > 0) {
             validateXml(new URL(args[0]));
         } else {
-            System.out.println(getXsd());
         }
     }
 

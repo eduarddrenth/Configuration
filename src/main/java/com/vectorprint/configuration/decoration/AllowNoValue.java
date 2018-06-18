@@ -229,4 +229,9 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
         return allowNoValue(defaultValue, clazz, keys);
     }
 
+    @Override
+    public EnhancedMap clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

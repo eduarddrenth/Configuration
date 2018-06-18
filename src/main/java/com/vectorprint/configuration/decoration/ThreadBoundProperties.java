@@ -87,7 +87,7 @@ public class ThreadBoundProperties extends AbstractPropertiesDecorator implement
    }
 
    @Override
-   public EnhancedMap clone() {
+   public EnhancedMap clone() throws CloneNotSupportedException {
       checkThread("clone");
       return new ThreadBoundProperties(propsFromThread.get().clone());
    }

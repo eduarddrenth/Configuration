@@ -86,7 +86,7 @@ public interface Parameter<TYPE extends Serializable> extends Cloneable, Seriali
     */
    TYPE getDefault();
 
-   Parameter<TYPE> clone();
+   Parameter<TYPE> clone() throws CloneNotSupportedException;
 
    /**
     * You may want to know which class declared this Parameter

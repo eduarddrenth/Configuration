@@ -103,9 +103,9 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
          }
          List l = (List) values;
          List<String> sl = new ArrayList<>(l.size());
-         for (Object o : l) {
-            sl.add(String.valueOf(o));
-         }
+         l.forEach((o) -> {
+             sl.add(String.valueOf(o));
+          });
          if (String[].class.equals(parameter.getValueClass())) {
             return (TYPE) ArrayHelper.toArray(sl);
          } else {
@@ -148,11 +148,9 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
       sb.append("{'").append(p.getClass().getSimpleName()).append("': ");
       if (!p.getParameters().isEmpty()) {
          Collection<Parameter> c = new ArrayList<>(p.getParameters().size());
-         for (Parameter par : p.getParameters().values()) {
-            if ((include(par))) {
-               c.add(par);
-            }
-         }
+         p.getParameters().values().stream().filter((par) -> ((include(par)))).forEachOrdered((par) -> {
+             c.add(par);
+          });
          if (!c.isEmpty()) {
             int max = c.size();
             int i = 0;

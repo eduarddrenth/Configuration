@@ -37,4 +37,9 @@ public class DoubleParameter extends ParameterImpl<Double>{
       setDefault(0d);
    }
 
+    @Override
+    public Parameter<Double> clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
