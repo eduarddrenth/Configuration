@@ -23,13 +23,13 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
-import static com.vectorprint.ArrayHelper.isArrayEqual;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Observable;
 import java.util.logging.Logger;
 
@@ -192,7 +192,6 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    /**
     * NB! calls {@link #getValue() },
     *
-    * @see ParameterHelper#isArrayEqual(java.lang.Class, java.lang.Object, java.lang.Object)
     * @param obj
     * @return
     */
@@ -225,10 +224,10 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
             return false;
          }
       } else {
-         if (v != o && (v == null || !isArrayEqual(v, o))) {
+         if (v != o && (v == null || !Objects.deepEquals(v, o))) {
             return false;
          }
-         if (this.def != other.def && (this.def == null || !isArrayEqual(this.def, other.def))) {
+         if (this.def != other.def && (this.def == null || !Objects.deepEquals(this.def, other.def))) {
             return false;
          }
       }

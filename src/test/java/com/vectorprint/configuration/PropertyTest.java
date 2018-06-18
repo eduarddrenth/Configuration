@@ -24,7 +24,6 @@ package com.vectorprint.configuration;
  * #L%
  */
 import com.vectorprint.ArrayHelper;
-import static com.vectorprint.ArrayHelper.isArrayEqual;
 import com.vectorprint.ClassHelper;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.VectorPrintRuntimeException;
@@ -94,6 +93,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -731,10 +731,10 @@ public class PropertyTest {
 
                         Serializable parseAsParameterValue = ParamBindingService.getInstance().getFactory().getParser(new StringReader("")).parseAsParameterValue(conf, p);
                         if (p.getValueClass().isArray()) {
-                           if (!isArrayEqual(p.getValue(), parseAsParameterValue)) {
+                           if (!Objects.deepEquals(p.getValue(), parseAsParameterValue)) {
                               System.out.println("");
                            }
-                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(), p.getValue(), parseAsParameterValue), isArrayEqual(p.getValue(), parseAsParameterValue));
+                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(), p.getValue(), parseAsParameterValue), Objects.deepEquals(p.getValue(), parseAsParameterValue));
                         } else {
                            assertEquals(String.valueOf(p.getValue()), String.valueOf(parseAsParameterValue));
                         }
