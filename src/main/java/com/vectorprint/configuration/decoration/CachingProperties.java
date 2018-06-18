@@ -288,5 +288,9 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
       return fromCache(defaultValue, clazz, keys);
    }
+   
+   public void clearCache() {
+       cache.clear();
+   }
 
 }
