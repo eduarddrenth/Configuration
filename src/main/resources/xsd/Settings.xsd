@@ -58,7 +58,8 @@
       </xs:attribute>
       <xs:attribute name="factoryClass" type="xs:string" default="com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl">
          <xs:annotation>
-            <xs:documentation>Used by ParsingProperties. You can define your own factory for syntax binding.</xs:documentation>
+            <xs:documentation>Used by ParsingProperties. You can write and use your own factory implementing
+                com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory for syntax binding.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
    </xs:complexType>
@@ -88,7 +89,7 @@
    
    <xs:element name="settings" id="settings" type="vpconfig:settingstype">
       <xs:annotation>
-         <xs:documentation>definition of settings to use in an application</xs:documentation>
+         <xs:documentation>definition of settings, their features and key/value preprocessors to use in an application</xs:documentation>
       </xs:annotation>
    </xs:element>
 

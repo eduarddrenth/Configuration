@@ -45,7 +45,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * This implementation supports the fast built in syntax for settings.
+ * This implementation supports the fast built in syntax for settings. You may write your own, register that in spi
+ * as a EnhancedMapBindingFactory, then write a @link SettingsFactoryValidator} and also register that. You may also call
+ * {@link SpecificClassValidator#setClazz(java.lang.Class) } with your factory before spi setup takes place.
  * @see SettingsBindingService
  * @author Eduard Drenth at VectorPrint.nl
  */
