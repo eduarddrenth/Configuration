@@ -3,7 +3,7 @@
 
     <groupId>com.vectorprint</groupId>
     <artifactId>Config</artifactId>
-    <version>8.3-SNAPSHOT</version>
+    <version>8.3</version>
     <packaging>jar</packaging>
     <inceptionYear>2015</inceptionYear>
 
@@ -45,7 +45,7 @@
         <url>https://github.com/eduarddrenth/Configuration</url>
         <connection>scm:git:git@github.com:eduarddrenth/Configuration.git</connection>
         <developerConnection>scm:git:git@github.com:eduarddrenth/Configuration.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>Config-8.3</tag>
     </scm>
     <issueManagement>
         <system>github</system>
@@ -163,7 +163,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>VectorPrintCommon</artifactId>
-            <version>3.10-SNAPSHOT</version>
+            <version>3.10</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -177,7 +177,7 @@
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
-            <version>3.10-SNAPSHOT</version>
+            <version>3.10</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
