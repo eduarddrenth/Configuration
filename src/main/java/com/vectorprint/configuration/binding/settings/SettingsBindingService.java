@@ -83,9 +83,7 @@ public class SettingsBindingService {
    
    public boolean isValid(EnhancedMapBindingFactory f ) {
          boolean ok = true;
-         boolean noValidatorFound = true;
          for (SettingsFactoryValidator validator : validators) {
-            noValidatorFound = false;
             if (!validator.isValid(f)) {
                if (LOGGER.isLoggable(Level.FINE)) {
                   LOGGER.fine(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
@@ -94,7 +92,7 @@ public class SettingsBindingService {
                break;
             }
          }
-         return ok||noValidatorFound;
+         return ok;
    }
 
    /**
