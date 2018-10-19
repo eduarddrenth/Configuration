@@ -1,10 +1,10 @@
 package com.vectorprint.configuration;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig3.0
+ * Config
  * %%
- * Copyright (C) 2011 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,10 @@ package com.vectorprint.configuration;
  * #L%
  */
 
+
 import java.util.Map;
 
-/**
- * A settings provider is responsible for providing configuration information to a
- * {@link Configurable configuarble object}.
- *
- * @param <P>
- * @see EnhancedMap
- * @author Eduard Drenth at VectorPrint.nl
- */
 public interface SettingsProvider<P extends Map> {
 
-        /**
-         *
-         * @param configurable the value of configurable
-         */
         void provideSettings(Configurable<P> configurable);
 }

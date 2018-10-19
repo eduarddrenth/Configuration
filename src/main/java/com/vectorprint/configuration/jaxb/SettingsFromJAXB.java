@@ -1,25 +1,11 @@
-/*
- * Copyright 2015 VectorPrint.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package com.vectorprint.configuration.jaxb;
 
-/*
+/*-
  * #%L
  * Config
  * %%
- * Copyright (C) 2015 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +20,7 @@ package com.vectorprint.configuration.jaxb;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.configuration.generated.jaxb.Featuretype;
@@ -60,11 +47,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import javax.xml.bind.JAXBException;
 
-/**
- * Threadsafe mapper for translating xml into application settings with features
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class SettingsFromJAXB {
 
    public EnhancedMap fromJaxb(Reader xml) throws VectorPrintException, JAXBException {

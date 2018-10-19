@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration.decoration;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig3.0
+ * Config
  * %%
- * Copyright (C) 2011 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +20,7 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.PropertyHelpImpl;
@@ -36,10 +34,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 
    public static final String HELPFORMAT = "help format: <property>=<type>;<description>";

@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig3.0
+ * Config
  * %%
- * Copyright (C) 2011 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +20,7 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
@@ -36,15 +34,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * This interface is a suggested way to store values for settings as arrays of String and retrieve settings
- * in the type needed by applications. Values are arrays because support for multiple values will not require splitting intelligence.
- * 
- * @see Settings
- * @see AbstractPropertiesDecorator
- * @see EnhancedMapBindingFactory
- * @author Eduard Drenth at VectorPrint.nl
- */
 public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializable {
 
    boolean getBooleanProperty(Boolean defaultValue, String... keys);

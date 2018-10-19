@@ -1,21 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration.decoration;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig3.0
+ * Config
  * %%
- * Copyright (C) 2011 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +20,7 @@ package com.vectorprint.configuration.decoration;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import java.io.IOException;
@@ -30,12 +28,6 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Set;
 
-/**
- * A {@link EnhancedMap} restricting access to properties to the instantiating thread or child threads. NOTE that when
- * threads are reused (pooled) unwanted access to thread variables may occur.
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class ThreadBoundProperties extends AbstractPropertiesDecorator implements HiddenBy {
 
    private static final long serialVersionUID = 1;

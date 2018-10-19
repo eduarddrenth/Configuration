@@ -1,32 +1,18 @@
-/*
- * Copyright 2015 VectorPrint.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package com.vectorprint.configuration.annotation;
 
-/*
+/*-
  * #%L
  * Config
  * %%
- * Copyright (C) 2015 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,6 +20,7 @@ package com.vectorprint.configuration.annotation;
  * limitations under the License.
  * #L%
  */
+
 import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
@@ -67,23 +54,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * This implementation will try to call a setter for a field first when injecting a value from settings, when this fails
- * the value of the field will be set directly using {@link Field#set(java.lang.Object, java.lang.Object) }. This
- * implementation will traverse all fields (including non public ones) in the class of the Object argument, including
- * those in superclasses. {@link SettingsField} may trigger
- * {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap) wrapping},
- * this instance will never wrap settings in the same decorator more than once. When settings are wrapped the outermost
- * wrapper should be used, otherwise functionality implemented by a decorator may not execute. When the object is a
- * {@link DecoratorVisitor} and settings are a subclass of {@link AbstractPropertiesDecorator}, call
-    * {@link AbstractPropertiesDecorator#accept(com.vectorprint.configuration.decoration.visiting.DecoratorVisitor) }.
- * Classes will only be initialized once with the same settings.
- *
- * @see AbstractPropertiesDecorator#hasProperties(java.lang.Class)
- * @see SettingsField
- * @see Setting
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
 
    private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());

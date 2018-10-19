@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration.jaxb;
 
-/*
+/*-
  * #%L
- * VectorPrintReport
+ * Config
  * %%
- * Copyright (C) 2012 - 2014 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +20,7 @@ package com.vectorprint.configuration.jaxb;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.IOHelper;
 import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import java.io.ByteArrayOutputStream;
@@ -45,11 +42,6 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-/**
- * Threadsafe helper for translating xml to JAXB objects
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class SettingsXMLHelper {
 
     private static Logger logger = Logger.getLogger(SettingsXMLHelper.class.getName());

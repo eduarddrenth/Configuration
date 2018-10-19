@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig3.0
+ * Config
  * %%
- * Copyright (C) 2011 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +21,7 @@ package com.vectorprint.configuration;
  * #L%
  */
 
-/**
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
+
 public class PropertyHelpImpl implements PropertyHelp {
 
    private static final long serialVersionUID = 1;

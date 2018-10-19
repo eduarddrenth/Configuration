@@ -1,25 +1,11 @@
-/*
- * Copyright 2015 VectorPrint.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package com.vectorprint.configuration.binding.parameters.json;
 
-/*
+/*-
  * #%L
  * Config
  * %%
- * Copyright (C) 2015 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +20,7 @@ package com.vectorprint.configuration.binding.parameters.json;
  * limitations under the License.
  * #L%
  */
+
 
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
@@ -57,14 +44,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Parser / serializer to support JSON syntax. This parser is less efficient than {@link ParameterizableParserImpl}
- * which instantiates and initializes a Parameterizable object during parsing. Robert Fischer's JSON parser is used
- * under the hood. This parser yields a generic Java datamodel (Map, List, String, BigDecimal, etc.) which is translated
- * into a Parameterizable object.
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class JSONSupport extends AbstractParameterizableBinding<Object> {
 
    private Reader reader;

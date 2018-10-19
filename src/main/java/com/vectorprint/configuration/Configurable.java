@@ -1,10 +1,10 @@
 package com.vectorprint.configuration;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig3.0
+ * Config
  * %%
- * Copyright (C) 2011 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,15 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.decoration.FindableProperties;
 import java.util.Map;
 
-/**
- * A Configurable object should be initialized by a {@link SettingsProvider}. Instead of implementing this interface to
- * provide settings to your objects you could also make use of {@link Setting}, {@link SettingsField} and
- * {@link SettingsAnnotationProcessor}.
- *
- * @param <P> a Map holding settings for the Configurable Object
- * @see FindableProperties
- * @see SettingsField
- * @author Eduard Drenth at VectorPrint.nl
- */
 public interface Configurable<P extends Map> {
 
-   /**
-    * return properties
-    *
-    * @return the properties found or null
-    */
    P getSettings();
 
    /**

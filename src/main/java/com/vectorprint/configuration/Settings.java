@@ -1,17 +1,17 @@
 package com.vectorprint.configuration;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig3.0
+ * Config
  * %%
- * Copyright (C) 2011 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package com.vectorprint.configuration;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
@@ -40,22 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-/**
- * Enhances Java Map with support for data types, debugging info, working with
- * default values in code. Internally a backing Map is used which is a HashMap
- * by default. You can provide your own backing map in {@link #Settings(java.util.Map)
- * }, this may not be an EnhancedMap implementation. You cannot subclass this
- * class, instead subclass {@link AbstractPropertiesDecorator} and wrap an
- * instance of this class.
- *
- * @see EnhancedMapBindingFactory
- * @see com.vectorprint.configuration.decoration
- * @see SettingsAnnotationProcessor
- * @see SettingsField
- * @see Setting
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public final class Settings implements EnhancedMap, DecorationAware {
 
     private static final long serialVersionUID = 1;
@@ -78,10 +63,6 @@ public final class Settings implements EnhancedMap, DecorationAware {
             = new ArrayList<>(3);
     private AbstractPropertiesDecorator outermostDecorator;
 
-    /**
-     * Creates a backing map {@link HashMap#HashMap() ) }.
-     *
-     */
     public Settings() {
         backingMap = new HashMap<>();
     }

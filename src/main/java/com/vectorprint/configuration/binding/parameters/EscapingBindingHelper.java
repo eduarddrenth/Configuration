@@ -1,15 +1,11 @@
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vectorprint.configuration.binding.parameters;
 
-/*
+/*-
  * #%L
- * VectorPrintReport4.0
+ * Config
  * %%
- * Copyright (C) 2012 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,20 +20,12 @@ package com.vectorprint.configuration.binding.parameters;
  * limitations under the License.
  * #L%
  */
+
 //~--- non-JDK imports --------------------------------------------------------
 import com.vectorprint.configuration.binding.*;
 import com.vectorprint.configuration.generated.parser.PropertiesParser;
 
 //~--- JDK imports ------------------------------------------------------------
-/**
- * implementation for the syntax supported by {@link PropertiesParser}, escapes ',', '|' and ')', , uses '|' as separator for array values
- *
- * Threadsafe: it is safe to call the available methods from different threads at the same time on one instance of this
- * class.
- *
- * @see StringConverter
- * @author Eduard Drenth at VectorPrint.nl
- */
 public final class EscapingBindingHelper extends AbstractParamBindingHelperDecorator {
 
    public EscapingBindingHelper() {

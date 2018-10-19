@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration.parameters;
 
-/*
+/*-
  * #%L
- * VectorPrintReport
+ * Config
  * %%
- * Copyright (C) 2012 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +20,10 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.ArrayHelper;
 import java.util.Arrays;
 
-/**
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class CharPasswordParameter extends ParameterImpl<char[]> {
 
    private boolean clearAfterGet = true;

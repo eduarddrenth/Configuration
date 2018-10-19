@@ -1,15 +1,11 @@
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vectorprint.configuration.binding;
 
-/*
+/*-
  * #%L
- * VectorPrintReport4.0
+ * Config
  * %%
- * Copyright (C) 2012 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,23 +20,24 @@ package com.vectorprint.configuration.binding;
  * limitations under the License.
  * #L%
  */
+
 //~--- non-JDK imports --------------------------------------------------------
 import com.vectorprint.VectorPrintRuntimeException;
 import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
-import static com.vectorprint.configuration.binding.StringConverter.BOOLEAN_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.BYTE_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.CHAR_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.CLASS_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.COLOR_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.DATE_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.DOUBLE_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.FILE_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.FLOAT_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.INT_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.LONG_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.REGEX_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.SHORT_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.URL_PARSER;
+import static com.vectorprint.StringConverter.BOOLEAN_PARSER;
+import static com.vectorprint.StringConverter.BYTE_PARSER;
+import static com.vectorprint.StringConverter.CHAR_PARSER;
+import static com.vectorprint.StringConverter.CLASS_PARSER;
+import static com.vectorprint.StringConverter.COLOR_PARSER;
+import static com.vectorprint.StringConverter.DATE_PARSER;
+import static com.vectorprint.StringConverter.DOUBLE_PARSER;
+import static com.vectorprint.StringConverter.FILE_PARSER;
+import static com.vectorprint.StringConverter.FLOAT_PARSER;
+import static com.vectorprint.StringConverter.INT_PARSER;
+import static com.vectorprint.StringConverter.LONG_PARSER;
+import static com.vectorprint.StringConverter.REGEX_PARSER;
+import static com.vectorprint.StringConverter.SHORT_PARSER;
+import static com.vectorprint.StringConverter.URL_PARSER;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
@@ -50,17 +47,6 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 //~--- JDK imports ------------------------------------------------------------
-/**
- * Responsible for converting Strings into (atomic) values and vise versa and for escaping meaningful characters for a
- * certain syntax. Use this default implementation in {@link AbstractBindingHelperDecorator#AbstractBindingHelperDecorator(com.vectorprint.configuration.binding.BindingHelper)
- * } when extending it.
- *
- * Threadsafe: it is safe to call the available methods from different threads at the same time on one instance of this
- * class.
- *
- * @see StringConverter
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class BindingHelperImpl implements BindingHelper {
 
    /**

@@ -1,21 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration.parameters;
 
-/*
+/*-
  * #%L
- * VectorPrintConfig
+ * Config
  * %%
- * Copyright (C) 2011 - 2014 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +20,7 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
@@ -42,16 +40,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.logging.Logger;
 
-/**
- * When constructed from {@link ParameterizableParser#parseParameterizable()} settings and parameter annotations will be
- * processed, otherwise you may want to do that programmatically.
- *
- * @see SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap)
- * @see ParamAnnotationProcessor#initParameters(com.vectorprint.configuration.parameters.Parameterizable)
- * @see ParameterizableParser#parseParameterizable()
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class ParameterizableImpl implements Parameterizable {
 
    public static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();

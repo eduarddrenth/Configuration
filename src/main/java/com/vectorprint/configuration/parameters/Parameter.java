@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.vectorprint.configuration.parameters;
 
-/*
+/*-
  * #%L
- * VectorPrintReport
+ * Config
  * %%
- * Copyright (C) 2012 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +20,12 @@ package com.vectorprint.configuration.parameters;
  * limitations under the License.
  * #L%
  */
+
 import com.vectorprint.configuration.parameters.annotation.Param;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import java.io.Serializable;
 
-/**
- * Parameters for a {@link Parameterizable} provide help, a key to identify the parameter.
- *
- * @see ParamAnnotationProcessorImpl
- * @see ParameterizableBindingFactory
- * @author Eduard Drenth at VectorPrint.nl
- * @param <TYPE>
- */
 public interface Parameter<TYPE extends Serializable> extends Cloneable, Serializable, Observable {
 
    /**

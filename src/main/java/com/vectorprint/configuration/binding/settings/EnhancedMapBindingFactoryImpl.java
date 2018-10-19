@@ -1,25 +1,11 @@
-/*
- * Copyright 2015 VectorPrint.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package com.vectorprint.configuration.binding.settings;
 
-/*
+/*-
  * #%L
  * Config
  * %%
- * Copyright (C) 2015 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +21,7 @@ package com.vectorprint.configuration.binding.settings;
  * #L%
  */
 
+
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.BindingHelperImpl;
@@ -44,13 +31,6 @@ import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * This implementation supports the fast built in syntax for settings. You may write your own, register that in spi
- * as a EnhancedMapBindingFactory, then write a @link SettingsFactoryValidator} and also register that. You may also call
- * {@link SpecificClassValidator#setClazz(java.lang.Class) } with your factory before spi setup takes place.
- * @see SettingsBindingService
- * @author Eduard Drenth at VectorPrint.nl
- */
 public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory {
 
    private static final Class<? extends EnhancedMapParser> parserClass = PropertiesParser.class;

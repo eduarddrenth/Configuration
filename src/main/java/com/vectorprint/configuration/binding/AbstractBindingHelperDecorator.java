@@ -1,26 +1,12 @@
-/*
- * Copyright 2015 VectorPrint.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package com.vectorprint.configuration.binding;
 
-/*
+/*-
  * #%L
  * Config
  * %%
- * Copyright (C) 2015 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,20 +22,21 @@ package com.vectorprint.configuration.binding;
  * #L%
  */
 
+
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintRuntimeException;
-import static com.vectorprint.configuration.binding.StringConverter.BOOLEAN_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.CLASS_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.COLOR_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.DATE_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.DOUBLE_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.FILE_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.FLOAT_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.INT_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.LONG_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.REGEX_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.SHORT_PARSER;
-import static com.vectorprint.configuration.binding.StringConverter.URL_PARSER;
+import static com.vectorprint.StringConverter.BOOLEAN_PARSER;
+import static com.vectorprint.StringConverter.CLASS_PARSER;
+import static com.vectorprint.StringConverter.COLOR_PARSER;
+import static com.vectorprint.StringConverter.DATE_PARSER;
+import static com.vectorprint.StringConverter.DOUBLE_PARSER;
+import static com.vectorprint.StringConverter.FILE_PARSER;
+import static com.vectorprint.StringConverter.FLOAT_PARSER;
+import static com.vectorprint.StringConverter.INT_PARSER;
+import static com.vectorprint.StringConverter.LONG_PARSER;
+import static com.vectorprint.StringConverter.REGEX_PARSER;
+import static com.vectorprint.StringConverter.SHORT_PARSER;
+import static com.vectorprint.StringConverter.URL_PARSER;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.Color;
@@ -59,14 +46,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-/**
- * The decoration pattern is advised if you need different behaviour on top of the two implementations
- * of the BindingHelper interface offered by this library.
- * @param <T>
- * @see ParameterizableBindingFactory
- * @see EnhancedMapBindingFactory
- * @author Eduard Drenth at VectorPrint.nl
- */
 public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> implements BindingHelper {
    
    protected final T bindingHelper;

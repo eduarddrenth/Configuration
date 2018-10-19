@@ -1,17 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package com.vectorprint.configuration.parameters;
 
-import java.util.Arrays;
-
-/*
+/*-
  * #%L
- * VectorPrintReport
+ * Config
  * %%
- * Copyright (C) 2012 - 2013 VectorPrint
+ * Copyright (C) 2015 - 2018 VectorPrint
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +22,9 @@ import java.util.Arrays;
  * #L%
  */
 
-/**
- *
- * @author Eduard Drenth at VectorPrint.nl
- */
+import java.util.Arrays;
+
+
 public class FloatArrayParameter extends ParameterImpl<float[]>{
    
    public FloatArrayParameter(String key, String help) {
