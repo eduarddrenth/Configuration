@@ -90,7 +90,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws IOException
     */
    public ParsingProperties(EnhancedMap properties, String... url) throws IOException {
-      this(properties, AbstractBindingHelperDecorator.parseURLValues(url));
+      this(properties, AbstractBindingHelperDecorator.parse(url, URL.class));
    }
 
    /**

@@ -253,9 +253,6 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * Return the first key from the list of arguments present in the settings.
      * Logs the key that is returned, maintains
      * {@link #getKeysNotPresent() set of keys not present}.
-     * 
-     * @see #keyNotPresent(java.lang.String) 
-     * @see #keyPresent(java.lang.String) 
      *
      * @param keys
      * @return the first key found in settings or null
@@ -354,13 +351,13 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseURLValues(get(key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),URL.class);
     }
 
     @Override
     public File[] getFileProperties(File[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseFileValues(get(key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),File.class);
     }
 
     @Override
@@ -409,7 +406,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public Color[] getColorProperties(Color[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseColorValues(get(key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),Color.class);
     }
 
     /**
@@ -613,7 +610,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public Date[] getDateProperties(Date[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseDateValues(get(key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),Date.class);
     }
 
     private final Collection<String> unused = new HashSet<>(25);
@@ -670,7 +667,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public Pattern[] getRegexProperties(Pattern[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseRegexValues(get(key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),Pattern.class);
     }
 
     /**
@@ -683,7 +680,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parseClassValues(get(key));
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),Class.class);
     }
 
     @Override

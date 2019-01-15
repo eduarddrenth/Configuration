@@ -22,29 +22,15 @@ package com.vectorprint.configuration.binding;
  */
 
 //~--- non-JDK imports --------------------------------------------------------
+
+import com.vectorprint.StringConverter;
 import com.vectorprint.VectorPrintRuntimeException;
-import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
-import static com.vectorprint.StringConverter.BOOLEAN_PARSER;
-import static com.vectorprint.StringConverter.BYTE_PARSER;
-import static com.vectorprint.StringConverter.CHAR_PARSER;
-import static com.vectorprint.StringConverter.CLASS_PARSER;
-import static com.vectorprint.StringConverter.COLOR_PARSER;
-import static com.vectorprint.StringConverter.DATE_PARSER;
-import static com.vectorprint.StringConverter.DOUBLE_PARSER;
-import static com.vectorprint.StringConverter.FILE_PARSER;
-import static com.vectorprint.StringConverter.FLOAT_PARSER;
-import static com.vectorprint.StringConverter.INT_PARSER;
-import static com.vectorprint.StringConverter.LONG_PARSER;
-import static com.vectorprint.StringConverter.REGEX_PARSER;
-import static com.vectorprint.StringConverter.SHORT_PARSER;
-import static com.vectorprint.StringConverter.URL_PARSER;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
-import java.awt.Color;
-import java.io.File;
-import java.net.URL;
-import java.util.Date;
-import java.util.regex.Pattern;
+
+import java.awt.*;
+
+import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
 
 //~--- JDK imports ------------------------------------------------------------
 public class BindingHelperImpl implements BindingHelper {
@@ -76,12 +62,8 @@ public class BindingHelperImpl implements BindingHelper {
       if (String[].class.equals(clazz)) {
          return (T) values;
       }
-      if (URL[].class.equals(clazz)) {
-         o = parseURLValues(values);
-      } else if (float[].class.equals(clazz)) {
+      if (float[].class.equals(clazz)) {
          o = parseFloatValues(values);
-      } else if (File[].class.equals(clazz)) {
-         o = parseFileValues(values);
       } else if (double[].class.equals(clazz)) {
          o = parseDoubleValues(values);
       } else if (short[].class.equals(clazz)) {
@@ -96,32 +78,14 @@ public class BindingHelperImpl implements BindingHelper {
          o = parseLongValues(values);
       } else if (boolean[].class.equals(clazz)) {
          o = parseBooleanValues(values);
-      } else if (Float[].class.equals(clazz)) {
-         o = parseFloatObjects(values);
-      } else if (Double[].class.equals(clazz)) {
-         o = parseDoubleObjects(values);
-      } else if (Short[].class.equals(clazz)) {
-         o = parseShortObjects(values);
       } else if (Character[].class.equals(clazz)) {
          o = parseCharObjects(values);
       } else if (Byte[].class.equals(clazz)) {
          o = parseByteObjects(values);
-      } else if (Integer[].class.equals(clazz)) {
-         o = parseIntObjects(values);
-      } else if (Long[].class.equals(clazz)) {
-         o = parseLongObjects(values);
-      } else if (Boolean[].class.equals(clazz)) {
-         o = parseBooleanObjects(values);
-      } else if (Color[].class.equals(clazz)) {
-         o = parseColorValues(values);
-      } else if (Date[].class.equals(clazz)) {
-         o = parseDateValues(values);
-      } else if (Class[].class.equals(clazz)) {
-         o = parseClassValues(values);
       } else if (clazz.isArray() && clazz.getComponentType().isEnum()) {
          o = parseEnumValues(values, (Class<? extends Enum>) clazz.getComponentType());
       } else {
-         throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
+         o = parse(values,clazz.getComponentType());
       }
       return (T) o;
    }
@@ -142,22 +106,6 @@ public class BindingHelperImpl implements BindingHelper {
       Object o = null;
       if (String.class.equals(clazz)) {
          o = value;
-      } else if (Boolean.class.equals(clazz)) {
-         o = BOOLEAN_PARSER.convert(value);
-      } else if (Byte.class.equals(clazz)) {
-         o = BYTE_PARSER.convert(value);
-      } else if (Character.class.equals(clazz)) {
-         o = CHAR_PARSER.convert(value);
-      } else if (Short.class.equals(clazz)) {
-         o = SHORT_PARSER.convert(value);
-      } else if (Double.class.equals(clazz)) {
-         o = DOUBLE_PARSER.convert(value);
-      } else if (Float.class.equals(clazz)) {
-         o = FLOAT_PARSER.convert(value);
-      } else if (Integer.class.equals(clazz)) {
-         o = INT_PARSER.convert(value);
-      } else if (Long.class.equals(clazz)) {
-         o = LONG_PARSER.convert(value);
       } else if (boolean.class.equals(clazz)) {
          o = Boolean.parseBoolean(value);
       } else if (byte.class.equals(clazz)) {
@@ -174,18 +122,6 @@ public class BindingHelperImpl implements BindingHelper {
          o = Integer.parseInt(value);
       } else if (long.class.equals(clazz)) {
          o = Long.parseLong(value);
-      } else if (Color.class.equals(clazz)) {
-         o = COLOR_PARSER.convert(value);
-      } else if (URL.class.equals(clazz)) {
-         o = URL_PARSER.convert(value);
-      } else if (File.class.equals(clazz)) {
-         o = FILE_PARSER.convert(value);
-      } else if (Date.class.equals(clazz)) {
-         o = DATE_PARSER.convert(value);
-      } else if (Class.class.equals(clazz)) {
-         o = CLASS_PARSER.convert(value);
-      } else if (Pattern.class.equals(clazz)) {
-         o = REGEX_PARSER.convert(value);
       } else if (clazz.isEnum()) {
          try {
             o = Enum.valueOf((Class<? extends Enum>) clazz, value);
@@ -193,7 +129,7 @@ public class BindingHelperImpl implements BindingHelper {
             o = Enum.valueOf((Class<? extends Enum>) clazz, value.toUpperCase());
          }
       } else {
-         throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
+         o = StringConverter.forClass(clazz).convert(value);
       }
       return (T) o;
    }

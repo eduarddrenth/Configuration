@@ -71,7 +71,6 @@ public interface BindingHelper {
      * when extending {@link AbstractBindingHelperDecorator}.
      *
      * @param separator
-     * @param char
      */
     public void setArrayValueSeparator(char separator);
 

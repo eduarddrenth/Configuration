@@ -24,24 +24,14 @@ package com.vectorprint.configuration.binding;
 
 
 import com.vectorprint.ArrayHelper;
+import com.vectorprint.StringConverter;
 import com.vectorprint.VectorPrintRuntimeException;
-import static com.vectorprint.StringConverter.BOOLEAN_PARSER;
-import static com.vectorprint.StringConverter.CLASS_PARSER;
-import static com.vectorprint.StringConverter.COLOR_PARSER;
-import static com.vectorprint.StringConverter.DATE_PARSER;
-import static com.vectorprint.StringConverter.DOUBLE_PARSER;
-import static com.vectorprint.StringConverter.FILE_PARSER;
-import static com.vectorprint.StringConverter.FLOAT_PARSER;
-import static com.vectorprint.StringConverter.INT_PARSER;
-import static com.vectorprint.StringConverter.LONG_PARSER;
-import static com.vectorprint.StringConverter.REGEX_PARSER;
-import static com.vectorprint.StringConverter.SHORT_PARSER;
-import static com.vectorprint.StringConverter.URL_PARSER;
-import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
-import java.awt.Color;
+
+import java.awt.*;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -106,30 +96,6 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       return rv;
    }
 
-   public static Float[] parseFloatObjects(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Float[] rv = new Float[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = FLOAT_PARSER.convert(s);
-      }
-      return rv;
-   }
-
-   public static Date[] parseDateValues(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Date[] rv = new Date[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = DATE_PARSER.convert(s);
-      }
-      return rv;
-   }
-
    public static long[] parseLongValues(String[] values) {
       if (values == null || values.length == 0) {
          return null;
@@ -142,17 +108,6 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       return rv;
    }
 
-   public static Long[] parseLongObjects(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Long[] rv = new Long[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = LONG_PARSER.convert(s);
-      }
-      return rv;
-   }
 
    public static char[] parseCharValues(String[] values) {
       if (values == null || values.length == 0 || values[0] == null) {
@@ -193,17 +148,19 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       }
       return rv;
    }
-
-   public static Short[] parseShortObjects(String[] values) {
+   
+   public static <O> O[] parse(String[] values, Class<O> clazz) {
       if (values == null || values.length == 0) {
          return null;
       }
-      Short[] rv = new Short[values.length];
+      O[] rv = (O[])Array.newInstance(clazz, values.length);
+      StringConverter<O> conv = StringConverter.forClass(clazz);
       int i = 0;
       for (String s : values) {
-         rv[i++] = SHORT_PARSER.convert(s);
+         rv[i++] = conv.convert(s);
       }
       return rv;
+      
    }
 
    public static byte[] parseByteValues(String[] values) {
@@ -238,30 +195,6 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       return rv;
    }
 
-   public static Double[] parseDoubleObjects(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Double[] rv = new Double[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = DOUBLE_PARSER.convert(s);
-      }
-      return rv;
-   }
-
-   public static Integer[] parseIntObjects(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Integer[] rv = new Integer[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = INT_PARSER.convert(s);
-      }
-      return rv;
-   }
-
    public static int[] parseIntValues(String[] values) {
       if (values == null || values.length == 0) {
          return null;
@@ -270,54 +203,6 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       int i = 0;
       for (String s : values) {
          rv[i++] = Integer.parseInt(s);
-      }
-      return rv;
-   }
-
-   public static Pattern[] parseRegexValues(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Pattern[] rv = new Pattern[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = REGEX_PARSER.convert(s);
-      }
-      return rv;
-   }
-
-   public static URL[] parseURLValues(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      URL[] rv = new URL[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = URL_PARSER.convert(s);
-      }
-      return rv;
-   }
-
-   public static File[] parseFileValues(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      File[] rv = new File[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = FILE_PARSER.convert(s);
-      }
-      return rv;
-   }
-
-   public static Class[] parseClassValues(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Class[] rv = new Class[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = CLASS_PARSER.convert(s);
       }
       return rv;
    }
@@ -338,18 +223,6 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       return t;
    }
 
-   public static Color[] parseColorValues(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Color[] rv = new Color[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = COLOR_PARSER.convert(s);
-      }
-      return rv;
-   }
-
    public static boolean[] parseBooleanValues(String[] values) {
       if (values == null || values.length == 0) {
          return null;
@@ -358,18 +231,6 @@ public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> im
       int i = 0;
       for (String s : values) {
          rv[i++] = Boolean.parseBoolean(s);
-      }
-      return rv;
-   }
-
-   public static Boolean[] parseBooleanObjects(String[] values) {
-      if (values == null || values.length == 0) {
-         return null;
-      }
-      Boolean[] rv = new Boolean[values.length];
-      int i = 0;
-      for (String s : values) {
-         rv[i++] = BOOLEAN_PARSER.convert(s);
       }
       return rv;
    }
