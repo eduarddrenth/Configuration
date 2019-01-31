@@ -114,6 +114,15 @@ public class PropertyTest {
    }
 
    @Test
+   public void testLoadBindingHelper() {
+      BindingHelper instance = BindingHelper.getInstance();
+      BindingHelper instance2 = BindingHelper.getInstance();
+      assertNotNull(instance);
+      assertNotNull(instance2);
+      assertEquals(instance,instance2);
+   }
+
+   @Test
    public void testMultiThreadProps() throws Exception {
       final PropCreator pc = new PropCreator();
       ThreadTester.testInThread(pc);

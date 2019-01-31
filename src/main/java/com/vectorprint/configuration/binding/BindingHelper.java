@@ -21,7 +21,26 @@ package com.vectorprint.configuration.binding;
  * #L%
  */
 
+import com.vectorprint.configuration.binding.settings.SettingsBindingService;
+
+import java.util.ServiceLoader;
+
+/**
+ * Completely stateless and Threadsafe helper class for (de)serialization.
+ *
+ * @see #getInstance() that uses ServiceLoader mechanism
+ */
 public interface BindingHelper {
+
+    ServiceLoader<BindingHelper> loader = ServiceLoader.load(BindingHelper.class);
+
+    /**
+     * returns the first BindingHelper found by {@link #loader}.
+     * @return
+     */
+    public static BindingHelper getInstance() {
+        return loader.iterator().next();
+    }
 
     /**
      * use this from {@link #serializeValue(java.lang.Object) } if you need to
