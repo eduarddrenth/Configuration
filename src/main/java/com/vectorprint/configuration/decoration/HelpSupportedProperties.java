@@ -26,9 +26,12 @@ import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.PropertyHelpImpl;
 import com.vectorprint.configuration.generated.parser.HelpParser;
 import com.vectorprint.configuration.generated.parser.ParseException;
-import com.vectorprint.configuration.generated.parser.TokenMgrError;
+import com.vectorprint.configuration.generated.parser.TokenMgrException;
+
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -47,14 +50,14 @@ public class HelpSupportedProperties extends AbstractPropertiesDecorator {
    /**
     * Uses {@link HelpParser}, calls {@link #setHelp(java.util.Map) }
     *
-    * @param url
+    * @param urls
     */
    protected void initHelp(URL... urls) {
       Map<String, PropertyHelp> h = new HashMap<>(150);
       for (URL url : urls) {
          try {
-            new HelpParser(url.openStream()).parse(h);
-         } catch (TokenMgrError | ParseException | IOException iOException) {
+            new HelpParser(url.openStream(), StandardCharsets.UTF_8.name()).parse(h);
+         } catch (TokenMgrException | ParseException | IOException iOException) {
             super.getHelp().put("nohelp", new PropertyHelpImpl(HELPFORMAT));
             log.log(Level.WARNING, HELPFORMAT, iOException);
          }
