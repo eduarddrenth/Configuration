@@ -164,7 +164,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>VectorPrintCommon</artifactId>
-            <version>3.5</version>
+            <version>4.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
