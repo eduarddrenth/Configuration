@@ -38,8 +38,8 @@
         </repository>
     </distributionManagement>
     <ciManagement>
-        <system>hudson</system>
-        <url>http://www.vectorprint.nl</url>
+        <system>github</system>
+        <url>https://github.com/eduarddrenth/Configuration/actions</url>
     </ciManagement>
     <scm>
         <url>https://github.com/eduarddrenth/Configuration</url>
@@ -64,8 +64,8 @@
     </developers>
 
     <organization>
-        <name>VectorPrint</name>
-        <url>http://www.vectorprint.nl</url>
+        <name>E. Drenth Software</name>
+        <url>https://github.com/eduarddrenth</url>
     </organization>
 
     <build>
