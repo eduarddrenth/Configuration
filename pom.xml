@@ -105,6 +105,9 @@
                         <goals>
                             <goal>javacc</goal>
                         </goals>
+                        <configuration>
+                            <jdkVersion>1.8</jdkVersion>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
