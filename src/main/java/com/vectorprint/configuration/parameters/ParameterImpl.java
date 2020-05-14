@@ -24,12 +24,13 @@ package com.vectorprint.configuration.parameters;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
-import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Observable;
-import java.util.logging.Logger;
 
 public abstract class ParameterImpl<TYPE extends Serializable> extends Observable implements Parameter<TYPE> {
 
@@ -39,7 +40,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
    private TYPE def;
    private Class<? extends Parameterizable> declaringClass;
    private Class<TYPE> valueClass;
-   protected static final Logger log = Logger.getLogger(ParameterImpl.class.getName());
+   protected static final Logger log = LoggerFactory.getLogger(ParameterImpl.class.getName());
 
    /**
     * @param key the value of key
@@ -200,20 +201,20 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
          return false;
       }
       final ParameterImpl<?> other = (ParameterImpl<?>) obj;
-      if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)) {
+      if (!Objects.equals(this.key, other.key)) {
          return false;
       }
-      if (this.valueClass != other.valueClass && (this.valueClass == null || !this.valueClass.equals(other.valueClass))) {
+      if (this.valueClass != other.valueClass) {
          return false;
       }
       Object v = (this instanceof PasswordParameter || this instanceof CharPasswordParameter) ? value : getValue();
       Object o = (this instanceof PasswordParameter || this instanceof CharPasswordParameter) ? other.value : other.getValue();
       // compare getValue, not value, if it equals its ok, wether it originates from default or not
       if (!valueClass.isArray()) {
-         if (v != o && (v == null || !v.equals(o))) {
+         if (!Objects.equals(v, o)) {
             return false;
          }
-         if (this.def != other.def && (this.def == null || !this.def.equals(other.def))) {
+         if (!Objects.equals(this.def, other.def)) {
             return false;
          }
       } else {
@@ -224,10 +225,10 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
             return false;
          }
       }
-      if (this.declaringClass != other.declaringClass && (this.declaringClass == null || !this.declaringClass.equals(other.declaringClass))) {
+      if (this.declaringClass != other.declaringClass) {
          return false;
       }
-      return !((this.help == null) ? (other.help != null) : !this.help.equals(other.help));
+      return !(!Objects.equals(this.help, other.help));
    }
 
 }

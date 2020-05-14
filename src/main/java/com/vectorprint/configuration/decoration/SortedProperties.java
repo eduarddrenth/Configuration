@@ -22,6 +22,7 @@ package com.vectorprint.configuration.decoration;
 
 
 import com.vectorprint.configuration.EnhancedMap;
+
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,13 +33,7 @@ public class SortedProperties extends AbstractPropertiesDecorator {
       super(settings);
    }
    
-   private static final Comparator<Entry<String, String[]>> ECOMP = new Comparator<Entry<String, String[]>>() {
-      @Override
-      public int compare(Entry<String, String[]> o1, Entry<String, String[]> o2) {
-         return o1.getKey().compareTo(o2.getKey());
-      }
-      
-   };
+   private static final Comparator<Entry<String, String[]>> ECOMP = Comparator.comparing(Entry::getKey);
    
    @Override
    public Set<Entry<String, String[]>> entrySet() {

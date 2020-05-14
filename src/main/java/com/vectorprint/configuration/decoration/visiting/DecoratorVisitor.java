@@ -22,7 +22,6 @@ package com.vectorprint.configuration.decoration.visiting;
  */
 
 import com.vectorprint.configuration.EnhancedMap;
-import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.ObservableProperties;

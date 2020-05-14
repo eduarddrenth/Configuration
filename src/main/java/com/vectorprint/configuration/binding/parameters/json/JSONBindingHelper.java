@@ -25,7 +25,8 @@ package com.vectorprint.configuration.binding.parameters.json;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.parameters.AbstractParamBindingHelperDecorator;
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelperImpl;
-import java.awt.Color;
+
+import java.awt.*;
 
 public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
 
@@ -51,7 +52,7 @@ public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
             sb.append('\'').append(AbstractBindingHelperDecorator.colorToHex((Color) value)).append('\'');
          } else {
             // parameter clazz is never primitive
-            if (Number.class.isInstance(value) || Boolean.class.equals(clazz)) {
+            if (value instanceof Number || Boolean.class.equals(clazz)) {
                sb.append(String.valueOf(value));
             } else {
                sb.append('\'').append(String.valueOf(value)).append('\'');
@@ -86,7 +87,7 @@ public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
             sb.append('\'').append(v).append('\'').append(getArrayValueSeparator());
          }
       } else {
-         if (char[].class.isInstance(value)) {
+         if (value instanceof char[]) {
             char[] s = (char[]) value;
             if (s.length == 0) {
                return sb.append("null]").toString();

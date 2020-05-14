@@ -28,13 +28,7 @@ import com.vectorprint.StringConverter;
 import com.vectorprint.VectorPrintRuntimeException;
 
 import java.awt.*;
-import java.io.File;
 import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 public abstract class AbstractBindingHelperDecorator<T extends BindingHelper> implements BindingHelper {
    

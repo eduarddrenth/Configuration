@@ -23,13 +23,14 @@ package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.parameters.Parameterizable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ParameterHelper {
 
-   private static final Logger log = Logger.getLogger(ParameterHelper.class.getName());
+   private static final Logger log = LoggerFactory.getLogger(ParameterHelper.class.getName());
 
 
    public enum SUFFIX {set_default, set_value}
@@ -51,22 +52,12 @@ public class ParameterHelper {
             return null;
          }
          clazz=c;
-         if (clazz == null) {
-            return null;
-         }
          simpleName = clazz.getSimpleName() + "." + key + "." + suffix;
       }
-      if (log.isLoggable(Level.FINE)) {
-         log.fine("found default " + simpleName + ": " + Arrays.toString(settings.get(simpleName)));
+      if (log.isDebugEnabled()) {
+         log.debug("found default " + simpleName + ": " + Arrays.toString(settings.get(simpleName)));
       }
       return simpleName;
    }
-
-   /**
-    * compares two arrays
-    * @param o
-    * @param p
-    * @return the boolean 
-    */
 
 }

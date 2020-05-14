@@ -23,6 +23,7 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.configuration.EnhancedMap;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -23,7 +23,6 @@ package com.vectorprint.configuration.annotation;
  */
 
 
-import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 
 public interface SettingsAnnotationProcessor {

@@ -22,21 +22,21 @@ package com.vectorprint.configuration.decoration;
  */
 
 import com.vectorprint.configuration.EnhancedMap;
-import java.awt.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class CachingProperties extends AbstractPropertiesDecorator {
 
-   private static final Logger LOGGER = Logger.getLogger(CachingProperties.class.getName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(CachingProperties.class.getName());
 
    public CachingProperties(EnhancedMap settings) {
       super(settings);
@@ -62,15 +62,15 @@ public class CachingProperties extends AbstractPropertiesDecorator {
             Class c = value.getClass();
             if (!checkPrimitive(clazz, c)) {
                cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
-               if (LOGGER.isLoggable(Level.WARNING)) {
-                  LOGGER.warning(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
+               if (LOGGER.isWarnEnabled()) {
+                  LOGGER.warn(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
                       key, c.getName(), clazz.getName()));
                }
             }
          } else if (!clazz.isInstance(value)) {
             cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
-            if (LOGGER.isLoggable(Level.WARNING)) {
-               LOGGER.warning(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
+            if (LOGGER.isWarnEnabled()) {
+               LOGGER.warn(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
                    key, value.getClass().getName(), clazz.getName()));
             }
          }
@@ -116,12 +116,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
 
    @Override
    public String[] remove(Object key) {
-      for (Iterator<Entry<String, Object>> it = cache.entrySet().iterator(); it.hasNext();) {
-         Entry<String, Object> next = it.next();
-         if (next.getKey().contains(String.valueOf(key))) {
-            it.remove();
-         }
-      }
+       cache.entrySet().removeIf(next -> next.getKey().contains(String.valueOf(key)));
       return super.remove(key);
    }
 
@@ -132,12 +127,7 @@ public class CachingProperties extends AbstractPropertiesDecorator {
 
    @Override
    public String[] put(String key, String[] value) {
-      for (Iterator<Entry<String, Object>> it = cache.entrySet().iterator(); it.hasNext();) {
-         Entry<String, Object> next = it.next();
-         if (next.getKey().contains(String.valueOf(key))) {
-            it.remove();
-         }
-      }
+       cache.entrySet().removeIf(next -> next.getKey().contains(String.valueOf(key)));
       return super.put(key, value);
    }
 

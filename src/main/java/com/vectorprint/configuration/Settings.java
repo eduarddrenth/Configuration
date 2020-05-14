@@ -21,40 +21,46 @@ package com.vectorprint.configuration;
  */
 
 import com.vectorprint.VectorPrintRuntimeException;
-import com.vectorprint.configuration.annotation.Setting;
-import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.DecorationAware;
-import java.awt.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public final class Settings implements EnhancedMap, DecorationAware {
 
     private static final long serialVersionUID = 1;
-    private static final Logger log = Logger.getLogger(Settings.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(Settings.class.getName());
     private final Map<String, String[]> backingMap;
 
     @Override
     public void listProperties(PrintStream ps) {
         ps.println("settings with id " + getId() + ":");
         ps.println();
-        backingMap.entrySet().forEach((entry) -> {
-            ps.println(entry.getKey() + "=" + (entry.getValue() != null ? Arrays.asList(entry.getValue()) : ""));
-        });
-        ps.println("");
+        backingMap.forEach((key, value) -> ps.println(key + "=" + (value != null ? Arrays.asList(value) : "")));
+        ps.println();
         ps.println("settings wrapped by " + decorators.toString());
     }
     private String id;
@@ -105,10 +111,10 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     private void debug(Object val, boolean defaultVal, String... keys) {
-        if (log.isLoggable(Level.FINE)) {
+        if (log.isDebugEnabled()) {
             StringBuilder s = new StringBuilder(String.valueOf(val));
             if (val != null && val.getClass().isArray()) {
-                s = new StringBuilder("");
+                s = new StringBuilder();
                 Class compType = val.getClass().getComponentType();
                 if (!compType.isPrimitive()) {
                     for (Object o : (Object[]) val) {
@@ -148,7 +154,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
                     }
                 }
             }
-            log.fine(String.format("looking for property %s in %s, using value %s", Arrays.asList(keys), getId(), s.append((defaultVal) ? " (default)" : "").toString()));
+            log.debug(String.format("looking for property %s in %s, using value %s", keys!=null?Arrays.asList(keys):null, getId(), s.append((defaultVal) ? " (default)" : "").toString()));
         }
     }
 
@@ -159,7 +165,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     private String getFirst(String key) {
-        if (log.isLoggable(Level.FINE)) {
+        if (log.isDebugEnabled()) {
             debug((key != null) ? backingMap.get(key) : null, false, key);
         }
         if (key == null) {
@@ -233,7 +239,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
             if (defaultVal == null) {
                 handleNoValue(keys);
             } else {
-                debug(defaultVal, key);
+                debug(defaultVal, null);
             }
         } else {
             return key;
@@ -263,36 +269,28 @@ public final class Settings implements EnhancedMap, DecorationAware {
         }
         if (keys.length == 1) {
             if (containsKey(keys[0])) {
-                if (log.isLoggable(Level.FINE)) {
-                    log.fine(String.format("Returning key \"%s\" from %s, it was first found in settings", keys[0], Arrays.asList(keys)));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Returning key \"%s\" from %s, it was first found in settings", keys[0], Arrays.asList(keys)));
                 }
-                if (notPresent.contains(keys[0])) {
-                    notPresent.remove(keys[0]);
-                }
+                notPresent.remove(keys[0]);
                 return keys[0];
             } else {
-                if (!notPresent.contains(keys[0])) {
-                    notPresent.add(keys[0]);
-                }
+                notPresent.add(keys[0]);
                 return null;
             }
         }
         for (String k : keys) {
             if (containsKey(k)) {
-                if (log.isLoggable(Level.FINE)) {
-                    log.fine(String.format("Returning key \"%s\" from %s, it was first found in settings", k, Arrays.asList(keys)));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Returning key \"%s\" from %s, it was first found in settings", k, Arrays.asList(keys)));
                 }
-                if (notPresent.contains(keys[0])) {
-                    notPresent.remove(keys[0]);
-                }
+                notPresent.remove(keys[0]);
                 return k;
-            } else if (!notPresent.contains(k)) {
-                notPresent.add(k);
-            }
+            } else notPresent.add(k);
 
         }
-        if (log.isLoggable(Level.FINE)) {
-            log.fine(String.format("None of %s found in settings", Arrays.asList(keys)));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("None of %s found in settings", Arrays.asList(keys)));
         }
         return null;
     }
@@ -430,7 +428,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
             return false;
         }
         final Settings other = (Settings) obj;
-        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         return Objects.equals(backingMap, other.backingMap);
@@ -466,12 +464,10 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public String printHelp() {
         StringBuilder sb = new StringBuilder(1024);
-        help.entrySet().forEach((h) -> {
-            sb.append(h.getKey()).append(": ").append(h.getValue().getType())
-                    .append("; ")
-                    .append(h.getValue().getExplanation())
-                    .append(System.getProperty("line.separator"));
-        });
+        help.forEach((key, value) -> sb.append(key).append(": ").append(value.getType())
+                .append("; ")
+                .append(value.getExplanation())
+                .append(System.getProperty("line.separator")));
         return sb.toString();
     }
 
@@ -592,12 +588,12 @@ public final class Settings implements EnhancedMap, DecorationAware {
             if (String[].class.equals(clazz)) {
                 return (T) get(key);
             }
-            return key == null ? defaultValue : getFactory().getBindingHelper().convert(get(key), clazz);
+            return getFactory().getBindingHelper().convert(get(key), clazz);
         } else {
             if (String.class.equals(clazz)) {
                 return (T) getFirst(key);
             }
-            return key == null ? defaultValue : getFactory().getBindingHelper().convert(getFirst(key), clazz);
+            return getFactory().getBindingHelper().convert(getFirst(key), clazz);
         }
     }
 
@@ -617,11 +613,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     public Collection<String> getUnusedKeys() {
-        for (Iterator<String> it = unused.iterator(); it.hasNext();) {
-            if (!containsKey(it.next())) {
-                it.remove();
-            }
-        }
+        unused.removeIf(s -> !containsKey(s));
         return Collections.unmodifiableCollection(unused);
     }
 
@@ -634,7 +626,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     protected void finalize() throws Throwable {
-        log.warning("not used, possibly obsolete settings in: " + this + ": " + getUnusedKeys());
+        log.warn("not used, possibly obsolete settings in: " + this + ": " + getUnusedKeys());
         super.finalize();
     }
 
@@ -701,7 +693,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     @Override
     public void setOutermostDecorator(AbstractPropertiesDecorator outermostDecorator) {
         this.outermostDecorator = outermostDecorator;
-        log.warning(String.format("NB! Settings wrapped by %s, you should use this instead of %s", outermostDecorator.getClass().getName(),
+        log.warn(String.format("NB! Settings wrapped by %s, you should use this instead of %s", outermostDecorator.getClass().getName(),
                 getClass().getName()));
     }
 
@@ -753,9 +745,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     public void put(Map<String, String> m) {
-        m.forEach((k, v) -> {
-            put(k, v);
-        });
+        m.forEach(this::put);
     }
 
     @Override

@@ -21,9 +21,7 @@ package com.vectorprint.configuration;
  * #L%
  */
 
-import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.io.PrintStream;
 import java.io.Serializable;

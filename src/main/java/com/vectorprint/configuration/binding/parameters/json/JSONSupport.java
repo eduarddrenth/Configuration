@@ -31,10 +31,10 @@ import com.vectorprint.configuration.binding.parameters.AbstractParameterizableB
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParameterHelper;
 import com.vectorprint.configuration.generated.parser.JSONParser;
-import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.generated.parser.ParseException;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -82,13 +82,11 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
          }
          List l = (List) values;
          List<String> sl = new ArrayList<>(l.size());
-         l.forEach((o) -> {
-             sl.add(String.valueOf(o));
-          });
+         l.forEach((o) -> sl.add(String.valueOf(o)));
          if (String[].class.equals(parameter.getValueClass())) {
             return (TYPE) ArrayHelper.toArray(sl);
          } else {
-            Serializable o = (Serializable) bindingHelper.convert(ArrayHelper.toArray(sl), parameter.getValueClass());
+            Serializable o = bindingHelper.convert(ArrayHelper.toArray(sl), parameter.getValueClass());
             return (TYPE) o;
          }
       } else {
@@ -96,7 +94,7 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
          if (String.class.equals(parameter.getValueClass())) {
             return (TYPE) s;
          } else {
-            Serializable o = (Serializable) bindingHelper.convert(s, parameter.getValueClass());
+            Serializable o = bindingHelper.convert(s, parameter.getValueClass());
             return (TYPE) o;
          }
       }
@@ -127,9 +125,7 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
       sb.append("{'").append(p.getClass().getSimpleName()).append("': ");
       if (!p.getParameters().isEmpty()) {
          Collection<Parameter> c = new ArrayList<>(p.getParameters().size());
-         p.getParameters().values().stream().filter((par) -> ((include(par)))).forEachOrdered((par) -> {
-             c.add(par);
-          });
+         p.getParameters().values().stream().filter(this::include).forEachOrdered(c::add);
          if (!c.isEmpty()) {
             int max = c.size();
             int i = 0;
@@ -165,8 +161,8 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
     */
    @Override
    public Parameterizable parseParameterizable() {
-      Object parse = null;
-      Parameterizable parameterizable = null;
+      Object parse;
+      Parameterizable parameterizable;
       try {
          parse = new JSONParser(reader).parse();
       } catch (ParseException ex) {

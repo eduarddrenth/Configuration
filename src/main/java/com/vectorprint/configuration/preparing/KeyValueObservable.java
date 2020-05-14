@@ -23,7 +23,7 @@ package com.vectorprint.configuration.preparing;
 
 
 import com.vectorprint.VectorPrintException;
-import com.vectorprint.configuration.EnhancedMap;
+
 import java.io.Serializable;
 
 public interface KeyValueObservable<K extends Serializable, V extends Serializable> extends Serializable {

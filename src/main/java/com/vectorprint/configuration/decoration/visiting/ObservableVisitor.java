@@ -21,7 +21,6 @@ package com.vectorprint.configuration.decoration.visiting;
  * #L%
  */
 
-import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.Observer;
 

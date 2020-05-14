@@ -23,6 +23,7 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
@@ -35,9 +36,6 @@ public class ThreadBoundProperties extends AbstractPropertiesDecorator implement
 
    public ThreadBoundProperties(EnhancedMap properties) {
       super(properties);
-      if (properties == null) {
-         throw new IllegalArgumentException("properties may not be null");
-      }
       propsFromThread = new InheritableThreadLocal<>();
       propsFromThread.set(properties);
    }

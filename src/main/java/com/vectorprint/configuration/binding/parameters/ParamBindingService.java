@@ -21,15 +21,16 @@ package com.vectorprint.configuration.binding.parameters;
  * #L%
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ParamBindingService {
 
-   private static final Logger LOGGER = Logger.getLogger(ParamBindingService.class.getName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(ParamBindingService.class.getName());
 
    private final ServiceLoader<ParameterizableBindingFactory> factories;
    private final ServiceLoader<ParamFactoryValidator> validators;
@@ -78,14 +79,14 @@ public class ParamBindingService {
          for (ParamFactoryValidator validator : validators) {
             noValidatorFound = false;
             if (!validator.isValid(f)) {
-               if (LOGGER.isLoggable(Level.FINE)) {
-                  LOGGER.fine(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
+               if (LOGGER.isDebugEnabled()) {
+                  LOGGER.debug(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
                }
                ok = false;
                break;
             }
          }
-         return ok||noValidatorFound;
+         return ok;
    }
 
    /**

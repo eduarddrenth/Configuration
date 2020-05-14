@@ -22,11 +22,12 @@ package com.vectorprint.configuration.parameters;
  */
 
 import com.vectorprint.ArrayHelper;
+
 import java.util.Arrays;
 
 public class PasswordParameter extends ParameterImpl<byte[]> {
 
-   private boolean clearAfterGet = true;
+   private boolean clearAfterGet;
 
    /**
     * Calls {@link #PasswordParameter(java.lang.String, java.lang.String, boolean) } with true
@@ -59,10 +60,8 @@ public class PasswordParameter extends ParameterImpl<byte[]> {
          return null;
       }
       if (clearAfterGet) {
-         if (copy!=null) {
-            log.warning("clearing password after first retrieval");
-         }
-         copy = Arrays.copyOf(copy, copy.length);
+          log.warn("clearing password after first retrieval");
+          copy = Arrays.copyOf(copy, copy.length);
          ArrayHelper.clear(super.getValue());
          setValue(null);
       }

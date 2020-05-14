@@ -20,10 +20,6 @@ package com.vectorprint.configuration;
  * #L%
  */
 
-import com.vectorprint.configuration.annotation.Setting;
-import com.vectorprint.configuration.annotation.SettingsField;
-import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
-import com.vectorprint.configuration.decoration.FindableProperties;
 import java.util.Map;
 
 public interface Configurable<P extends Map> {

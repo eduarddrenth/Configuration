@@ -22,8 +22,12 @@ package com.vectorprint.configuration.binding.parameters.json;
  */
 
 
-import com.vectorprint.configuration.binding.parameters.*;
 import com.vectorprint.VectorPrintRuntimeException;
+import com.vectorprint.configuration.binding.parameters.ParamBindingHelper;
+import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
+import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
+import com.vectorprint.configuration.binding.parameters.ParameterizableSerializer;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;

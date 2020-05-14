@@ -34,7 +34,7 @@ public abstract class AbstractPrepareKeyValue implements PrepareKeyValue<String,
    /**
     * returns true when optIn is true (the default) and the key is registered or when optIn is false and the key isn't registered
     *
-    * @see #addKeys(java.io.Serializable)
+    * @see #addKeys(String...) 
     * @see #setOptIn(boolean) 
     * @param keyValue 
     * @return

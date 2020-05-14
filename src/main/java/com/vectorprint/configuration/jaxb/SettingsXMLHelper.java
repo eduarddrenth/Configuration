@@ -23,14 +23,11 @@ package com.vectorprint.configuration.jaxb;
 
 import com.vectorprint.IOHelper;
 import com.vectorprint.configuration.generated.jaxb.Settingstype;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -39,12 +36,16 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
 
 public class SettingsXMLHelper {
 
-    private static Logger logger = Logger.getLogger(SettingsXMLHelper.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(SettingsXMLHelper.class.getName());
 
     public static final String XSD = "/xsd/Settings.xsd";
 
@@ -57,9 +58,9 @@ public class SettingsXMLHelper {
             schema = sf.newSchema(new SAXSource(new InputSource(SettingsXMLHelper.class.getResourceAsStream(XSD))));
             JAXBCONTEXT = JAXBContext.newInstance("com.vectorprint.configuration.generated.jaxb");
         } catch (JAXBException ex) {
-            logger.log(Level.SEVERE, "failed to load jaxb context", ex);
+            logger.error("failed to load jaxb context", ex);
         } catch (SAXException ex) {
-            logger.log(Level.SEVERE, "failed to load schema", ex);
+            logger.error("failed to load schema", ex);
         }
     }
 
@@ -99,16 +100,15 @@ public class SettingsXMLHelper {
     }
 
     /**
-     * prints xsd, or validate xml (no exceptions => ok)
+     * validate xml (no exceptions => ok)
      *
-     * @see #VALIDATE
+     * @see #validateXml(URL)
      * @param args
      * @throws IOException
      */
     public static void main(String[] args) throws IOException, SAXException {
         if (args != null && args.length > 0) {
             validateXml(new URL(args[0]));
-        } else {
         }
     }
 

@@ -22,7 +22,6 @@ package com.vectorprint.configuration.annotation;
  */
 
 
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
@@ -31,6 +30,7 @@ import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

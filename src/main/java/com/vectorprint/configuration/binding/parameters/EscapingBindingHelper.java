@@ -22,8 +22,6 @@ package com.vectorprint.configuration.binding.parameters;
  */
 
 //~--- non-JDK imports --------------------------------------------------------
-import com.vectorprint.configuration.binding.*;
-import com.vectorprint.configuration.generated.parser.PropertiesParser;
 
 //~--- JDK imports ------------------------------------------------------------
 public final class EscapingBindingHelper extends AbstractParamBindingHelperDecorator {

@@ -21,8 +21,6 @@ package com.vectorprint.configuration.binding;
  * #L%
  */
 
-import com.vectorprint.configuration.binding.settings.SettingsBindingService;
-
 import java.util.ServiceLoader;
 
 /**

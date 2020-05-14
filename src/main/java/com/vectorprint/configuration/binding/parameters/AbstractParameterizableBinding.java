@@ -31,13 +31,14 @@ import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.PasswordParameter;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class AbstractParameterizableBinding<T> implements ParameterizableParser<T>, ParameterizableSerializer {
 
-   private static final Logger logger = Logger.getLogger(AbstractParameterizableBinding.class.getName());
+   private static final Logger logger = LoggerFactory.getLogger(AbstractParameterizableBinding.class.getName());
    private String packageName;
    private EnhancedMap settings;
 
@@ -94,7 +95,7 @@ public abstract class AbstractParameterizableBinding<T> implements Parameterizab
     */
    @Override
    public boolean include(Parameter parameter) {
-      boolean rv = true;
+      boolean rv;
       if (parameter instanceof CharPasswordParameter || parameter instanceof PasswordParameter) {
          rv = false;
       } else {
@@ -102,8 +103,8 @@ public abstract class AbstractParameterizableBinding<T> implements Parameterizab
          rv = !(v == null ? parameter.getDefault() == null : v.equals(parameter.getDefault()));
       }
       if (!rv) {
-         if (logger.isLoggable(Level.FINE)) {
-            logger.fine(String.format("not including %s in serialization", parameter));
+         if (logger.isDebugEnabled()) {
+            logger.debug(String.format("not including %s in serialization", parameter));
          }
       }
       return rv;

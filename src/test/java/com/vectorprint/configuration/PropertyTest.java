@@ -68,7 +68,11 @@ import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.testing.ThreadTester;
-import java.awt.Color;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -95,10 +99,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class PropertyTest {
 

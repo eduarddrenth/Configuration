@@ -22,15 +22,16 @@ package com.vectorprint.configuration.binding.settings;
  */
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SettingsBindingService {
    
-   private static final Logger LOGGER = Logger.getLogger(SettingsBindingService.class.getName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(SettingsBindingService.class.getName());
 
    private final ServiceLoader<EnhancedMapBindingFactory> factories;
    private final ServiceLoader<SettingsFactoryValidator> validators;
@@ -65,8 +66,8 @@ public class SettingsBindingService {
          boolean ok = true;
          for (SettingsFactoryValidator validator : validators) {
             if (!validator.isValid(f)) {
-               if (LOGGER.isLoggable(Level.FINE)) {
-                  LOGGER.fine(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
+               if (LOGGER.isDebugEnabled()) {
+                  LOGGER.debug(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
                }
                ok = false;
                break;

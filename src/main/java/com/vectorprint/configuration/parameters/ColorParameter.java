@@ -21,7 +21,7 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ColorParameter extends ParameterImpl<Color> {
 

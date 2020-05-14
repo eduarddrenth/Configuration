@@ -33,7 +33,7 @@ public class PreparingVisitor extends AbstractVisitor<PreparingProperties> {
    }
 
    /**
-    * Call {@link PreparingProperties#addObserver(com.vectorprint.configuration.observing.PrepareKeyValue) }.
+    * Call {@link PreparingProperties#addObserver(PrepareKeyValue)}  }.
     *
     * @param e
     */

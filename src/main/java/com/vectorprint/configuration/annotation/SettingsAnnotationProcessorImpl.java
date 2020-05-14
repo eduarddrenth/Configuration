@@ -21,13 +21,10 @@ package com.vectorprint.configuration.annotation;
  * #L%
  */
 
-import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
-import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactoryImpl;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
-import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
@@ -39,9 +36,11 @@ import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.beans.Statement;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -51,12 +50,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static com.vectorprint.ClassHelper.findConstructor;
 
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
 
-   private static final Logger LOGGER = Logger.getLogger(SettingsAnnotationProcessorImpl.class.getName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(SettingsAnnotationProcessorImpl.class.getName());
 
    private EnhancedMap settingsUsed = null;
 
@@ -74,8 +73,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
    @Override
    public boolean initSettings(Object o, EnhancedMap settings) {
       if (settings == null || settings.isEmpty()) {
-         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("settings null or empty, no initialization");
+         if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("settings null or empty, no initialization");
          }
          return false;
       }
@@ -83,12 +82,12 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          settingsUsed = settings;
       } else if (o instanceof Class && objects.contains(o) && settingsUsed.equals(settings)) {
          // only check for classes, because equals of objects may be very expensive
-         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(String.format("assuming, based on equals, settings for %s already initialized with %s", o, settings));
+         if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("assuming, based on equals, settings for %s already initialized with %s", o, settings));
          }
          return false;
       }
-      initSettings(o instanceof Class ? (Class) o : o.getClass(), o instanceof Class ? null : o, settings == null ? new Settings() : settings, settings != null);
+      initSettings(o instanceof Class ? (Class) o : o.getClass(), o instanceof Class ? null : o, settings, true);
       if (o instanceof Class) {
          objects.add(o);
       }
@@ -97,8 +96,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
       Field[] declaredFields = c.getDeclaredFields();
-      if (LOGGER.isLoggable(Level.FINE)) {
-         LOGGER.fine(String.format("looking for %s fields to apply settings to", (obj == null ? "static" : "instance")));
+      if (LOGGER.isDebugEnabled()) {
+         LOGGER.debug(String.format("looking for %s fields to apply settings to", (obj == null ? "static" : "instance")));
       }
       for (Field field : declaredFields) {
          // when looping use the original settings argument, each settings annotation should use its own setup
@@ -111,21 +110,21 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          EnhancedMap settings = eh;
          field.setAccessible(true);
          Class type = field.getType();
-         Annotation a = field.getAnnotation(Setting.class);
-         Annotation se = field.getAnnotation(SettingsField.class);
+         Setting a = field.getAnnotation(Setting.class);
+         SettingsField se = field.getAnnotation(SettingsField.class);
          if (se != null) {
             if (a != null) {
-               LOGGER.warning(String.format("Setting annotation is not processed because Settings is also present"));
+               LOGGER.warn("Setting annotation is not processed because Settings is also present");
             }
             if (!type.isAssignableFrom(EnhancedMap.class)) {
                throw new VectorPrintRuntimeException(String.format("%s is not an EnhancedMap, cannot assign settings", type.getName()));
             }
-            SettingsField set = (SettingsField) se;
+            SettingsField set = se;
             try {
                if (set.preprocessors().length > 0) {
                   if (!hasProps(settings, PreparingProperties.class)) {
                      if (notifyWrapping) {
-                        LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), PreparingProperties.class.getName()));
+                        LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), PreparingProperties.class.getName()));
                      }
                      settings = new PreparingProperties(settings);
                   }
@@ -139,7 +138,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                if (set.observable()) {
                   if (!hasProps(settings, ObservableProperties.class)) {
                      if (notifyWrapping) {
-                        LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ObservableProperties.class.getName()));
+                        LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ObservableProperties.class.getName()));
                      }
                      settings = new ObservableProperties(settings);
                   }
@@ -149,20 +148,20 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                }
                if (set.urls().length > 0) {
                   if (notifyWrapping) {
-                     LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ParsingProperties.class.getName()));
+                     LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ParsingProperties.class.getName()));
                   }
                   settings = new ParsingProperties(settings, set.urls());
                }
                if (set.readonly()) {
                   if (notifyWrapping) {
-                     LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ReadonlyProperties.class.getName()));
+                     LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ReadonlyProperties.class.getName()));
                   }
                   settings = new ReadonlyProperties(settings);
                }
                if (set.cache()) {
                   if (!hasProps(settings, CachingProperties.class)) {
                      if (notifyWrapping) {
-                        LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), CachingProperties.class.getName()));
+                        LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), CachingProperties.class.getName()));
                      }
                      settings = new CachingProperties(settings);
                   }
@@ -174,17 +173,14 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec, EnhancedMap.class, URL[].class);
                      if (!hasProps(settings, dec)) {
                         if (notifyWrapping) {
-                           LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
-                        }
-                        if (ParsingProperties.class.isInstance(dec) && !feat.factoryClass().equals(EnhancedMapBindingFactoryImpl.class)) {
-                           SpecificClassValidator.setClazz(feat.factoryClass());
+                           LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                         }
                         settings = constructor.newInstance(settings, urls);
                      }
                   } else if (!hasProps(settings, dec)) {
                      Constructor<? extends AbstractPropertiesDecorator> constructor = findConstructor(dec, EnhancedMap.class);
                      if (notifyWrapping) {
-                        LOGGER.warning(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
+                        LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), dec.getName()));
                      }
                      settings = constructor.newInstance(settings);
                   }
@@ -204,26 +200,26 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             }
          }
          if (a != null) {
-            Setting s = (Setting) a;
+            Setting s = a;
             try {
                Object cur = field.get(isStatic ? null : obj);
-               Object v = null;
+               Object v;
                if (cur == null) {
-                  if (LOGGER.isLoggable(Level.FINE)) {
-                     LOGGER.fine(String.format("requiring a value for %s in settings", Arrays.toString(s.keys())));
+                  if (LOGGER.isDebugEnabled()) {
+                     LOGGER.debug(String.format("requiring a value for %s in settings", Arrays.toString(s.keys())));
                   }
                   // don't catch exception, a setting is required
                   v = settings.getGenericProperty(null, type, s.keys());
                } else {
-                  if (LOGGER.isLoggable(Level.FINE)) {
-                     LOGGER.fine(String.format("looking for a value for %s in settings, ", Arrays.toString(s.keys())));
+                  if (LOGGER.isDebugEnabled()) {
+                     LOGGER.debug(String.format("looking for a value for %s in settings, ", Arrays.toString(s.keys())));
                   }
                   // a setting is not required, only look for one if it is there
                   v = settings.getGenericProperty(cur, type, s.keys());
                }
                if (v != null) {
-                  if (LOGGER.isLoggable(Level.FINE)) {
-                     LOGGER.fine(String.format("found %s for %s in settings, ", v, Arrays.toString(s.keys())));
+                  if (LOGGER.isDebugEnabled()) {
+                     LOGGER.debug(String.format("found %s for %s in settings, ", v, Arrays.toString(s.keys())));
                   }
                   if (!executeSetter(field, obj, v, isStatic)) {
                      field.set(obj, v);
@@ -242,8 +238,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
 
    private boolean executeSetter(Field f, Object o, Object value, boolean isStatic) {
       try {
-         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(String.format("trying to call %s with %s", "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), value));
+         if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("trying to call %s with %s", "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), value));
          }
          if (!isStatic) {
             new Statement(o, "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1), new Object[]{value}).execute();
@@ -264,9 +260,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          return true;
       } catch (NoSuchMethodException ex) {
          // no problem, we'll try to set the field value directly
-         LOGGER.log(Level.FINE, null, ex);
-      } catch (SecurityException ex) {
-         throw new VectorPrintRuntimeException(ex);
+         LOGGER.debug( "no problem, we'll try to set the field value directly", ex);
       } catch (Exception ex) {
          throw new VectorPrintRuntimeException(ex);
       }

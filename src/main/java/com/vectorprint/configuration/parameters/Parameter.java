@@ -23,7 +23,7 @@ package com.vectorprint.configuration.parameters;
 
 import com.vectorprint.configuration.parameters.annotation.Param;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
+
 import java.io.Serializable;
 
 public interface Parameter<TYPE extends Serializable> extends Cloneable, Serializable, Observable {

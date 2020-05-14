@@ -23,12 +23,8 @@ package com.vectorprint.configuration.jaxb;
 
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.VectorPrintException;
-import com.vectorprint.configuration.generated.jaxb.Featuretype;
-import com.vectorprint.configuration.generated.jaxb.Preprocessortype;
-import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
-import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
@@ -39,13 +35,19 @@ import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
+import com.vectorprint.configuration.generated.jaxb.Featuretype;
+import com.vectorprint.configuration.generated.jaxb.Preprocessortype;
+import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
+
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import javax.xml.bind.JAXBException;
+
+import static com.vectorprint.ClassHelper.findConstructor;
 
 public class SettingsFromJAXB {
 

@@ -32,18 +32,20 @@ import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
-import java.util.logging.Logger;
 
 public class ParameterizableImpl implements Parameterizable {
 
    public static final ParamAnnotationProcessor paramProcessor = new ParamAnnotationProcessorImpl();
-   protected static final Logger logger = Logger.getLogger(ParameterizableImpl.class.getName());
+   protected static final Logger logger = LoggerFactory.getLogger(ParameterizableImpl.class.getName());
    private static final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    private final Map<String, Parameter> parameters = new HashMap<String, Parameter>(5) {
@@ -123,9 +125,7 @@ public class ParameterizableImpl implements Parameterizable {
          Constructor con = getClass().getConstructor();
          ParameterizableImpl pi = (ParameterizableImpl) con.newInstance();
          paramProcessor.initParameters(pi);
-         pi.parameters.values().forEach((p) -> {
-             p.setValue(getParameters().get(p.getKey()).getValue());
-          });
+         pi.parameters.values().forEach((p) -> p.setValue(getParameters().get(p.getKey()).getValue()));
          return pi;
       } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
          throw new VectorPrintRuntimeException(ex);
@@ -151,7 +151,7 @@ public class ParameterizableImpl implements Parameterizable {
    @Override
    public int hashCode() {
       int hash = 7;
-      hash = 79 * hash + (this.parameters != null ? this.parameters.hashCode() : 0);
+      hash = 79 * hash + this.parameters.hashCode();
       return hash;
    }
 
@@ -167,7 +167,7 @@ public class ParameterizableImpl implements Parameterizable {
          return false;
       }
       final ParameterizableImpl other = (ParameterizableImpl) obj;
-      return !(this.parameters != other.parameters && (this.parameters == null || !this.parameters.equals(other.parameters)));
+      return !(this.parameters != other.parameters && !this.parameters.equals(other.parameters));
    }
 
    @Override

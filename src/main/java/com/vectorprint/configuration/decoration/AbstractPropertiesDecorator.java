@@ -26,7 +26,10 @@ import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.PropertyHelp;
 import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
-import java.awt.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -38,7 +41,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public abstract class AbstractPropertiesDecorator implements EnhancedMap, DecorationAware {
@@ -46,7 +48,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
     private EnhancedMap settings;
     private AbstractPropertiesDecorator outermostDecorator;
     private final List<Class<? extends AbstractPropertiesDecorator>> decorators = new ArrayList<>(2);
-    protected static final Logger log = Logger.getLogger(AbstractPropertiesDecorator.class.getName());
+    protected static final Logger log = LoggerFactory.getLogger(AbstractPropertiesDecorator.class.getName());
 
     /**
      * Will call {@link DecorationAware#addDecorator(java.lang.Class) } and
@@ -276,13 +278,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
                 inner = null;
             }
         }
-        return l.toArray(new DecorationAware[l.size()]);
+        return l.toArray(new DecorationAware[0]);
     }
 
     /**
-     * traverse the stack of settings decorators and visit all that are
-     * instances of {@link DecoratorVisitor#getClazzToVisit()
-     * }. {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap)
+     * traverse the stack of settings decorators and visit all that {@link DecoratorVisitor#shouldVisit(EnhancedMap) should be visited} . {@link DecoratorVisitor#visit(com.vectorprint.configuration.EnhancedMap)
      * } will be called.
      *
      * @param dv
@@ -480,7 +480,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
     @Override
     public void setOutermostDecorator(AbstractPropertiesDecorator outermostDecorator) {
         this.outermostDecorator = outermostDecorator;
-        log.warning(String.format("NB! %s decorated by %s, you should use this instead of %s", getClass().getName(), outermostDecorator.getClass().getName(),
+        log.warn(String.format("NB! %s decorated by %s, you should use this instead of %s", getClass().getName(), outermostDecorator.getClass().getName(),
                 getClass().getName()));
     }
 

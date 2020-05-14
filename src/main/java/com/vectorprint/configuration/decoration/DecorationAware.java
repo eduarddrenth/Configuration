@@ -22,7 +22,9 @@ package com.vectorprint.configuration.decoration;
  */
 
 
+import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsField;
+
 import java.util.List;
 
 public interface DecorationAware {
@@ -32,7 +34,7 @@ public interface DecorationAware {
     * }
     * to build a list of decorators for settings. When decorated your code should call methods on the outermost
     * decorator only, if you don't, functionality of decorators will not be called. The preferred way to achieve this is
-    * to use the {@link SettingsField} annotation in conjunction with a call to {@link SettingsAnnotationProcessor#initSettings(java.lang.Object, com.vectorprint.configuration.EnhancedMap) }
+    * to use the {@link SettingsField} annotation in conjunction with a call to {@link com.vectorprint.configuration.annotation.SettingsAnnotationProcessor#initSettings(Object, EnhancedMap)}  }
     * }.
     *
     * @param clazz
@@ -48,7 +50,7 @@ public interface DecorationAware {
    /**
     * The last added Decorator, if it is not null use it instead of these settings.
     *
-    * @see SettingsAnnotationProcessor
+    * @see com.vectorprint.configuration.annotation.SettingsAnnotationProcessor
     * @return
     */
    AbstractPropertiesDecorator getOutermostDecorator();
@@ -57,7 +59,7 @@ public interface DecorationAware {
     * Called from {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
     * }.
     *
-    * @see SettingsAnnotationProcessor
+    * @see com.vectorprint.configuration.annotation.SettingsAnnotationProcessor
     * @param outermostDecorator
     */
    void setOutermostDecorator(AbstractPropertiesDecorator outermostDecorator);

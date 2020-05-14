@@ -52,13 +52,13 @@ public class BindingHelperImpl implements BindingHelper {
     */
    @Override
    public <T> T convert(String[] values, Class<T> clazz) {
-      if (values == null | values.length == 0) {
+      if (values == null || values.length == 0) {
          return null;
       }
       if (!clazz.isArray()) {
          throw new VectorPrintRuntimeException(clazz.getName() + " not supported");
       }
-      Object o = null;
+      Object o;
       if (String[].class.equals(clazz)) {
          return (T) values;
       }
@@ -82,7 +82,7 @@ public class BindingHelperImpl implements BindingHelper {
          o = parseCharObjects(values);
       } else if (Byte[].class.equals(clazz)) {
          o = parseByteObjects(values);
-      } else if (clazz.isArray() && clazz.getComponentType().isEnum()) {
+      } else if (clazz.getComponentType().isEnum()) {
          o = parseEnumValues(values, (Class<? extends Enum>) clazz.getComponentType());
       } else {
          o = parse(values,clazz.getComponentType());
@@ -103,7 +103,7 @@ public class BindingHelperImpl implements BindingHelper {
       if (value == null || value.isEmpty()) {
          return null;
       }
-      Object o = null;
+      Object o;
       if (String.class.equals(clazz)) {
          o = value;
       } else if (boolean.class.equals(clazz)) {
@@ -219,7 +219,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(v).append(separator);
          }
-      } else if (short[].class.isInstance(value)) {
+      } else if (value instanceof short[]) {
          short[] s = (short[]) value;
          if (s.length == 0) {
             return null;
@@ -232,7 +232,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(String.valueOf(s[i])).append(separator);
          }
-      } else if (int[].class.isInstance(value)) {
+      } else if (value instanceof int[]) {
          int[] s = (int[]) value;
          if (s.length == 0) {
             return null;
@@ -245,7 +245,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(String.valueOf(s[i])).append(separator);
          }
-      } else if (long[].class.isInstance(value)) {
+      } else if (value instanceof long[]) {
          long[] s = (long[]) value;
          if (s.length == 0) {
             return null;
@@ -258,7 +258,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(String.valueOf(s[i])).append(separator);
          }
-      } else if (float[].class.isInstance(value)) {
+      } else if (value instanceof float[]) {
          float[] s = (float[]) value;
          if (s.length == 0) {
             return null;
@@ -271,7 +271,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(String.valueOf(s[i])).append(separator);
          }
-      } else if (double[].class.isInstance(value)) {
+      } else if (value instanceof double[]) {
          double[] s = (double[]) value;
          if (s.length == 0) {
             return null;
@@ -284,7 +284,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(String.valueOf(s[i])).append(separator);
          }
-      } else if (byte[].class.isInstance(value)) {
+      } else if (value instanceof byte[]) {
          byte[] s = (byte[]) value;
          if (s.length == 0) {
             return null;
@@ -297,7 +297,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(String.valueOf(s[i])).append(separator);
          }
-      } else if (boolean[].class.isInstance(value)) {
+      } else if (value instanceof boolean[]) {
          boolean[] s = (boolean[]) value;
          if (s.length == 0) {
             return null;
@@ -310,7 +310,7 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(String.valueOf(s[i])).append(separator);
          }
-      } else if (char[].class.isInstance(value)) {
+      } else if (value instanceof char[]) {
          char[] s = (char[]) value;
          if (s.length == 0) {
             return null;
