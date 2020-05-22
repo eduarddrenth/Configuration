@@ -50,6 +50,7 @@ import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
+import com.vectorprint.configuration.decoration.ReloadableProperties;
 import com.vectorprint.configuration.decoration.ThreadBoundProperties;
 import com.vectorprint.configuration.decoration.visiting.ParsingVisitor;
 import com.vectorprint.configuration.generated.parser.ParseException;
@@ -89,6 +90,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -257,6 +261,24 @@ public class PropertyTest {
       public void update(Observable object, Changes changes) {
          this.changes = changes;
       }
+   }
+   @Test
+   public void testReloading() throws IOException, ParseException, InterruptedException {
+      File f = File.createTempFile("props", "props");
+      f.deleteOnExit();
+      Files.write(f.toPath(),Files.readAllBytes(new File("src/test/resources/config"
+                      + File.separator + "chart.properties").toPath()), StandardOpenOption.APPEND);
+
+      ReloadableProperties rp = new ReloadableProperties(new Settings(), f);
+      assertTrue(rp.getProperty("","alpha").equals("200"));
+      assertFalse(rp.containsKey("font"));
+
+      Files.write(f.toPath(),Files.readAllBytes(new File("src/test/resources/config"
+              + File.separator + "page.properties").toPath()), StandardOpenOption.APPEND);
+      assertTrue(rp.getProperty("","alpha").equals("200"));
+      Thread.sleep(2000);
+      assertTrue(rp.getProperty("","font").equals("/MyriadPro-Regular.ttf"));
+
    }
 
    @Test

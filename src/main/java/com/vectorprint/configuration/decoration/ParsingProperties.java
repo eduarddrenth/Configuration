@@ -97,18 +97,18 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    /**
     * Calls {@link #ParsingProperties(com.vectorprint.configuration.EnhancedMap, java.net.URL...) }
     * @param properties
-    * @param inFile
+    * @param files
     * @throws IOException
     */
-   public ParsingProperties(EnhancedMap properties, File... inFile) throws IOException {
-      this(properties, toURL(inFile));
+   public ParsingProperties(EnhancedMap properties, File... files) throws IOException {
+      this(properties, toURL(files));
    }
    
-   public static URL[] toURL(File... urls) {
-      URL[] u = new URL[urls.length];
-      for (int i = 0; i < urls.length; i++) {
+   public static URL[] toURL(File... files) {
+      URL[] u = new URL[files.length];
+      for (int i = 0; i < files.length; i++) {
          try {
-            u[i] = urls[i].toURI().toURL();
+            u[i] = files[i].toURI().toURL();
          } catch (MalformedURLException ex) {
             throw new VectorPrintRuntimeException(ex);
          }
