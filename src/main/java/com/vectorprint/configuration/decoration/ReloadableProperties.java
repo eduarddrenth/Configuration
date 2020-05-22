@@ -66,7 +66,7 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     }
 
     public ReloadableProperties(EnhancedMap properties, String... files) throws IOException {
-        this(properties, (File[]) Arrays.stream(files).map(u -> new File(u)).collect(Collectors.toList()).toArray());
+        this(properties, Arrays.stream(files).map(u -> new File(u)).collect(Collectors.toList()).toArray(new File[files.length]));
     }
 
     /**
