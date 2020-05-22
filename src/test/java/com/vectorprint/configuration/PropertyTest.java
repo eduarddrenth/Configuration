@@ -52,6 +52,7 @@ import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.ReloadableProperties;
 import com.vectorprint.configuration.decoration.ThreadBoundProperties;
+import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.ParsingVisitor;
 import com.vectorprint.configuration.generated.parser.ParseException;
 import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
@@ -269,7 +270,9 @@ public class PropertyTest {
       Files.write(f.toPath(),Files.readAllBytes(new File("src/test/resources/config"
                       + File.separator + "chart.properties").toPath()), StandardOpenOption.APPEND);
 
-      ReloadableProperties rp = new ReloadableProperties(new Settings(), f);
+      ReloadableProperties rp = new ReloadableProperties(new ObservableProperties(new Settings()), f);
+      MyObserver observer = new MyObserver();
+      rp.accept(new ObservableVisitor(observer));
       assertTrue(rp.getProperty("","alpha").equals("200"));
       assertFalse(rp.containsKey("font"));
 
@@ -278,6 +281,9 @@ public class PropertyTest {
       assertTrue(rp.getProperty("","alpha").equals("200"));
       Thread.sleep(2000);
       assertTrue(rp.getProperty("","font").equals("/MyriadPro-Regular.ttf"));
+      assertEquals(observer.changes.getAdded().size(),1);
+      assertEquals(observer.changes.getChanged(),null);
+      assertEquals(observer.changes.getAdded().get(0),"font");
 
    }
 

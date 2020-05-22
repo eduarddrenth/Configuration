@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Watches files (only those via constructor arguments) for changes reloads settings.
  */
-public class ReloadableProperties extends ParsingProperties {
+public class ReloadableProperties extends ParsingProperties implements HiddenBy {
 
     private final transient WatchService watcher = FileSystems.getDefault().newWatchService();
     private final transient ExecutorService runner = Executors.newSingleThreadExecutor();
@@ -45,7 +45,11 @@ public class ReloadableProperties extends ParsingProperties {
                     Path file = we.context();
                     Path dir = (Path) watchKey.watchable();
                     try {
-                        reload(dir.resolve(file));
+                        if (dir.resolve(file).toFile().exists()) {
+                            reload(dir.resolve(file));
+                        } else {
+                            log.error("deleted? " + file);
+                        }
                     } catch (IOException e) {
                         log.error("error reloading: " + file,e);
                     }
@@ -72,5 +76,9 @@ public class ReloadableProperties extends ParsingProperties {
      */
     protected void reload(Path file) throws IOException {
         loadFromReader(new FileReader(file.toFile()));
+    }
+    @Override
+    public boolean hiddenBy(Class<? extends AbstractPropertiesDecorator> settings) {
+        return ObservableProperties.class.isAssignableFrom(settings);
     }
 }
