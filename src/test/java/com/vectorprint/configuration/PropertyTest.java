@@ -282,7 +282,7 @@ public class PropertyTest {
       Thread.sleep(2000);
       assertTrue(rp.getProperty("","font").equals("/MyriadPro-Regular.ttf"));
       assertEquals(observer.changes.getAdded().size(),1);
-      assertEquals(observer.changes.getChanged(),null);
+      assertEquals(observer.changes.getChanged().size(),0);
       assertEquals(observer.changes.getAdded().get(0),"font");
 
    }

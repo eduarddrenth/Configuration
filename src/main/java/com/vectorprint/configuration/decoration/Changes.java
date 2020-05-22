@@ -28,7 +28,7 @@ import java.util.List;
 
 public class Changes {
 
-   private List<String> added, changed, deleted;
+   private List<String> added=Collections.emptyList(), changed = Collections.emptyList(), deleted = Collections.emptyList();
 
    public Changes(List<String> added, List<String> changed, List<String> deleted) {
       if (added != null) {
