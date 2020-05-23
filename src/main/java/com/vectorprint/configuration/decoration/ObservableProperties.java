@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
@@ -70,11 +71,10 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    @Override
    public String[] put(String key, String[] value) {
       boolean exists = containsKey(key);
-      String[] v1 = value;
       String[] v2 = get(key);
       String[] s = super.put(key, value);
       if (exists) {
-         if ((v1 == null && v2 != null) || (v1 != null && !Arrays.equals(v1, v2))) {
+         if (!Objects.deepEquals(value,v2)) {
             notifyObservers(new Changes(null, Changes.fromKeys(key), null));
          }
       } else {
@@ -90,7 +90,7 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
       m.forEach((key, v1) -> {
          if (containsKey(key)) {
             String[] v2 = get(key);
-            if ((v1 == null && v2 != null) || (v1 != null && !Arrays.equals(v1, v2))) {
+            if (!Objects.deepEquals(v1,v2)) {
                changed.add(key);
             }
          } else {
@@ -98,21 +98,28 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
          }
       });
       super.putAll(m);
-      notifyObservers(new Changes(added, changed, null));
+      if (!(added.isEmpty()&&changed.isEmpty())) {
+         notifyObservers(new Changes(added, changed, null));
+      }
    }
 
    @Override
    public String[] remove(Object key) {
       String[] s = super.remove(key);
-      notifyObservers(new Changes(null, null, Changes.fromKeys((String) key)));
+      if (s!=null) {
+         notifyObservers(new Changes(null, null, Changes.fromKeys((String) key)));
+      }
       return s;
    }
 
    @Override
    public void clear() {
+      boolean notEmpty = !isEmpty();
       List<String> gone = new ArrayList<>(keySet());
       super.clear();
-      notifyObservers(new Changes(null, null, gone));
+      if (notEmpty) {
+         notifyObservers(new Changes(null, null, gone));
+      }
    }
 
    @Override

@@ -301,7 +301,7 @@ public class PropertyTest {
       assertTrue(os.changes.getChanged().contains("marks"));
 
       mtp.put("testerdetest", "_nieuwe waarde");
-      assertNull(os.changes.getChanged());
+      assertTrue(os.changes.getChanged().isEmpty());
       assertTrue(os.changes.getAdded().contains("testerdetest"));
 
       Map<String, String[]> mm = new HashMap<>(2);
