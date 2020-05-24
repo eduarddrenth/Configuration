@@ -32,6 +32,11 @@
             <xs:documentation>by default settings will be cached to minimize expensive string conversion</xs:documentation>
          </xs:annotation>
       </xs:attribute>
+      <xs:attribute name="autoreload" default="false" type="xs:boolean">
+         <xs:annotation>
+            <xs:documentation>by default settings will not be auto reloaded</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="observable" default="false" type="xs:boolean">
          <xs:annotation>
             <xs:documentation>by default settings will not be obervable, if they are you can add observers to the settings</xs:documentation>

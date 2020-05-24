@@ -34,6 +34,7 @@ import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
+import com.vectorprint.configuration.decoration.ReloadableProperties;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
 import com.vectorprint.configuration.generated.jaxb.Featuretype;
 import com.vectorprint.configuration.generated.jaxb.Preprocessortype;
@@ -73,8 +74,12 @@ public class SettingsFromJAXB {
             settings = new ObservableProperties(settings);
          }
          if (!settingstype.getUrl().isEmpty()) {
-            settings = new ParsingProperties(settings, SettingsBindingService.getInstance().getFactory().getBindingHelper().
-                convert(ArrayHelper.toArray(settingstype.getUrl()), URL[].class));
+            if (settingstype.isAutoreload()) {
+               settings = new ReloadableProperties(settings, settingstype.getUrl().toArray(new String[0]));
+            } else {
+               settings = new ParsingProperties(settings, SettingsBindingService.getInstance().getFactory().getBindingHelper().
+                       convert(ArrayHelper.toArray(settingstype.getUrl()), URL[].class));
+            }
          }
          if (settingstype.isReadonly()) {
             settings = new ReadonlyProperties(settings);
