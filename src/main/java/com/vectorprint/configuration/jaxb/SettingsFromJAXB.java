@@ -80,6 +80,8 @@ public class SettingsFromJAXB {
                settings = new ParsingProperties(settings, SettingsBindingService.getInstance().getFactory().getBindingHelper().
                        convert(ArrayHelper.toArray(settingstype.getUrl()), URL[].class));
             }
+         } else if (settingstype.isAutoreload()) {
+            throw new IllegalArgumentException("autoreloading needs file urls!");
          }
          if (settingstype.isReadonly()) {
             settings = new ReadonlyProperties(settings);

@@ -32,6 +32,7 @@ import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
+import com.vectorprint.configuration.decoration.ReloadableProperties;
 import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
@@ -150,7 +151,13 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                   if (notifyWrapping) {
                      LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ParsingProperties.class.getName()));
                   }
-                  settings = new ParsingProperties(settings, set.urls());
+                  if (set.autoreload()) {
+                     settings = new ReloadableProperties(settings, set.urls());
+                  } else {
+                     settings = new ParsingProperties(settings, set.urls());
+                  }
+               } else if (set.autoreload()) {
+                  throw new IllegalArgumentException("autoreload needs file urls");
                }
                if (set.readonly()) {
                   if (notifyWrapping) {

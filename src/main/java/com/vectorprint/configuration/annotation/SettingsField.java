@@ -59,6 +59,13 @@ public @interface SettingsField {
    boolean cache() default true;
 
    /**
+    * by default settings will not be {@link com.vectorprint.configuration.decoration.ReloadableProperties reloadable}.
+    *
+    * @return
+    */
+   boolean autoreload() default false;
+
+   /**
     * by default settings will not be {@link ObservableProperties observable}. If you want the object containing the
     * settings to be added automatically as observer, just implement {@link Observer}.
     *
