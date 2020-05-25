@@ -18,7 +18,7 @@ public class WeldJUnit4Runner extends BlockJUnit4ClassRunner {
         this.klass = klass;
         this.weld = new Weld();
         this.container = weld
-                .addPackages(PropertyLocationProvider.class.getPackage(),CDIProperties.class.getPackage(),EnhancedMap.class.getPackage())
+                .addPackages(PropertyLocationProvider.class.getPackage())
                 .addBeanClass(CDIProperties.class).addBeanClass(EnhancedMap.class).addBeanClass(PropertyResolver.class)
                 .addBeanClass(PropertyLocationProvider.class).addBeanClass(RequiredInterceptor.class)
                 .initialize();
