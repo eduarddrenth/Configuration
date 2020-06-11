@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotate a method with {@link javax.enterprise.inject.Produces} and this annotation in an application scoped bean that will return the url to settings.
+ * Annotate a String[] method with {@link javax.enterprise.inject.Produces} and this annotation in an application scoped bean that will return the urls to settings.
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier
