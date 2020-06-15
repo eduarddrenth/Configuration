@@ -378,8 +378,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
                 changes.getChanged().stream(),
                 changes.getAdded().stream()
         )
-        .forEach(c -> {
-            injectionPoints.get(c).forEach(ip -> {
+        .forEach(c -> injectionPoints.get(c).forEach(ip -> {
                 Bean<?> bean = ip.getBean();
                 Class bc = bean.getBeanClass();
                 CreationalContext<?> creationalContext =
@@ -387,10 +386,10 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
                 Object reference = beanManager.getReference(bean, bc, creationalContext);
                 Annotated a = ip.getAnnotated();
                 updates.add(new ToUpdate(a, reference, c));
-            });
-        });
-        updates.forEach(u -> u.update(getGenericProperty(null, (Class) u.annotated.getBaseType(), u.key)));
+            })
+        );
         accept(CACHE_CLEARING_VISITOR);
+        updates.forEach(u -> u.update(getGenericProperty(null, (Class) u.annotated.getBaseType(), u.key)));
     }
 
     private static final CacheClearingVisitor CACHE_CLEARING_VISITOR =

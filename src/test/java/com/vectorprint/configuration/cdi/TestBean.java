@@ -15,16 +15,19 @@
  */
 package com.vectorprint.configuration.cdi;
 
+import com.vectorprint.configuration.EnhancedMap;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 
 /**
  *
  * @author eduard
  */
-@ApplicationScoped
+@Singleton
 @Named
 public class TestBean {
 
@@ -45,10 +48,18 @@ public class TestBean {
     @Property(keys = "i", defaultValue = "1")
     private int i;
 
+    @Inject
+    @Properties
+    private EnhancedMap properties;
+
+    public EnhancedMap getProperties() {
+        return properties;
+    }
+
     /*
-    trick to be able to verify method parameter injection and update are working
-    An injected Testbean in the test class itself doesn't get updated
-     */
+        trick to be able to verify method parameter injection and update are working
+        An injected Testbean in the test class itself doesn't get updated
+         */
     private static boolean bp;
 
     private static String s;
