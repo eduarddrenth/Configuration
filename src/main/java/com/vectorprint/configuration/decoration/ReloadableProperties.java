@@ -33,7 +33,7 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     public ReloadableProperties(EnhancedMap properties, File... files) throws IOException {
         super(properties, files);
         for (File f : files) {
-            toWatch.add(new File(f.getName()));
+            toWatch.add(f);
             f.getParentFile().toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
         }
         /*
@@ -51,8 +51,8 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
                     Path file = we.context();
                     Path dir = (Path) watchKey.watchable();
                     try {
-                        if (!toWatch.contains(file.toFile())) {
-                            log.warn("Not watched, skipping " + file);
+                        if (!toWatch.contains(dir.resolve(file).toFile())) {
+                            log.warn("Not watched, skipping " + dir.resolve(file).toFile());
                         } else {
                             if (dir.resolve(file).toFile().exists()) {
                                 reload(dir.resolve(file));
