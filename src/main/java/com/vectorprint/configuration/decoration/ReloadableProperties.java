@@ -12,7 +12,10 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -25,9 +28,12 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     private final transient WatchService watcher = FileSystems.getDefault().newWatchService();
     private final transient ExecutorService runner = Executors.newSingleThreadExecutor();
 
+    private final List<File> toWatch = new ArrayList<>(1);
+
     public ReloadableProperties(EnhancedMap properties, File... files) throws IOException {
         super(properties, files);
         for (File f : files) {
+            toWatch.add(new File(f.getName()));
             f.getParentFile().toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
         }
         /*
@@ -45,10 +51,14 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
                     Path file = we.context();
                     Path dir = (Path) watchKey.watchable();
                     try {
-                        if (dir.resolve(file).toFile().exists()) {
-                            reload(dir.resolve(file));
+                        if (!toWatch.contains(file.toFile())) {
+                            log.warn("Not watched, skipping " + file);
                         } else {
-                            log.error("deleted? " + file);
+                            if (dir.resolve(file).toFile().exists()) {
+                                reload(dir.resolve(file));
+                            } else {
+                                log.error("deleted? " + file);
+                            }
                         }
                     } catch (IOException e) {
                         log.error("error reloading: " + file,e);
