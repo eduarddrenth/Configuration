@@ -420,7 +420,6 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
                 }
             } else {
                 AnnotatedParameter ap = (AnnotatedParameter) annotated;
-                Parameter javaParameter = ap.getJavaParameter();
                 AnnotatedCallable declaringCallable = ap.getDeclaringCallable();
                 if (declaringCallable instanceof AnnotatedMethod) {
                     Method method = ((AnnotatedMethod) declaringCallable).getJavaMember();
