@@ -68,7 +68,8 @@ import java.util.stream.Stream;
  * A CDI Producer of properties allowing you to use @Inject in combination with
  * {@link Property}.
  * NOTE -parameters option for javac (java 8+) must be used when {@link Property} is used on
- * method parameters without {@link Property#keys()} and properties are reloadable.
+ * method parameters without {@link Property#keys()}. Injected {@link Property properties} can be updated
+ * (in SingletonScoped beans for now, updating injected EnhancedMap will work in all scopes).
  * @author Eduard Drenth at VectorPrint.nl
  * @see PropertyResolver
  */
