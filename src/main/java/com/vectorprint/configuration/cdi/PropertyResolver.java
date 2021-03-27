@@ -42,7 +42,7 @@ import java.io.Reader;
 /**
  * Application scoped CDI bean responsible for providing {@link CDIProperties} with properties read from a Url. CDIProperties is
  * in its turn responsible for injecting properties based on @Inject and @Property. This Resolver needs an Application scoped bean that
- * produces urls, a boolean fromJar and a boolean autoReload, it is up to users of this library to provide that bean. The bean can for example use System properties that are set in the environment to produce the values.
+ * produces urls, a boolean fromJar, a boolean autoReload and an int interval (for autoreload), it is up to users of this library to provide that bean. The bean can for example use System properties that are set in the environment to produce the values.
  * @author eduard
  */
 @ApplicationScoped
@@ -59,14 +59,15 @@ public class PropertyResolver {
      * argument, when true read from jar in classpath
      * @param autoReload create an application scoped bean to produce this
      * argument, when true autoreload properties
+     * @param interval poll interval in millisecond when autoreload is true
      * @see StringConverter.URLParser
      * @see SettingsXMLHelper#XSD
      * @throws Exception
      */
     @Produces
     @PropertyProducer
-    public EnhancedMap initSettings(@FromJar Boolean fromJar, @AutoReload boolean autoReload, @ConfigFileUrls String... configFileUrls) throws Exception {
-        return readAsSettingsOrProperties(fromJar, autoReload, configFileUrls);
+    public EnhancedMap initSettings(@FromJar Boolean fromJar, @AutoReload boolean autoReload, @POLL_INTERVAL int interval, @ConfigFileUrls String... configFileUrls) throws Exception {
+        return readAsSettingsOrProperties(fromJar, autoReload, interval, configFileUrls);
     }
 
     private Reader getReader(String configFileUrl, boolean fromJar) throws IOException {
@@ -87,15 +88,16 @@ public class PropertyResolver {
      * }
      * will be called. By default properties will be {@link CachingProperties cached} and {@link com.vectorprint.configuration.decoration.ReadonlyProperties read only}.
      *
-     * @param urls
      * @param fromJar when true read from jar in classpath
      * @param autoReload
+     * @param interval
+     * @param urls
      * @return
      * @throws JAXBException
      * @throws VectorPrintException
      * @throws IOException
      */
-    private EnhancedMap readAsSettingsOrProperties(boolean fromJar, boolean autoReload, String... urls) throws Exception {
+    private EnhancedMap readAsSettingsOrProperties(boolean fromJar, boolean autoReload, int interval, String... urls) throws Exception {
         if (urls.length==1) {
             String url = urls[0];
             try {
@@ -112,6 +114,6 @@ public class PropertyResolver {
         return fromJar || !autoReload ?
                 new CachingProperties(new ParsingProperties(new Settings(), urls)) :
                 new CachingProperties(
-                    new ReloadableProperties(new ObservableProperties(new Settings()), urls));
+                    new ReloadableProperties(new ObservableProperties(new Settings()),interval, urls));
     }
 }

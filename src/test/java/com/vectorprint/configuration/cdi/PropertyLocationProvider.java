@@ -43,4 +43,12 @@ public class PropertyLocationProvider {
     public boolean autoReload() {
         return true;
     }
+
+    @Produces
+    @POLL_INTERVAL
+    public int pollInterval() {
+        return 1000;
+    }
+
+
 }

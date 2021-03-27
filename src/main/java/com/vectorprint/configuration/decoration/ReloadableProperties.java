@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
  */
 public class ReloadableProperties extends ParsingProperties implements HiddenBy {
 
-    private final transient FileAlterationMonitor monitor = new FileAlterationMonitor(1000);
+    public static final int POLL_INTERVAL = 10000;
+    private final transient FileAlterationMonitor monitor;
     private final transient FileAlterationListener listener = new FileAlterationListenerAdaptor() {
         @Override
         public void onFileCreate(File file) {
@@ -38,8 +39,9 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
         }
     };
 
-    public ReloadableProperties(EnhancedMap properties, File... files) throws IOException {
+    public ReloadableProperties(EnhancedMap properties, int interval, File... files) throws IOException {
         super(properties, files);
+        monitor = new FileAlterationMonitor(interval);
         for (File f : files) {
             FileAlterationObserver observer = new FileAlterationObserver(f.getParentFile());
             observer.addListener(listener);
@@ -53,7 +55,19 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     }
 
     public ReloadableProperties(EnhancedMap properties, String... files) throws IOException {
-        this(properties, Arrays.stream(files).map(u -> new File(u)).collect(Collectors.toList()).toArray(new File[files.length]));
+        this(properties, getFiles(files));
+    }
+
+    public ReloadableProperties(EnhancedMap properties, int interval, String... files) throws IOException {
+        this(properties, interval, getFiles(files));
+    }
+
+    private static File[] getFiles(String[] files) {
+        return Arrays.stream(files).map(u -> new File(u)).collect(Collectors.toList()).toArray(new File[files.length]);
+    }
+
+    public ReloadableProperties(EnhancedMap properties, File... files) throws IOException {
+        this(properties, POLL_INTERVAL,files);
     }
 
     /**

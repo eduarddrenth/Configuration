@@ -44,12 +44,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotate a method with {@link javax.enterprise.inject.Produces} and this annotation in an application scoped bean
- * that will return a boolean indicating reloading should be active. Note that for auto reloading the properties should be in a file.
+ * that will return the interval when {@link AutoReload autoreload} is active. Note that for auto reloading the properties should be in a file.
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier
 @Retention(RUNTIME)
 @Target({ElementType.METHOD,ElementType.PARAMETER})
-public @interface AutoReload {
+public @interface POLL_INTERVAL {
 
 }

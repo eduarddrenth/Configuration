@@ -269,7 +269,7 @@ public class PropertyTest {
       Files.write(f.toPath(),Files.readAllBytes(new File("src/test/resources/config"
                       + File.separator + "chart.properties").toPath()), StandardOpenOption.APPEND);
 
-      ReloadableProperties rp = new ReloadableProperties(new ObservableProperties(new Settings()), f);
+      ReloadableProperties rp = new ReloadableProperties(new ObservableProperties(new Settings()),1000, f);
       MyObserver observer = new MyObserver();
       rp.accept(new ObservableVisitor(observer));
       assertTrue(rp.getProperty("","alpha").equals("200"));
