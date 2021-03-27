@@ -35,6 +35,8 @@ package com.vectorprint.configuration.cdi;
  * #L%
  */
 
+import com.vectorprint.configuration.EnhancedMap;
+
 import javax.inject.Qualifier;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -43,7 +45,8 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Only used internally to identify the bean that produces properties
+ * Used internally to identify {@link PropertyResolver#initSettings(Boolean, boolean, int, String...)} as the method
+ * that produces properties for {@link CDIProperties#CDIProperties(EnhancedMap)}.
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier
