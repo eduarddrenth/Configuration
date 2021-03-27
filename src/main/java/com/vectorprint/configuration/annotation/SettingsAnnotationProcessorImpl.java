@@ -152,7 +152,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ParsingProperties.class.getName()));
                   }
                   if (set.autoreload()) {
-                     settings = new ReloadableProperties(settings, set.urls());
+                     settings = new ReloadableProperties(settings, set.pollInterval(), set.urls());
                   } else {
                      settings = new ParsingProperties(settings, set.urls());
                   }

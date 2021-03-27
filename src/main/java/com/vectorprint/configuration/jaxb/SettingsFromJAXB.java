@@ -75,7 +75,7 @@ public class SettingsFromJAXB {
          }
          if (!settingstype.getUrl().isEmpty()) {
             if (settingstype.isAutoreload()) {
-               settings = new ReloadableProperties(settings, settingstype.getUrl().toArray(new String[0]));
+               settings = new ReloadableProperties(settings, settingstype.getPollInterval().intValue(), settingstype.getUrl().toArray(new String[0]));
             } else {
                settings = new ParsingProperties(settings, SettingsBindingService.getInstance().getFactory().getBindingHelper().
                        convert(ArrayHelper.toArray(settingstype.getUrl()), URL[].class));

@@ -66,6 +66,13 @@ public @interface SettingsField {
    boolean autoreload() default false;
 
    /**
+    * Poll interval for {@link com.vectorprint.configuration.decoration.ReloadableProperties}.
+    *
+    * @return
+    */
+   int pollInterval() default 10000;
+
+   /**
     * by default settings will not be {@link ObservableProperties observable}. If you want the object containing the
     * settings to be added automatically as observer, just implement {@link Observer}.
     *
