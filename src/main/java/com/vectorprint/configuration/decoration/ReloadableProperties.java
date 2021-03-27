@@ -1,78 +1,55 @@
 package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.EnhancedMap;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
- * Watches files (only those via constructor arguments) for changes reloads settings.
+ * Watches files (only those via constructor arguments) for changes and reloads settings in those files.
  */
 public class ReloadableProperties extends ParsingProperties implements HiddenBy {
 
-    private final transient WatchService watcher = FileSystems.getDefault().newWatchService();
-    private final transient ExecutorService runner = Executors.newSingleThreadExecutor();
+    private final transient FileAlterationMonitor monitor = new FileAlterationMonitor(1000);
+    private final transient FileAlterationListener listener = new FileAlterationListenerAdaptor() {
+        @Override
+        public void onFileCreate(File file) {
+        }
 
-    private final List<File> toWatch = new ArrayList<>(1);
+        @Override
+        public void onFileDelete(File file) {
+        }
+
+        @Override
+        public void onFileChange(File file) {
+            try {
+                reload(file.toPath());
+            } catch (IOException e) {
+                log.error("error reloading: " + file,e);
+            }
+        }
+    };
 
     public ReloadableProperties(EnhancedMap properties, File... files) throws IOException {
         super(properties, files);
         for (File f : files) {
-            toWatch.add(f);
-            f.getParentFile().toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+            FileAlterationObserver observer = new FileAlterationObserver(f.getParentFile());
+            observer.addListener(listener);
+            monitor.addObserver(observer);
         }
-        /*
-        process events...
-        watcher.take
-        event.context
-        reload props
-        watchkey.reset
-         */
-        runner.submit(() -> {
-            for (;;) {
-                WatchKey watchKey = watcher.take();
-                watchKey.pollEvents().forEach(pe -> {
-                    WatchEvent<Path> we = (WatchEvent<Path>) pe;
-                    Path file = we.context();
-                    Path dir = (Path) watchKey.watchable();
-                    try {
-                        if (!toWatch.contains(dir.resolve(file).toFile())) {
-                            log.warn("Not watched, skipping " + dir.resolve(file).toFile());
-                        } else {
-                            if (dir.resolve(file).toFile().exists()) {
-                                reload(dir.resolve(file));
-                            } else {
-                                log.error("deleted? " + file);
-                            }
-                        }
-                    } catch (IOException e) {
-                        log.error("error reloading: " + file,e);
-                    }
-                    if (!watchKey.reset()) {
-                        try {
-                            file.register(watcher,StandardWatchEventKinds.ENTRY_MODIFY);
-                        } catch (IOException e) {
-                            log.error("unable to watch: " + file, e);
-                        }
-                    }
-                });
-            }
-        });
+        try {
+            monitor.start();
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
     public ReloadableProperties(EnhancedMap properties, String... files) throws IOException {
@@ -80,13 +57,15 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     }
 
     /**
-     * This method does not clear existing settings, it just parses the changed property file
+     * This method does not clear existing settings, it just parses the changed property file.
+     * Registered {@link Observer Observers} will be notified of changes.
      * @param file
      * @throws IOException
      */
     protected void reload(Path file) throws IOException {
         loadFromReader(new FileReader(file.toFile()));
     }
+
     @Override
     public boolean hiddenBy(Class<? extends AbstractPropertiesDecorator> settings) {
         return ObservableProperties.class.isAssignableFrom(settings);
