@@ -28,7 +28,7 @@ import java.io.File;
  * @author eduard
  */
 @Singleton
-@Named
+@SingTestBean
 public class TestBean {
 
     @Inject

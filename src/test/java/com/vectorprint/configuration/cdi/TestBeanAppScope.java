@@ -28,7 +28,7 @@ import java.io.File;
  * @author eduard
  */
 @ApplicationScoped
-@Named
+@AppTestBean
 public class TestBeanAppScope {
 
     @Inject

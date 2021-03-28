@@ -70,9 +70,9 @@ import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.testing.ThreadTester;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -104,16 +104,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PropertyTest {
 
-   @BeforeClass
+   @BeforeAll
    public static void setUpClass() throws IOException {
       Logger.getLogger(Settings.class.getName()).setLevel(Level.FINE);
    }
 
-   @Before
+   @BeforeEach
    public void setUp() throws IOException {
       SpecificClassValidator.setClazz(null);
       com.vectorprint.configuration.binding.parameters.SpecificClassValidator.setClazz(null);
@@ -614,7 +614,7 @@ public class PropertyTest {
       }
       long nocaching = System.currentTimeMillis() - start;
 
-      assertTrue(String.format("caching not faster: %d <= %d", caching, nocaching), caching < nocaching);
+      assertTrue( caching < nocaching,String.format("caching not faster: %d <= %d", caching, nocaching));
 
       cache.put("tt", "racing");
       cache.getProperty("tt");
@@ -747,7 +747,7 @@ public class PropertyTest {
                      EnhancedMapParser parser = SettingsBindingService.getInstance().getFactory().getParser(new StringReader(c.getSimpleName() + "=" + init));
                      parser.parse(settings);
                      setVal(p, settings);
-                     assertNotNull(p.toString(), p.getValue());
+                     assertNotNull( p.getValue(),p.toString());
                      if (!(p instanceof BooleanParameter && !"true".equals(init)) && !(p instanceof CharPasswordParameter) && !(p instanceof PasswordParameter)) {
                         assertNotEquals(p.getValue(), cl.getValue());
                      }
@@ -766,7 +766,7 @@ public class PropertyTest {
                            if (!Objects.deepEquals(p.getValue(), parseAsParameterValue)) {
                               System.out.println("");
                            }
-                           assertTrue(String.format("%s: %s != %s", p.getValueClass().getName(), p.getValue(), parseAsParameterValue), Objects.deepEquals(p.getValue(), parseAsParameterValue));
+                           assertTrue( Objects.deepEquals(p.getValue(), parseAsParameterValue),String.format("%s: %s != %s", p.getValueClass().getName(), p.getValue(), parseAsParameterValue));
                         } else {
                            assertEquals(String.valueOf(p.getValue()), String.valueOf(parseAsParameterValue));
                         }

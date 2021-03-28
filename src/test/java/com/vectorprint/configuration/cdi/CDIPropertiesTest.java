@@ -15,10 +15,12 @@
  */
 package com.vectorprint.configuration.cdi;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jboss.weld.junit5.EnableWeld;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -27,32 +29,36 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 /**
  * @author eduard
  */
-@RunWith(WeldJUnit4Runner.class)
+@EnableWeld
 public class CDIPropertiesTest {
+
+    @WeldSetup
+    public WeldInitiator weld = WeldInitiator.of(WeldInitiator.createWeld()
+            .scanClasspathEntries().enableDiscovery()
+    .beanClasses(TestBean.class));
 
     private File props = new File("src/test/resources/test.properties");
     private File propsnew = new File("src/test/resources/testnew.properties");
     private File propsorig = new File("src/test/resources/testorig.properties");
 
     @Inject
+    @SingTestBean
     private TestBean testBean;
-    @Inject
-    private TestBeanAppScope testBeanAppScope;
 
-    @After
+    @AfterEach
     public void init() throws IOException {
         Files.copy(propsorig.toPath(), props.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Test
     public void testCDIProps() throws InterruptedException, IOException {
-
         assertEquals("test", testBean.getTestProp());
         assertEquals("src/test/resources/test.properties", testBean.getFprop().getPath());
         assertEquals(true, testBean.isBprop());

@@ -15,9 +15,11 @@
  */
 package com.vectorprint.configuration.cdi;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jboss.weld.junit5.EnableWeld;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -26,24 +28,29 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 /**
  * @author eduard
  */
-@RunWith(WeldJUnit4Runner.class)
+@EnableWeld
 public class CDIProperties2Test {
+
+    @WeldSetup
+    public WeldInitiator weld = WeldInitiator.of(WeldInitiator.createWeld()
+            .scanClasspathEntries().enableDiscovery());
 
     private File props = new File("src/test/resources/test.properties");
     private File propsnew = new File("src/test/resources/testnew.properties");
     private File propsorig = new File("src/test/resources/testorig.properties");
 
     @Inject
-    private TestBean testBean;
-    @Inject
+    @AppTestBean
     private TestBeanAppScope testBeanAppScope;
 
-    @After
+    @AfterEach
     public void init() throws IOException {
         Files.copy(propsorig.toPath(), props.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
@@ -63,8 +70,8 @@ public class CDIProperties2Test {
         Thread.sleep(1100);
 
         System.err.println("NOTE UPDATING PROPERTIES IN SCOPE OTHER THAN Singleton DOES NOT WORK YET!!");
-        assertEquals("SHOULD BE true!!!",false, testBeanAppScope.isBp());
-        assertEquals("SHOULD BE false!!!",true, testBeanAppScope.isBprop());
+        assertEquals(false, testBeanAppScope.isBp(),"SHOULD BE true!!!");
+        assertEquals(true, testBeanAppScope.isBprop(),"SHOULD BE false!!!");
         assertEquals("s", testBeanAppScope.getS());
         assertEquals(false, testBeanAppScope.getProperties().getBooleanProperty(null, "bprop"));
     }
