@@ -69,9 +69,9 @@ public class CDIProperties2Test {
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(1100);
 
-        System.err.println("NOTE UPDATING PROPERTIES IN SCOPE OTHER THAN Singleton DOES NOT WORK YET!!");
-        assertEquals(false, testBeanAppScope.isBp(),"SHOULD BE true!!!");
-        assertEquals(true, testBeanAppScope.isBprop(),"SHOULD BE false!!!");
+        System.err.println("NOTE UPDATING FIELDS IN TEST IN BEAN WITH SCOPE OTHER THAN Singleton DOES NOT WORK, YET!!");
+        assertEquals(false, testBeanAppScope.isBp());
+        assertEquals(true, testBeanAppScope.isBprop(),"SHOULD BE false, CHANGE THIS assertion!!!");
         assertEquals("s", testBeanAppScope.getS());
         assertEquals(false, testBeanAppScope.getProperties().getBooleanProperty(null, "bprop"));
     }

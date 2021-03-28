@@ -39,7 +39,7 @@ public class TestBeanAppScope {
     private File fprop;
     @Inject
     @Property(required = true)
-    private boolean bprop;
+    private Boolean bprop;
     @Inject
     @Property(keys = "zprop", required = false)
     private String zprop;
