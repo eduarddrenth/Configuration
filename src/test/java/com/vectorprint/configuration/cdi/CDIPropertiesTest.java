@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * @author eduard
  */
+@EnableWeld
 public class CDIPropertiesTest {
 
     @WeldSetup
