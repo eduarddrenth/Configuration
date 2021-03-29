@@ -33,7 +33,6 @@ import org.xml.sax.SAXException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -93,7 +92,7 @@ public class PropertyResolver {
      * @param interval
      * @param urls
      * @return
-     * @throws JAXBException
+     * @throws jakarta.xml.bind.JAXBException
      * @throws VectorPrintException
      * @throws IOException
      */

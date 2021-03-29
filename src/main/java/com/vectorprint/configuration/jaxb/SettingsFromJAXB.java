@@ -40,8 +40,8 @@ import com.vectorprint.configuration.generated.jaxb.Featuretype;
 import com.vectorprint.configuration.generated.jaxb.Preprocessortype;
 import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
+import jakarta.xml.bind.JAXBException;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
