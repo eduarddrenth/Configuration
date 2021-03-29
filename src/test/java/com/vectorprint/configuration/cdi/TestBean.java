@@ -17,10 +17,10 @@ package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.EnhancedMap;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import java.io.File;
 
 /**

@@ -15,16 +15,13 @@
  */
 package com.vectorprint.configuration.cdi;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
-import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,9 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class CDIPropertiesTest {
 
     @WeldSetup
-    public WeldInitiator weld = WeldInitiator.from(
-            TestBean.class, CDIProperties.class,PropertyLocationProvider.class,PropertyResolver.class)
-        .build();
+    public WeldInitiator weld = WeldInitiator.of(WeldInitiator.createWeld()
+            .enableDiscovery().scanClasspathEntries()
+            .beanClasses(TestBean.class)
+    );
 
     private File props = new File("src/test/resources/test.properties");
     private File propsnew = new File("src/test/resources/testnew.properties");

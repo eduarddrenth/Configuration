@@ -17,11 +17,11 @@ package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.NoValueException;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 
 /**
  *

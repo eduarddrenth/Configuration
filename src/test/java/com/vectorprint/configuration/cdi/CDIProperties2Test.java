@@ -23,7 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,8 @@ public class CDIProperties2Test {
 
     @WeldSetup
     public WeldInitiator weld = WeldInitiator.of(WeldInitiator.createWeld()
-            .beanClasses(TestBeanAppScope.class, CDIProperties.class,PropertyLocationProvider.class,PropertyResolver.class));
+            .enableDiscovery().scanClasspathEntries()
+    );
 
     private File props = new File("src/test/resources/test.properties");
     private File propsnew = new File("src/test/resources/testnew.properties");
