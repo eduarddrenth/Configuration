@@ -27,6 +27,7 @@ PARSER_BEGIN(PropertiesParser)
     
     import java.util.Map;
     import java.util.List;
+    import java.util.Arrays;
     import java.util.ArrayList;
     import java.io.Writer;
     import java.io.IOException;
@@ -72,11 +73,13 @@ PARSER_BEGIN(PropertiesParser)
          }
          w.append(e.getKey());
          w.append('=');
-         if (e.getValue()!=null) {
-            for (String v : e.getValue()) {
-               w.append(v);
-               w.append(';');
-            }
+         if (e.getValue()!=null&&e.getValue().length>0) {
+             for(int i = 0; i < e.getValue().length; i++) {
+                 w.append(e.getValue()[i].replace(";","\\;"));
+                 if (i < e.getValue().length - 1) {
+                     w.append(";");
+                 }
+             }
          }
          w.append(System.getProperty("line.separator"));
 
