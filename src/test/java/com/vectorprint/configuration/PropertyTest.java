@@ -350,6 +350,7 @@ public class PropertyTest {
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
       assertFalse(mtp.containsKey("m"));
+      assertEquals(mtp.getProperty("esc"),"a;b");
 //      mtp.addFromArguments(new String[]{"-m"});
 //      assertTrue(mtp.containsKey("m"));
 
@@ -359,6 +360,7 @@ public class PropertyTest {
       mtp.saveToUrl(f.toURI().toURL());
 
       mtp = new ParsingProperties(new Settings(), f.getPath());
+      assertEquals(mtp.getProperty("esc"),"a;b");
 //      assertTrue(mtp.containsKey("m"));
       assertTrue(mtp.getTrailingComment().get(1).contains("bla"));
       assertTrue(mtp.getCommentBeforeKey("diameter").get(0).contains("To change"));
