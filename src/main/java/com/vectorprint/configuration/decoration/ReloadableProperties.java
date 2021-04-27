@@ -7,10 +7,15 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +47,26 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     public ReloadableProperties(EnhancedMap properties, int interval, File... files) throws IOException {
         super(properties, files);
         monitor = new FileAlterationMonitor(interval);
+        List<File> observed =  new ArrayList<>();
+        Map<File,List<File>> toObserve = new HashMap<>();
         for (File f : files) {
-            FileAlterationObserver observer = new FileAlterationObserver(f.getParentFile());
+            if (observed.contains(f)) {
+                continue;
+            }
+            File dir = f.getParentFile();
+            if (!toObserve.containsKey(dir)) {
+                toObserve.put(dir,new ArrayList<>());
+            }
+            toObserve.get(dir).add(f);
+        }
+        for (Map.Entry<File,List<File>> entry: toObserve.entrySet()) {
+            FileFilter ff = new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    return entry.getValue().contains(file);
+                }
+            };
+            FileAlterationObserver observer = new FileAlterationObserver(entry.getKey(),ff);
             observer.addListener(listener);
             monitor.addObserver(observer);
         }
