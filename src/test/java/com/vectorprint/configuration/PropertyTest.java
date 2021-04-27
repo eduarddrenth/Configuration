@@ -360,6 +360,7 @@ public class PropertyTest {
       mtp.saveToUrl(f.toURI().toURL());
 
       mtp = new ParsingProperties(new Settings(), f.getPath());
+      assertEquals(mtp.getProperty("esc"),"a;b");
 //      assertTrue(mtp.containsKey("m"));
       assertEquals(mtp.getProperty("esc"),"a;b");
       assertTrue(mtp.getProperty("dotFill").equals("#ee0000"));
