@@ -378,7 +378,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
                 changes.getChanged().stream(),
                 changes.getAdded().stream()
         )
-        .forEach(c -> {
+        .forEach(c ->
             injectionPoints.get(c).forEach(ip -> {
                 Bean<?> bean = ip.getBean();
                 // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
@@ -396,8 +396,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
                     Object reference = beanManager.getReference(bean, bc, creationalContext);
                     updates.add(new ToUpdate(a, reference, c));
                 }
-            });
-        }
+            })
         );
         accept(CACHE_CLEARING_VISITOR);
         updates.forEach(u -> u.update(getGenericProperty(null, (Class) u.annotated.getBaseType(), u.key)));
