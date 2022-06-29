@@ -52,7 +52,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -379,15 +378,26 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
                 changes.getChanged().stream(),
                 changes.getAdded().stream()
         )
-        .forEach(c -> injectionPoints.get(c).forEach(ip -> {
+        .forEach(c -> {
+            injectionPoints.get(c).forEach(ip -> {
                 Bean<?> bean = ip.getBean();
-                Class bc = bean.getBeanClass();
-                CreationalContext<?> creationalContext =
-                        beanManager.createCreationalContext(bean);
-                Object reference = beanManager.getReference(bean, bc, creationalContext);
+                // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
+                Class bc = ip.getMember().getDeclaringClass();
                 Annotated a = ip.getAnnotated();
-                updates.add(new ToUpdate(a, reference, c));
-            })
+                if (bean==null) {
+                    String name = a instanceof AnnotatedField ?
+                            ((AnnotatedField)a).getJavaMember().getName() :
+                                ((AnnotatedParameter)a).getDeclaringCallable() instanceof AnnotatedMethod ?
+                                ((AnnotatedParameter)a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
+                    log.warn(String.format("%s is not a bean, cannot resolve Object for %s", bc.getName(),name));
+                } else {
+                    CreationalContext<?> creationalContext =
+                            beanManager.createCreationalContext(bean);
+                    Object reference = beanManager.getReference(bean, bc, creationalContext);
+                    updates.add(new ToUpdate(a, reference, c));
+                }
+            });
+        }
         );
         accept(CACHE_CLEARING_VISITOR);
         updates.forEach(u -> u.update(getGenericProperty(null, (Class) u.annotated.getBaseType(), u.key)));
@@ -411,7 +421,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
             if (annotated instanceof AnnotatedField) {
                 Field f = ((AnnotatedField) annotated).getJavaMember();
                 try {
-                    boolean ac = f.isAccessible();
+                    boolean ac = f.canAccess(reference);
                     f.setAccessible(true);
                     f.set(reference, value);
                     f.setAccessible(ac);
