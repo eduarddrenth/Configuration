@@ -68,7 +68,7 @@ import java.util.stream.Stream;
  * {@link Property}.
  * NOTE parameters option for javac (java 8+) must be used when {@link Property} is used on
  * method parameters without {@link Property#keys()}. Injected {@link Property properties} will be updated
- * when property file changes and {@link AutoReload} is true.
+ * when property file changes, {@link AutoReload} is true, {@link Property#updatable() } is true and the property is injected in a managed bean.
  * @author Eduard Drenth at VectorPrint.nl
  * @see PropertyResolver
  */
@@ -380,21 +380,23 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
         )
         .forEach(c ->
             injectionPoints.get(c).forEach(ip -> {
-                Bean<?> bean = ip.getBean();
-                // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
-                Class bc = ip.getMember().getDeclaringClass();
                 Annotated a = ip.getAnnotated();
-                if (bean==null) {
-                    String name = a instanceof AnnotatedField ?
-                            ((AnnotatedField)a).getJavaMember().getName() :
-                                ((AnnotatedParameter)a).getDeclaringCallable() instanceof AnnotatedMethod ?
-                                ((AnnotatedParameter)a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
-                    log.warn(String.format("%s is not a bean, cannot resolve Object for %s", bc.getName(),name));
-                } else {
-                    CreationalContext<?> creationalContext =
-                            beanManager.createCreationalContext(bean);
-                    Object reference = beanManager.getReference(bean, bc, creationalContext);
-                    updates.add(new ToUpdate(a, reference, c));
+                if (a.getAnnotation(Property.class).updatable()) {
+                    Bean<?> bean = ip.getBean();
+                    // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
+                    Class bc = ip.getMember().getDeclaringClass();
+                    if (bean==null) {
+                        String name = a instanceof AnnotatedField ?
+                                ((AnnotatedField)a).getJavaMember().getName() :
+                                    ((AnnotatedParameter)a).getDeclaringCallable() instanceof AnnotatedMethod ?
+                                    ((AnnotatedParameter)a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
+                        log.warn(String.format("%s is not a bean, cannot resolve Object for %s", bc.getName(),name));
+                    } else {
+                        CreationalContext<?> creationalContext =
+                                beanManager.createCreationalContext(bean);
+                        Object reference = beanManager.getReference(bean, bc, creationalContext);
+                        updates.add(new ToUpdate(a, reference, c));
+                    }
                 }
             })
         );
