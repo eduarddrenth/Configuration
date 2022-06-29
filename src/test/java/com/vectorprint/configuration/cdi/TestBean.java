@@ -17,9 +17,7 @@ package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.EnhancedMap;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
 
@@ -45,7 +43,7 @@ public class TestBean {
     private String zprop;
 
     @Inject
-    @Property(keys = "i", defaultValue = "1")
+    @Property(keys = "i", defaultValue = "1", updatable = false)
     private int i;
 
     @Inject
