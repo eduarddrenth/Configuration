@@ -71,4 +71,10 @@ public @interface Property {
      */
    @Nonbinding String[] defaultValue() default {};
 
+   /**
+    * When true (default) the property will be updated when the property source changes
+    * @return 
+    */
+   @Nonbinding boolean updatable() default true;
+
 }

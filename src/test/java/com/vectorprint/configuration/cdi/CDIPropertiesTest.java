@@ -75,6 +75,7 @@ public class CDIPropertiesTest {
         assertEquals(false, testBean.isBprop());
         assertEquals("s", testBean.getS());
         assertEquals(false, testBean.getProperties().getBooleanProperty(null, "bprop"));
+        assertEquals(1, testBean.getI());
 
     }
 }
