@@ -3,7 +3,7 @@
 
     <groupId>com.vectorprint</groupId>
     <artifactId>Config</artifactId>
-    <version>10.8-SNAPSHOT</version>
+    <version>10.9-SNAPSHOT</version>
     <packaging>jar</packaging>
     <inceptionYear>2015</inceptionYear>
 
