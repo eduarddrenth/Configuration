@@ -390,7 +390,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
                                 ((AnnotatedField)a).getJavaMember().getName() :
                                     ((AnnotatedParameter)a).getDeclaringCallable() instanceof AnnotatedMethod ?
                                     ((AnnotatedParameter)a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
-                        log.warn(String.format("%s is not a bean, cannot resolve Object for %s", bc.getName(),name));
+                        log.warn(String.format("Bean for %s not present, BeanManager cannot resolve Object holding %s", bc.getName(),name));
                     } else {
                         CreationalContext<?> creationalContext =
                                 beanManager.createCreationalContext(bean);
