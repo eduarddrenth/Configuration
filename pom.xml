@@ -75,7 +75,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <release>11</release>
+                    <release>17</release>
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
@@ -84,7 +84,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.1</version>
                 <!--<configuration>
                    <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
                    <docletArtifact>
@@ -108,7 +108,7 @@
                             <goal>javacc</goal>
                         </goals>
                         <configuration>
-                            <jdkVersion>1.11</jdkVersion>
+                            <jdkVersion>1.17</jdkVersion>
                         </configuration>
                     </execution>
                 </executions>
@@ -116,9 +116,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.0.0-M7</version>
                 <configuration>
                     <useSystemClassLoader>false</useSystemClassLoader>
+                    <argLine>--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -183,7 +184,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>7.1.1</version>
+                <version>7.3.0</version>
                 <configuration>
                     <failBuildOnCVSS>8</failBuildOnCVSS>
                     <skipProvidedScope>true</skipProvidedScope>
@@ -209,7 +210,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>VectorPrintCommon</artifactId>
-            <version>4.1</version>
+            <version>5.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -220,23 +221,24 @@
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>9.1.0</version>
+            <version>10.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>3.0.0</version>
+            <version>4.0.1</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.weld/weld-junit5 -->
         <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-junit5</artifactId>
-            <version>3.0.0.Final</version>
+            <version>4.0.0.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -251,7 +253,7 @@
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
-            <version>4.1</version>
+            <version>5.1</version>
         </dependency>
     </dependencies>
     <profiles>
@@ -268,7 +270,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.4.0</version>
+                        <version>3.4.1</version>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
