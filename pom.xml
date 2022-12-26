@@ -108,7 +108,7 @@
                             <goal>javacc</goal>
                         </goals>
                         <configuration>
-                            <jdkVersion>1.17</jdkVersion>
+                            <jdkVersion>17</jdkVersion>
                         </configuration>
                     </execution>
                 </executions>
