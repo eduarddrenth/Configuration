@@ -239,7 +239,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
             if (defaultVal == null) {
                 handleNoValue(keys);
             } else {
-                debug(defaultVal, null);
+                debug(defaultVal);
             }
         } else {
             return key;
@@ -523,7 +523,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
         if (backingMap instanceof Cloneable) {
             try {
                 Method m = backingMap.getClass().getMethod("clone");
-                vp = new Settings((Map<String, String[]>) m.invoke(backingMap, null));
+                vp = new Settings((Map<String, String[]>) m.invoke(backingMap));
             } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException | SecurityException ex) {
                 throw new VectorPrintRuntimeException(ex);
             }

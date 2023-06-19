@@ -294,7 +294,7 @@ Number number(): {
 		t = <NUMBER_DECIMAL>
       { 
          if(nativeNumbers) {
-            return new Double(t.image);
+            return Double.valueOf(t.image);
          } else {
             return new BigDecimal(t.image); 
          }
@@ -303,7 +303,7 @@ Number number(): {
 		t = <NUMBER_INTEGER>
 		{ 
 			if(nativeNumbers) {
-				return new Long(substringBefore(t.image, '.'));
+				return Long.valueOf(substringBefore(t.image, '.'));
 			} else {
 				return new BigInteger(substringBefore(t.image, '.')); 
 			}
