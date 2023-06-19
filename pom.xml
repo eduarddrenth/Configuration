@@ -3,7 +3,7 @@
 
     <groupId>com.vectorprint</groupId>
     <artifactId>Config</artifactId>
-    <version>11.2</version>
+    <version>11.3-SNAPSHOT</version>
     <packaging>jar</packaging>
     <inceptionYear>2015</inceptionYear>
 
@@ -45,7 +45,7 @@
         <url>https://github.com/eduarddrenth/Configuration</url>
         <connection>scm:git:git@github.com:eduarddrenth/Configuration.git</connection>
         <developerConnection>scm:git:git@github.com:eduarddrenth/Configuration.git</developerConnection>
-        <tag>Config-11.2</tag>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>github</system>
