@@ -15,7 +15,6 @@
  */
 package com.vectorprint.configuration.cdi;
 
-import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.WeldSetup;

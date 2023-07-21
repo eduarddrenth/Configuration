@@ -17,7 +17,6 @@ package com.vectorprint.configuration.cdi;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
-import java.io.File;
 
 /**
  *

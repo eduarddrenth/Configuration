@@ -107,4 +107,9 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     public boolean hiddenBy(Class<? extends AbstractPropertiesDecorator> settings) {
         return ObservableProperties.class.isAssignableFrom(settings);
     }
+
+    @Override
+    public EnhancedMap clone() throws CloneNotSupportedException {
+        return super.clone(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    }
 }

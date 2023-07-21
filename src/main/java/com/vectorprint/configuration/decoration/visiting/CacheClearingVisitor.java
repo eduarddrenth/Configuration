@@ -22,8 +22,6 @@ package com.vectorprint.configuration.decoration.visiting;
  */
 
 import com.vectorprint.configuration.decoration.CachingProperties;
-import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.Observer;
 
 /**
  * clears cache

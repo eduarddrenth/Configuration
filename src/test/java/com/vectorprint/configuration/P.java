@@ -27,6 +27,7 @@ import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.parameters.BooleanParameter;
 import com.vectorprint.configuration.parameters.ColorParameter;
 import com.vectorprint.configuration.parameters.IntArrayParameter;
+import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.ParameterizableImpl;
 import com.vectorprint.configuration.parameters.StringParameter;
 import com.vectorprint.configuration.parameters.annotation.Param;
@@ -64,5 +65,10 @@ public class P extends ParameterizableImpl {
    public static boolean isFf() {
       return ff;
    }
+
+    @Override
+    public Parameterizable clone() throws CloneNotSupportedException {
+        return super.clone(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    }
 
 }

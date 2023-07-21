@@ -278,7 +278,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
                 inner = null;
             }
         }
-        return l.toArray(new DecorationAware[0]);
+        return l.toArray(DecorationAware[]::new);
     }
 
     /**

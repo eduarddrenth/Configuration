@@ -19,8 +19,6 @@ import com.vectorprint.configuration.EnhancedMap;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import java.io.File;
 
 /**

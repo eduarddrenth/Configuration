@@ -107,21 +107,21 @@ public class BindingHelperImpl implements BindingHelper {
       if (String.class.equals(clazz)) {
          o = value;
       } else if (boolean.class.equals(clazz)) {
-         o = Boolean.parseBoolean(value);
+         o = Boolean.valueOf(value);
       } else if (byte.class.equals(clazz)) {
-         o = Byte.parseByte(value);
+         o = Byte.valueOf(value);
       } else if (char.class.equals(clazz)) {
          o = value.charAt(0);
       } else if (short.class.equals(clazz)) {
-         o = Short.parseShort(value);
+         o = Short.valueOf(value);
       } else if (double.class.equals(clazz)) {
-         o = Double.parseDouble(value);
+         o = Double.valueOf(value);
       } else if (float.class.equals(clazz)) {
-         o = Float.parseFloat(value);
+         o = Float.valueOf(value);
       } else if (int.class.equals(clazz)) {
-         o = Integer.parseInt(value);
+         o = Integer.valueOf(value);
       } else if (long.class.equals(clazz)) {
-         o = Long.parseLong(value);
+         o = Long.valueOf(value);
       } else if (clazz.isEnum()) {
          try {
             o = Enum.valueOf((Class<? extends Enum>) clazz, value);
