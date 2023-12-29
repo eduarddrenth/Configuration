@@ -763,7 +763,7 @@ public class PropertyTest {
                      BindingHelper stringConversion = ParamBindingService.getInstance().getFactory().getBindingHelper();
                      String conf = stringConversion.serializeValue(p.getValue());
 
-                     if (conf != null && !"".equals(conf)) {
+                     if (conf != null && !conf.isEmpty()) {
 
                         Serializable parseAsParameterValue = ParamBindingService.getInstance().getFactory().getParser(new StringReader("")).parseAsParameterValue(conf, p);
                         if (p.getValueClass().isArray()) {

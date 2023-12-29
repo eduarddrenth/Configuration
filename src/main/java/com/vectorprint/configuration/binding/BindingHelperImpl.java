@@ -29,6 +29,8 @@ import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFa
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 
 import java.awt.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
 
@@ -162,6 +164,8 @@ public class BindingHelperImpl implements BindingHelper {
 
    private char separator = ',';
 
+   private String SEP = String.valueOf(separator);
+
    /**
     * default is ","
     *
@@ -170,6 +174,7 @@ public class BindingHelperImpl implements BindingHelper {
    @Override
    public void setArrayValueSeparator(char separator) {
       this.separator = separator;
+      this.SEP=String.valueOf(separator);
    }
 
    @Override
@@ -221,56 +226,28 @@ public class BindingHelperImpl implements BindingHelper {
          }
       } else if (value instanceof short[]) {
          short[] s = (short[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       } else if (value instanceof int[]) {
          int[] s = (int[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       } else if (value instanceof long[]) {
          long[] s = (long[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       } else if (value instanceof float[]) {
          float[] s = (float[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       } else if (value instanceof double[]) {
          double[] s = (double[]) value;
          if (s.length == 0) {
@@ -286,43 +263,22 @@ public class BindingHelperImpl implements BindingHelper {
          }
       } else if (value instanceof byte[]) {
          byte[] s = (byte[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       } else if (value instanceof boolean[]) {
          boolean[] s = (boolean[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       } else if (value instanceof char[]) {
          char[] s = (char[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       }
       return sb.toString();
    }
