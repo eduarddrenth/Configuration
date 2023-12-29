@@ -253,14 +253,10 @@ public class BindingHelperImpl implements BindingHelper {
          if (s.length == 0) {
             return null;
          }
-         int l = s.length;
-         for (int i = 0;; i++) {
-            if (i == l - 1) {
-               sb.append(String.valueOf(s[i]));
-               break;
-            }
-            sb.append(String.valueOf(s[i])).append(separator);
-         }
+         if (s.length>0) {
+            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                    .collect(Collectors.joining(SEP)));
+         } else return null;
       } else if (value instanceof byte[]) {
          byte[] s = (byte[]) value;
          if (s.length>0) {
