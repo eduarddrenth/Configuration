@@ -23,6 +23,7 @@ package com.vectorprint.configuration.binding;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import com.vectorprint.ArrayHelper;
 import com.vectorprint.StringConverter;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
@@ -189,20 +190,19 @@ public class BindingHelperImpl implements BindingHelper {
     */
    @Override
    public String serializeValue(Object value) {
-      StringBuilder sb = new StringBuilder();
       if (value == null) {
          return null;
       }
       Class clazz = value.getClass();
       if (!clazz.isArray()) {
          if (value instanceof Color) {
-            sb.append(colorToHex((Color) value));
+            return colorToHex((Color) value);
          } else {
-            sb.append(escape(String.valueOf(value)));
+            return escape(String.valueOf(value));
          }
-         return sb.toString();
       }
       if (!clazz.getComponentType().isPrimitive()) {
+         StringBuilder sb = new StringBuilder();
          Object[] O = (Object[]) value;
          if (O.length == 0) {
             return null;
@@ -224,59 +224,41 @@ public class BindingHelperImpl implements BindingHelper {
             }
             sb.append(v).append(separator);
          }
+         return sb.toString();
       } else if (value instanceof short[]) {
          short[] s = (short[]) value;
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
       } else if (value instanceof int[]) {
          int[] s = (int[]) value;
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
       } else if (value instanceof long[]) {
          long[] s = (long[]) value;
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
       } else if (value instanceof float[]) {
          float[] s = (float[]) value;
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
       } else if (value instanceof double[]) {
          double[] s = (double[]) value;
-         if (s.length == 0) {
-            return null;
-         }
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
       } else if (value instanceof byte[]) {
          byte[] s = (byte[]) value;
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
       } else if (value instanceof boolean[]) {
          boolean[] s = (boolean[]) value;
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
       } else if (value instanceof char[]) {
          char[] s = (char[]) value;
-         if (s.length>0) {
-            sb.append(IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
-                    .collect(Collectors.joining(SEP)));
-         } else return null;
+         return string(ArrayHelper.wrap(s));
+      } else {
+         return null;
       }
-      return sb.toString();
    }
 
+   private String string(Object... s) {
+      if (s.length>0) {
+         return IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+                 .collect(Collectors.joining(SEP));
+      }
+      return null;
+   }
 }
