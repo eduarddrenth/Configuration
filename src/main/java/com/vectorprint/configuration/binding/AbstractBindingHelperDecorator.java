@@ -26,7 +26,6 @@ package com.vectorprint.configuration.binding;
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.StringConverter;
 import com.vectorprint.VectorPrintRuntimeException;
-
 import java.awt.*;
 import java.lang.reflect.Array;
 

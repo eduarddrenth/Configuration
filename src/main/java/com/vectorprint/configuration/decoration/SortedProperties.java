@@ -22,7 +22,6 @@ package com.vectorprint.configuration.decoration;
 
 
 import com.vectorprint.configuration.EnhancedMap;
-
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;

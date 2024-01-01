@@ -1,11 +1,6 @@
 package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.EnhancedMap;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
@@ -17,6 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 
 /**
  * Watches files (only those via constructor arguments) for changes and reloads settings in those files.

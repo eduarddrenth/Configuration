@@ -30,7 +30,6 @@ import com.vectorprint.configuration.decoration.Changes;
 import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
-
 import java.net.URL;
 
 public class Fields implements Observer {

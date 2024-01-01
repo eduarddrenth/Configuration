@@ -36,12 +36,10 @@ package com.vectorprint.configuration.cdi;
  */
 
 import jakarta.inject.Qualifier;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
  * Annotate a method with {@link jakarta.enterprise.inject.Produces} and this annotation in an application scoped bean that will return a boolean that indicates wether settings are in a jar.

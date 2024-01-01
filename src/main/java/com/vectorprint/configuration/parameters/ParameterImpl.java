@@ -25,12 +25,11 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Observable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ParameterImpl<TYPE extends Serializable> extends Observable implements Parameter<TYPE> {
 

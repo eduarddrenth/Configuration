@@ -37,12 +37,10 @@ package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.EnhancedMap;
 import jakarta.inject.Qualifier;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
  * Used internally to identify {@link PropertyResolver#initSettings(Boolean, boolean, int, String...)} as the method

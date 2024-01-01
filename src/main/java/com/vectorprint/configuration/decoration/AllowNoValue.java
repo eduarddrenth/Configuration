@@ -23,15 +23,14 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.NoValueException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AllowNoValue extends AbstractPropertiesDecorator {
 

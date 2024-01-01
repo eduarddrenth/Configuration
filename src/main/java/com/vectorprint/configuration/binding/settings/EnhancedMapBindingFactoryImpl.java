@@ -26,7 +26,6 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.generated.parser.PropertiesParser;
-
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;

@@ -27,16 +27,15 @@ import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import com.vectorprint.configuration.generated.parser.PropertiesParser;
 import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
 import com.vectorprint.configuration.jaxb.SettingsXMLHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Application scoped CDI bean responsible for providing {@link CDIProperties} with properties read from a Url. CDIProperties is

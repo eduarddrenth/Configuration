@@ -25,7 +25,6 @@ package com.vectorprint.configuration.binding.parameters.json;
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.parameters.AbstractParamBindingHelperDecorator;
 import com.vectorprint.configuration.binding.parameters.ParamBindingHelperImpl;
-
 import java.awt.*;
 
 public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {

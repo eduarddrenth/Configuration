@@ -24,7 +24,6 @@ package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.parameters.Parameter;
-
 import java.io.Serializable;
 
 public interface ParamBindingHelper extends BindingHelper {

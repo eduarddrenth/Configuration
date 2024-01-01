@@ -23,7 +23,6 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;

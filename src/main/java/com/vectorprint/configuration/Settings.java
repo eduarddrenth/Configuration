@@ -26,9 +26,6 @@ import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.DecorationAware;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.io.File;
 import java.io.PrintStream;
@@ -48,6 +45,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Settings implements EnhancedMap, DecorationAware {
 

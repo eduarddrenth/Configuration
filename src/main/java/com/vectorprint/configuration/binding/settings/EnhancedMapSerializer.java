@@ -24,7 +24,6 @@ package com.vectorprint.configuration.binding.settings;
 
 
 import com.vectorprint.configuration.EnhancedMap;
-
 import java.io.IOException;
 import java.io.Writer;
 

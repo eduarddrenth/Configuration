@@ -29,7 +29,6 @@ import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

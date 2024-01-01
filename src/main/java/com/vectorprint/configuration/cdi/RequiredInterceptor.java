@@ -16,7 +16,6 @@
 package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.NoValueException;
-
 import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.interceptor.AroundInvoke;

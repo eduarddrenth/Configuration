@@ -27,14 +27,13 @@ import com.vectorprint.configuration.PropertyHelpImpl;
 import com.vectorprint.configuration.generated.parser.HelpParser;
 import com.vectorprint.configuration.generated.parser.ParseException;
 import com.vectorprint.configuration.generated.parser.TokenMgrException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HelpSupportedProperties extends AbstractPropertiesDecorator {
 

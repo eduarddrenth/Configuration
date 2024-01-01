@@ -32,15 +32,14 @@ import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParameterizableImpl implements Parameterizable {
 

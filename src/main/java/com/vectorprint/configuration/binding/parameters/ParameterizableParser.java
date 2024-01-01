@@ -26,7 +26,6 @@ import com.vectorprint.configuration.annotation.SettingsAnnotationProcessor;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
-
 import java.io.Serializable;
 
 public interface ParameterizableParser<T> {

@@ -23,7 +23,6 @@ package com.vectorprint.configuration.decoration.visiting;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.decoration.ParsingProperties;
-
 import java.io.IOException;
 import java.net.URL;
 

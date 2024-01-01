@@ -33,7 +33,6 @@ import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.visiting.CacheClearingVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.Produces;

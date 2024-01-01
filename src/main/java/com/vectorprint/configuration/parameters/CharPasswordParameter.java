@@ -22,7 +22,6 @@ package com.vectorprint.configuration.parameters;
  */
 
 import com.vectorprint.ArrayHelper;
-
 import java.util.Arrays;
 
 public class CharPasswordParameter extends ParameterImpl<char[]> {

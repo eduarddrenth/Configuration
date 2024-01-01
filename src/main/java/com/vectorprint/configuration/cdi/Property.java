@@ -38,11 +38,10 @@ package com.vectorprint.configuration.cdi;
 import jakarta.enterprise.util.Nonbinding;
 import jakarta.inject.Qualifier;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static java.lang.annotation.ElementType.FIELD;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
  * Use together with @Inject, {@link CDIProperties} will provide values;

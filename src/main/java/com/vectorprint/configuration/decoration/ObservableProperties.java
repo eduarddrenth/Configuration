@@ -23,15 +23,14 @@ package com.vectorprint.configuration.decoration;
 
 
 import com.vectorprint.configuration.EnhancedMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
 

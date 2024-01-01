@@ -24,7 +24,6 @@ package com.vectorprint.configuration.parameters.annotation;
 
 
 import com.vectorprint.configuration.parameters.ParameterImpl;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

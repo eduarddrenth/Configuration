@@ -23,10 +23,9 @@ package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.parameters.Parameterizable;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
 
 public class ParameterHelper {
 

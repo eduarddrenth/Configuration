@@ -34,7 +34,6 @@ import com.vectorprint.configuration.generated.parser.JSONParser;
 import com.vectorprint.configuration.generated.parser.ParseException;
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;

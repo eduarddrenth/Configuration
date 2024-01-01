@@ -70,10 +70,6 @@ import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.testing.ThreadTester;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -103,8 +99,10 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PropertyTest {
 

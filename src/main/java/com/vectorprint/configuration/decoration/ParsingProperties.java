@@ -28,7 +28,6 @@ import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;

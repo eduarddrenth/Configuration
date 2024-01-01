@@ -24,7 +24,6 @@ package com.vectorprint.configuration.binding.settings;
 
 
 import com.vectorprint.configuration.binding.BindingHelper;
-
 import java.io.Reader;
 
 public interface EnhancedMapBindingFactory {

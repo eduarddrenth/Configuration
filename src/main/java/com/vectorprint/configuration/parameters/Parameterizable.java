@@ -25,7 +25,6 @@ package com.vectorprint.configuration.parameters;
 
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Observer;
