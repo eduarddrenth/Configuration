@@ -118,23 +118,22 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             if (!type.isAssignableFrom(EnhancedMap.class)) {
                throw new VectorPrintRuntimeException(String.format("%s is not an EnhancedMap, cannot assign settings", type.getName()));
             }
-            SettingsField set = se;
-            try {
-               if (set.preprocessors().length > 0) {
+             try {
+               if (se.preprocessors().length > 0) {
                   if (!hasProps(settings, PreparingProperties.class)) {
                      if (notifyWrapping) {
                         LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), PreparingProperties.class.getName()));
                      }
                      settings = new PreparingProperties(settings);
                   }
-                  for (PreProcess pp : set.preprocessors()) {
-                     AbstractPrepareKeyValue apkv = pp.preProcessorClass().newInstance().addKeys(pp.keys()).setOptIn(pp.optIn());
+                  for (PreProcess pp : se.preprocessors()) {
+                     AbstractPrepareKeyValue apkv = pp.preProcessorClass().getConstructor().newInstance().addKeys(pp.keys()).setOptIn(pp.optIn());
                      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
                      apd.accept(new PreparingVisitor(apkv));
                   }
                }
 
-               if (set.observable()) {
+               if (se.observable()) {
                   if (!hasProps(settings, ObservableProperties.class)) {
                      if (notifyWrapping) {
                         LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ObservableProperties.class.getName()));
@@ -145,25 +144,25 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      ((AbstractPropertiesDecorator) settings).accept(new ObservableVisitor((Observer) obj));
                   }
                }
-               if (set.urls().length > 0) {
+               if (se.urls().length > 0) {
                   if (notifyWrapping) {
                      LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ParsingProperties.class.getName()));
                   }
-                  if (set.autoreload()) {
-                     settings = new ReloadableProperties(settings, set.pollInterval(), set.urls());
+                  if (se.autoreload()) {
+                     settings = new ReloadableProperties(settings, se.pollInterval(), se.urls());
                   } else {
-                     settings = new ParsingProperties(settings, set.urls());
+                     settings = new ParsingProperties(settings, se.urls());
                   }
-               } else if (set.autoreload()) {
+               } else if (se.autoreload()) {
                   throw new IllegalArgumentException("autoreload needs file urls");
                }
-               if (set.readonly()) {
+               if (se.readonly()) {
                   if (notifyWrapping) {
                      LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), ReadonlyProperties.class.getName()));
                   }
                   settings = new ReadonlyProperties(settings);
                }
-               if (set.cache()) {
+               if (se.cache()) {
                   if (!hasProps(settings, CachingProperties.class)) {
                      if (notifyWrapping) {
                         LOGGER.warn(String.format("wrapping %s in %s, you should use the wrapper", settings.getClass().getName(), CachingProperties.class.getName()));
@@ -171,7 +170,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      settings = new CachingProperties(settings);
                   }
                }
-               for (Feature feat : set.features()) {
+               for (Feature feat : se.features()) {
                   Class<? extends AbstractPropertiesDecorator> dec = feat.clazz();
                   if (feat.urls().length > 0) {
                      URL[] urls = SettingsBindingService.getInstance().getFactory().getBindingHelper().convert(feat.urls(), URL[].class);
@@ -193,7 +192,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                if (!isStatic && obj instanceof DecoratorVisitor && settings instanceof AbstractPropertiesDecorator) {
                   ((AbstractPropertiesDecorator) settings).accept((DecoratorVisitor) obj);
                }
-            } catch (IOException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            } catch (IOException | SecurityException | InstantiationException | IllegalAccessException |
+                     IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
             try {
@@ -205,26 +205,25 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
             }
          }
          if (a != null) {
-            Setting s = a;
-            try {
+             try {
                Object cur = field.get(isStatic ? null : obj);
                Object v;
                if (cur == null) {
                   if (LOGGER.isDebugEnabled()) {
-                     LOGGER.debug(String.format("requiring a value for %s in settings", Arrays.toString(s.keys())));
+                     LOGGER.debug(String.format("requiring a value for %s in settings", Arrays.toString(a.keys())));
                   }
                   // don't catch exception, a setting is required
-                  v = settings.getGenericProperty(null, type, s.keys());
+                  v = settings.getGenericProperty(null, type, a.keys());
                } else {
                   if (LOGGER.isDebugEnabled()) {
-                     LOGGER.debug(String.format("looking for a value for %s in settings, ", Arrays.toString(s.keys())));
+                     LOGGER.debug(String.format("looking for a value for %s in settings, ", Arrays.toString(a.keys())));
                   }
                   // a setting is not required, only look for one if it is there
-                  v = settings.getGenericProperty(cur, type, s.keys());
+                  v = settings.getGenericProperty(cur, type, a.keys());
                }
                if (v != null) {
                   if (LOGGER.isDebugEnabled()) {
-                     LOGGER.debug(String.format("found %s for %s in settings, ", v, Arrays.toString(s.keys())));
+                     LOGGER.debug(String.format("found %s for %s in settings, ", v, Arrays.toString(a.keys())));
                   }
                   if (!executeSetter(field, obj, v, isStatic)) {
                      field.set(obj, v);

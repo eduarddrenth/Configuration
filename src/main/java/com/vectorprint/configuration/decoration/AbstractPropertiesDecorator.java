@@ -443,10 +443,9 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof AbstractPropertiesDecorator)) {
+        if (!(obj instanceof AbstractPropertiesDecorator apd)) {
             return false;
         }
-        AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) obj;
         return apd.settings.equals(settings);
     }
 
@@ -516,26 +515,20 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
 
     }
 
-    private static class Hiding implements DecoratorVisitor<HiddenBy> {
-
-        private final AbstractPropertiesDecorator settings;
-
-        public Hiding(AbstractPropertiesDecorator settings) {
-            this.settings = settings;
-        }
+    private record Hiding(AbstractPropertiesDecorator settings) implements DecoratorVisitor<HiddenBy> {
 
         @Override
-        public void visit(HiddenBy e) {
-            if (e.hiddenBy(settings.getClass())) {
-                throw new VectorPrintRuntimeException(String.format("%s hides %s",
-                        settings.getClass().getName(), e.getClass().getName()));
+            public void visit(HiddenBy e) {
+                if (e.hiddenBy(settings.getClass())) {
+                    throw new VectorPrintRuntimeException(String.format("%s hides %s",
+                            settings.getClass().getName(), e.getClass().getName()));
+                }
             }
-        }
 
-        @Override
-        public boolean shouldVisit(EnhancedMap e) {
-            return e instanceof HiddenBy;
-        }
+            @Override
+            public boolean shouldVisit(EnhancedMap e) {
+                return e instanceof HiddenBy;
+            }
 
-    }
+        }
 }

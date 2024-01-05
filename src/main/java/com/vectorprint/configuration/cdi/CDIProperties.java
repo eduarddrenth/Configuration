@@ -406,50 +406,41 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
     private static final CacheClearingVisitor CACHE_CLEARING_VISITOR =
             new CacheClearingVisitor();
 
-    private static class ToUpdate {
-        private final Annotated annotated;
-        private final Object reference;
-        private final String key;
-
-        public ToUpdate(Annotated annotated, Object reference, String key) {
-            this.annotated = annotated;
-            this.reference = reference;
-            this.key = key;
-        }
+    private record ToUpdate(Annotated annotated, Object reference, String key) {
 
         void update(Object value) {
-            if (annotated instanceof AnnotatedField) {
-                Field f = ((AnnotatedField) annotated).getJavaMember();
-                try {
-                    boolean ac = f.canAccess(reference);
-                    f.setAccessible(true);
-                    f.set(reference, value);
-                    f.setAccessible(ac);
-                } catch (IllegalAccessException e) {
-                    log.error(String.format("error updating %s with %s",
-                            f, value));
-                }
-            } else {
-                AnnotatedParameter ap = (AnnotatedParameter) annotated;
-                AnnotatedCallable declaringCallable = ap.getDeclaringCallable();
-                if (declaringCallable instanceof AnnotatedMethod) {
-                    Method method = ((AnnotatedMethod) declaringCallable).getJavaMember();
-                    if (method.getParameterCount()==1) {
-                        try {
-                            method.invoke(reference,value);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            log.error(String.format("error calling %s with %s",
-                                    method, value));
-                        }
-                    } else {
-                        log.warn(String.format("%s has more than one argument, not supported yet",
-                                method));
+                if (annotated instanceof AnnotatedField) {
+                    Field f = ((AnnotatedField) annotated).getJavaMember();
+                    try {
+                        boolean ac = f.canAccess(reference);
+                        f.setAccessible(true);
+                        f.set(reference, value);
+                        f.setAccessible(ac);
+                    } catch (IllegalAccessException e) {
+                        log.error(String.format("error updating %s with %s",
+                                f, value));
                     }
                 } else {
-                    log.warn(String.format("calling constructor %s not supported",declaringCallable));
+                    AnnotatedParameter ap = (AnnotatedParameter) annotated;
+                    AnnotatedCallable declaringCallable = ap.getDeclaringCallable();
+                    if (declaringCallable instanceof AnnotatedMethod) {
+                        Method method = ((AnnotatedMethod) declaringCallable).getJavaMember();
+                        if (method.getParameterCount() == 1) {
+                            try {
+                                method.invoke(reference, value);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                log.error(String.format("error calling %s with %s",
+                                        method, value));
+                            }
+                        } else {
+                            log.warn(String.format("%s has more than one argument, not supported yet",
+                                    method));
+                        }
+                    } else {
+                        log.warn(String.format("calling constructor %s not supported", declaringCallable));
+                    }
                 }
             }
         }
-    }
 
 }

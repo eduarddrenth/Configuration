@@ -61,7 +61,7 @@ public class SettingsFromJAXB {
             settings = new PreparingProperties(settings);
             for (Preprocessortype p : settingstype.getPreprocessor()) {
                Class<? extends AbstractPrepareKeyValue> c = (Class<? extends AbstractPrepareKeyValue>) Class.forName(p.getPreprocessorclassname());
-               AbstractPrepareKeyValue apv = c.newInstance().setOptIn(p.isOptIn());
+               AbstractPrepareKeyValue apv = c.getConstructor().newInstance().setOptIn(p.isOptIn());
                if (!p.getKeys().isEmpty()) {
                   apv.addKeys(ArrayHelper.toArray(p.getKeys()));
                }
@@ -103,7 +103,8 @@ public class SettingsFromJAXB {
                }
             }
          }
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException | IllegalArgumentException | InvocationTargetException classNotFoundException) {
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException |
+               IllegalArgumentException | InvocationTargetException | NoSuchMethodException classNotFoundException) {
          throw new VectorPrintException(classNotFoundException);
       }
       return settings;

@@ -60,7 +60,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
         ps.println();
         backingMap.forEach((key, value) -> ps.println(key + "=" + (value != null ? Arrays.asList(value) : "")));
         ps.println();
-        ps.println("settings wrapped by " + decorators.toString());
+        ps.println("settings wrapped by " + decorators);
     }
     private String id;
     private final Map<String, PropertyHelp> help = new HashMap<>(50);
@@ -117,15 +117,15 @@ public final class Settings implements EnhancedMap, DecorationAware {
                 Class compType = val.getClass().getComponentType();
                 if (!compType.isPrimitive()) {
                     for (Object o : (Object[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
+                        s.append(o).append("; ");
                     }
                 } else if (compType.equals(boolean.class)) {
                     for (boolean o : (boolean[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
+                        s.append(o).append("; ");
                     }
                 } else if (compType.equals(char.class)) {
                     for (char o : (char[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
+                        s.append(o).append("; ");
                     }
                 } else if (compType.equals(byte.class)) {
                     for (byte o : (byte[]) val) {
@@ -137,23 +137,23 @@ public final class Settings implements EnhancedMap, DecorationAware {
                     }
                 } else if (compType.equals(int.class)) {
                     for (int o : (int[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
+                        s.append(o).append("; ");
                     }
                 } else if (compType.equals(long.class)) {
                     for (long o : (long[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
+                        s.append(o).append("; ");
                     }
                 } else if (compType.equals(float.class)) {
                     for (float o : (float[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
+                        s.append(o).append("; ");
                     }
                 } else if (compType.equals(double.class)) {
                     for (double o : (double[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
+                        s.append(o).append("; ");
                     }
                 }
             }
-            log.debug(String.format("looking for property %s in %s, using value %s", keys!=null?Arrays.asList(keys):null, getId(), s.append((defaultVal) ? " (default)" : "").toString()));
+            log.debug(String.format("looking for property %s in %s, using value %s", keys!=null?Arrays.asList(keys):null, getId(), s.append((defaultVal) ? " (default)" : "")));
         }
     }
 
@@ -201,7 +201,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     @Override
-    public URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException {
+    public URL getURLProperty(URL defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
         return key == null ? defaultValue : getFactory().getBindingHelper().convert(getFirst(key), URL.class);
     }
@@ -346,7 +346,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     @Override
-    public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
+    public URL[] getURLProperties(URL[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
         return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),URL.class);
     }
@@ -528,8 +528,8 @@ public final class Settings implements EnhancedMap, DecorationAware {
             }
         } else {
             try {
-                vp = new Settings(backingMap.getClass().newInstance());
-            } catch (IllegalAccessException | InstantiationException ex) {
+                vp = new Settings(backingMap.getClass().getConstructor().newInstance());
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException ex) {
                 throw new VectorPrintRuntimeException(ex);
             }
             vp.backingMap.putAll(backingMap);
@@ -644,7 +644,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * @throws ClassNotFoundException
      */
     @Override
-    public Class getClassProperty(Class defaultValue, String... keys) throws ClassNotFoundException {
+    public Class getClassProperty(Class defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
         return key == null ? defaultValue : getFactory().getBindingHelper().convert(getFirst(key), Class.class);
     }
@@ -669,7 +669,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
      * @throws ClassNotFoundException
      */
     @Override
-    public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
+    public Class[] getClassProperties(Class[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
         return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),Class.class);
     }

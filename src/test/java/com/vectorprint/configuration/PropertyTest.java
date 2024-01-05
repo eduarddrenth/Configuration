@@ -107,12 +107,12 @@ import org.junit.jupiter.api.Test;
 public class PropertyTest {
 
    @BeforeAll
-   public static void setUpClass() throws IOException {
+   public static void setUpClass() {
       Logger.getLogger(Settings.class.getName()).setLevel(Level.FINE);
    }
 
    @BeforeEach
-   public void setUp() throws IOException {
+   public void setUp() {
       SpecificClassValidator.setClazz(null);
       com.vectorprint.configuration.binding.parameters.SpecificClassValidator.setClazz(null);
    }
@@ -131,15 +131,12 @@ public class PropertyTest {
       final PropCreator pc = new PropCreator();
       ThreadTester.testInThread(pc);
       Collection<Runnable> toRun = new HashSet<>(1);
-      toRun.add(new Runnable() {
-         @Override
-         public void run() {
-            try {
-               assertFalse(pc.mtp.containsKey("stoponerror"));
-               fail("properties should not be reached in sibling threads");
-            } catch (VectorPrintRuntimeException ex) {
-               // expected
-            }
+      toRun.add(() -> {
+         try {
+            assertFalse(pc.mtp.containsKey("stoponerror"));
+            fail("properties should not be reached in sibling threads");
+         } catch (VectorPrintRuntimeException ex) {
+            // expected
          }
       });
       ThreadTester.testInThread(toRun);
@@ -379,12 +376,7 @@ public class PropertyTest {
       assertTrue(mtp.containsValue(new String[]{"7"}));
       assertTrue(mtp.keySet().contains("stoponerror"));
       assertTrue(mtp.keySet().contains("marks"));
-      ThreadTester.testInThread(new Runnable() {
-         @Override
-         public void run() {
-            assertNotNull(mtp.getProperty("stoponerror"));
-         }
-      });
+      ThreadTester.testInThread(() -> assertNotNull(mtp.getProperty("stoponerror")));
    }
 
    @Test
@@ -395,12 +387,7 @@ public class PropertyTest {
       final ThreadBoundProperties mtp = new ThreadBoundProperties(mp);
       assertFalse(mtp.containsKey("bla"));
       mtp.put("bla", "bla");
-      ThreadTester.testInThread(new Runnable() {
-         @Override
-         public void run() {
-            mtp.put("bla", "ookbla");
-         }
-      });
+      ThreadTester.testInThread(() -> mtp.put("bla", "ookbla"));
       assertEquals("ookbla", mtp.getProperty("bla"));
       assertTrue(mtp.containsKey("stoponerror"));
    }
@@ -655,13 +642,9 @@ public class PropertyTest {
 
       assertEquals("wat een mooie\nhelp tekst\n\nis dit", deserialized.getHelp("stoponerror").getExplanation());
 
-      ThreadTester.testInThread(new Runnable() {
-
-         @Override
-         public void run() {
-            deserialized.put("childThreadProp", "child");
-            assertTrue(deserialized.containsKey("childThreadProp"));
-         }
+      ThreadTester.testInThread(() -> {
+         deserialized.put("childThreadProp", "child");
+         assertTrue(deserialized.containsKey("childThreadProp"));
       });
 
       assertTrue(deserialized.containsKey("childThreadProp"));
@@ -903,10 +886,11 @@ public class PropertyTest {
       assertTrue(apd.hasProperties(CachingProperties.class));
       assertTrue(apd.hasProperties(HelpSupportedProperties.class));
       assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
-      assertEquals(settings.getHelp("stoponerror").getExplanation(), "wat een mooie\n"
-          + "help tekst\n"
-          + "\n"
-          + "is dit");
+      assertEquals(settings.getHelp("stoponerror").getExplanation(), """
+              wat een mooie
+              help tekst
+
+              is dit""");
    }
 
    @Test
@@ -918,10 +902,11 @@ public class PropertyTest {
       assertTrue(apd.hasProperties(CachingProperties.class));
       assertTrue(apd.hasProperties(HelpSupportedProperties.class));
       assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
-      assertEquals(settings.getHelp("stoponerror").getExplanation(), "wat een mooie\n"
-          + "help tekst\n"
-          + "\n"
-          + "is dit");
+      assertEquals(settings.getHelp("stoponerror").getExplanation(), """
+              wat een mooie
+              help tekst
+
+              is dit""");
    }
    
    @Test
@@ -933,10 +918,11 @@ public class PropertyTest {
       assertTrue(apd.hasProperties(CachingProperties.class));
       assertTrue(apd.hasProperties(HelpSupportedProperties.class));
       assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
-      assertEquals(settings.getHelp("stoponerror").getExplanation(), "wat een mooie\n"
-          + "help tekst\n"
-          + "\n"
-          + "is dit");
+      assertEquals(settings.getHelp("stoponerror").getExplanation(), """
+              wat een mooie
+              help tekst
+
+              is dit""");
    }
 
    @Test

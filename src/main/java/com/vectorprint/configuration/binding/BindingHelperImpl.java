@@ -30,6 +30,7 @@ import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorat
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -223,30 +224,22 @@ public class BindingHelperImpl implements BindingHelper {
             sb.append(v).append(separator);
          }
          return sb.toString();
-      } else if (value instanceof short[]) {
-         short[] s = (short[]) value;
-         return string(ArrayHelper.wrap(s));
-      } else if (value instanceof int[]) {
-         int[] s = (int[]) value;
-         return string(ArrayHelper.wrap(s));
-      } else if (value instanceof long[]) {
-         long[] s = (long[]) value;
-         return string(ArrayHelper.wrap(s));
-      } else if (value instanceof float[]) {
-         float[] s = (float[]) value;
-         return string(ArrayHelper.wrap(s));
-      } else if (value instanceof double[]) {
-         double[] s = (double[]) value;
-         return string(ArrayHelper.wrap(s));
-      } else if (value instanceof byte[]) {
-         byte[] s = (byte[]) value;
-         return string(ArrayHelper.wrap(s));
-      } else if (value instanceof boolean[]) {
-         boolean[] s = (boolean[]) value;
-         return string(ArrayHelper.wrap(s));
-      } else if (value instanceof char[]) {
-         char[] s = (char[]) value;
-         return string(ArrayHelper.wrap(s));
+      } else if (value instanceof short[] s) {
+          return string(ArrayHelper.wrap(s));
+      } else if (value instanceof int[] s) {
+          return string(ArrayHelper.wrap(s));
+      } else if (value instanceof long[] s) {
+          return string(ArrayHelper.wrap(s));
+      } else if (value instanceof float[] s) {
+          return string(ArrayHelper.wrap(s));
+      } else if (value instanceof double[] s) {
+          return string(ArrayHelper.wrap(s));
+      } else if (value instanceof byte[] s) {
+          return string(ArrayHelper.wrap(s));
+      } else if (value instanceof boolean[] s) {
+          return string(ArrayHelper.wrap(s));
+      } else if (value instanceof char[] s) {
+          return string(ArrayHelper.wrap(s));
       } else {
          return null;
       }
@@ -254,7 +247,7 @@ public class BindingHelperImpl implements BindingHelper {
 
    private String string(Object... s) {
       if (s.length>0) {
-         return IntStream.range(0,s.length).mapToObj(i -> String.valueOf(s[i]))
+         return Arrays.stream(s).map(String::valueOf)
                  .collect(Collectors.joining(SEP));
       }
       return null;

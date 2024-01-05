@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,25 +77,24 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
 
    protected <TYPE extends Serializable> TYPE convert(Object values, Parameter<TYPE> parameter) {
       if (parameter.getValueClass().isArray()) {
-         if (!(values instanceof List)) {
+         if (!(values instanceof List l)) {
             throw new VectorPrintRuntimeException(EXAMPLE_SUPPORTED_JSON_SYNTAX);
          }
-         List l = (List) values;
-         List<String> sl = new ArrayList<>(l.size());
+          List<String> sl = new ArrayList<>(l.size());
          l.forEach((o) -> sl.add(String.valueOf(o)));
          if (String[].class.equals(parameter.getValueClass())) {
             return (TYPE) ArrayHelper.toArray(sl);
          } else {
-            Serializable o = bindingHelper.convert(ArrayHelper.toArray(sl), parameter.getValueClass());
-            return (TYPE) o;
+            TYPE o = bindingHelper.convert(ArrayHelper.toArray(sl), parameter.getValueClass());
+            return o;
          }
       } else {
          String s = String.valueOf(values);
          if (String.class.equals(parameter.getValueClass())) {
             return (TYPE) s;
          } else {
-            Serializable o = bindingHelper.convert(s, parameter.getValueClass());
-            return (TYPE) o;
+            TYPE o = bindingHelper.convert(s, parameter.getValueClass());
+            return o;
          }
       }
    }
@@ -167,9 +167,8 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
       } catch (ParseException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
-      if (parse instanceof Map) {
-         Map m = (Map) parse;
-         if (m.size() == 1) {
+      if (parse instanceof Map m) {
+          if (m.size() == 1) {
             Map.Entry next = (Map.Entry) m.entrySet().iterator().next();
             String className = String.valueOf(next.getKey());
             EnhancedMap settings = getSettings();
@@ -188,20 +187,18 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
                sap.initSettings(c, settings);
             }
             try {
-               parameterizable = (Parameterizable) c.newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+               parameterizable = (Parameterizable) c.getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
                throw new VectorPrintRuntimeException(ex);
             }
             // init instance settings
             sap.initSettings(parameterizable, settings);
             initParameterizable(parameterizable);
             if (next.getValue() != null) {
-               if (next.getValue() instanceof List) {
-                  List parameters = (List) next.getValue();
-                  for (Object o : parameters) {
-                     if (o instanceof Map) {
-                        Map p = (Map) o;
-                        if (p.size() == 1) {
+               if (next.getValue() instanceof List parameters) {
+                   for (Object o : parameters) {
+                     if (o instanceof Map p) {
+                         if (p.size() == 1) {
                            Map.Entry par = (Map.Entry) p.entrySet().iterator().next();
                            String key = String.valueOf(par.getKey());
                            checkKey(parameterizable, key);

@@ -59,12 +59,7 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
             toObserve.get(dir).add(f);
         }
         for (Map.Entry<File,List<File>> entry: toObserve.entrySet()) {
-            FileFilter ff = new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    return entry.getValue().contains(file);
-                }
-            };
+            FileFilter ff = file -> entry.getValue().contains(file);
             FileAlterationObserver observer = new FileAlterationObserver(entry.getKey(),ff);
             observer.addListener(listener);
             monitor.addObserver(observer);
@@ -85,7 +80,7 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     }
 
     private static File[] getFiles(String[] files) {
-        return Arrays.stream(files).map(u -> new File(u)).collect(Collectors.toList()).toArray(new File[files.length]);
+        return Arrays.stream(files).map(File::new).collect(Collectors.toList()).toArray(new File[files.length]);
     }
 
     public ReloadableProperties(EnhancedMap properties, File... files) throws IOException {

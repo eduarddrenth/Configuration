@@ -52,9 +52,9 @@ public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
          } else {
             // parameter clazz is never primitive
             if (value instanceof Number || Boolean.class.equals(clazz)) {
-               sb.append(String.valueOf(value));
+               sb.append(value);
             } else {
-               sb.append('\'').append(String.valueOf(value)).append('\'');
+               sb.append('\'').append(value).append('\'');
             }
          }
          return sb.toString();
@@ -86,18 +86,17 @@ public class JSONBindingHelper extends AbstractParamBindingHelperDecorator {
             sb.append('\'').append(v).append('\'').append(getArrayValueSeparator());
          }
       } else {
-         if (value instanceof char[]) {
-            char[] s = (char[]) value;
-            if (s.length == 0) {
+         if (value instanceof char[] s) {
+             if (s.length == 0) {
                return sb.append("null]").toString();
             }
             int l = s.length;
             for (int i = 0;; i++) {
                if (i == l - 1) {
-                  sb.append('\'').append(String.valueOf(s[i])).append('\'');
+                  sb.append('\'').append(s[i]).append('\'');
                   break;
                }
-               sb.append('\'').append(String.valueOf(s[i])).append('\'').append(getArrayValueSeparator());
+               sb.append('\'').append(s[i]).append('\'').append(getArrayValueSeparator());
             }
          } else {
             String serializeValue = super.serializeValue(value);

@@ -72,10 +72,11 @@ public class ParameterizableBindingFactoryJson implements ParameterizableBinding
    @Override
    public ParameterizableSerializer getSerializer() {
       try {
-         ParameterizableSerializer ps = serializerClass.newInstance();
+         ParameterizableSerializer ps = serializerClass.getConstructor().newInstance();
          ps.setBindingHelper(getBindingHelper());
          return ps;
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException ex) {
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException |
+               NoSuchMethodException | InvocationTargetException ex) {
          throw new VectorPrintRuntimeException(ex);
       }
    }
