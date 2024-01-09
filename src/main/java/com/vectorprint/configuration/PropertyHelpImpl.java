@@ -22,8 +22,11 @@ package com.vectorprint.configuration;
  */
 
 
+import java.io.Serial;
+
 public class PropertyHelpImpl implements PropertyHelp {
 
+   @Serial
    private static final long serialVersionUID = 1;
    private String type = "unknown type", explanation = "unknown";
 

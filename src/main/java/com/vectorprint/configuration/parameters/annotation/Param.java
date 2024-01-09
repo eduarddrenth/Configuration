@@ -37,11 +37,11 @@ public @interface Param {
    /**
     * means null, no value
     */
-   public static final String NULL = "000";
-   public String help() default "no help";
-   public String key();
-   public Class<? extends ParameterImpl> clazz();
-   public String defaultValue() default NULL;
-   public String[] defaultArray() default NULL;
+   String NULL = "000";
+   String help() default "no help";
+   String key();
+   Class<? extends ParameterImpl> clazz();
+   String defaultValue() default NULL;
+   String[] defaultArray() default NULL;
 
 }

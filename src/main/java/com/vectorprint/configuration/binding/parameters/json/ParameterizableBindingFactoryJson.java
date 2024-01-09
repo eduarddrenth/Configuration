@@ -35,7 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ParameterizableBindingFactoryJson implements ParameterizableBindingFactory {
 
    private static final ParamBindingHelper bindingHelper = new JSONBindingHelper();
-   private static Constructor<? extends ParameterizableParser> constructor;
+   private static final Constructor<? extends ParameterizableParser> constructor;
    private static final Class<? extends ParameterizableSerializer> serializerClass = JSONSupport.class;
 
    static {

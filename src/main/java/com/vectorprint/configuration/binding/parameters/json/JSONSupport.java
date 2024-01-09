@@ -85,16 +85,14 @@ public class JSONSupport extends AbstractParameterizableBinding<Object> {
          if (String[].class.equals(parameter.getValueClass())) {
             return (TYPE) ArrayHelper.toArray(sl);
          } else {
-            TYPE o = bindingHelper.convert(ArrayHelper.toArray(sl), parameter.getValueClass());
-            return o;
+             return bindingHelper.convert(ArrayHelper.toArray(sl), parameter.getValueClass());
          }
       } else {
          String s = String.valueOf(values);
          if (String.class.equals(parameter.getValueClass())) {
             return (TYPE) s;
          } else {
-            TYPE o = bindingHelper.convert(s, parameter.getValueClass());
-            return o;
+             return bindingHelper.convert(s, parameter.getValueClass());
          }
       }
    }

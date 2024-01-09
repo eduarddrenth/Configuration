@@ -47,7 +47,6 @@ public interface KeyValueObservable<K extends Serializable, V extends Serializab
          * suggested method where the {@link PrepareKeyValue} will be called.
          *
          * @param keyValue
-         * @throws VectorPrintException
          */
-        void prepareKeyValue(KeyValue<K, V> keyValue) throws VectorPrintException;
+        void prepareKeyValue(KeyValue<K, V> keyValue);
 }

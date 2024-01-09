@@ -36,7 +36,7 @@ public interface BindingHelper {
      * returns the first BindingHelper found by {@link #loader}.
      * @return
      */
-    public static BindingHelper getInstance() {
+    static BindingHelper getInstance() {
         return loader.iterator().next();
     }
 
@@ -51,7 +51,7 @@ public interface BindingHelper {
      * @param value
      * @return
      */
-    public String escape(String value);
+    String escape(String value);
 
     /**
      * set characters to be escaped, do this from the constructors when
@@ -59,7 +59,7 @@ public interface BindingHelper {
      *
      * @param chars
      */
-    public void setEscapeChars(char[] chars);
+    void setEscapeChars(char[] chars);
 
     /**
      * supports arrays of primitives and their wrappers, enums, URL, Color,
@@ -89,7 +89,7 @@ public interface BindingHelper {
      *
      * @param separator
      */
-    public void setArrayValueSeparator(char separator);
+    void setArrayValueSeparator(char separator);
 
     char getArrayValueSeparator();
 

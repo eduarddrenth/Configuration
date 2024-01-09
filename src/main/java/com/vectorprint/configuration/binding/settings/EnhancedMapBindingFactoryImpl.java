@@ -34,7 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 public class EnhancedMapBindingFactoryImpl implements EnhancedMapBindingFactory {
 
    private static final Class<? extends EnhancedMapParser> parserClass = PropertiesParser.class;
-   private static Constructor<? extends EnhancedMapParser> constructor;
+   private static final Constructor<? extends EnhancedMapParser> constructor;
    private static final BindingHelper bindingHelper = new BindingHelperImpl();
 
    static {

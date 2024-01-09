@@ -25,6 +25,8 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Observable;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class ParameterImpl<TYPE extends Serializable> extends Observable implements Parameter<TYPE> {
 
+   @Serial
    private static final long serialVersionUID = 1;
    private String key, help;
    private TYPE value;
@@ -178,8 +181,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
 
    @Override
    public int hashCode() {
-      int hash = 5;
-      return hash;
+       return 5;
    }
 
    /**
@@ -227,7 +229,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
       if (this.declaringClass != other.declaringClass) {
          return false;
       }
-      return !(!Objects.equals(this.help, other.help));
+      return Objects.equals(this.help, other.help);
    }
 
 }

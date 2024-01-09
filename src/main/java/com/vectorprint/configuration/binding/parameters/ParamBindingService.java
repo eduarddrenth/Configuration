@@ -74,9 +74,7 @@ public class ParamBindingService {
    
    public boolean isValid(ParameterizableBindingFactory f ) {
          boolean ok = true;
-         boolean noValidatorFound = true;
          for (ParamFactoryValidator validator : validators) {
-            noValidatorFound = false;
             if (!validator.isValid(f)) {
                if (LOGGER.isDebugEnabled()) {
                   LOGGER.debug(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));

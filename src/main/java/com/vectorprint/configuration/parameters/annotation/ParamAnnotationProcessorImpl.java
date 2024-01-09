@@ -67,8 +67,7 @@ public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
    private void process(Class<? extends Parameterizable> c, Parameterizable parameterizable) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
       Parameters annotation = c.getAnnotation(Parameters.class);
       if (annotation != null) {
-         Parameters ps = annotation;
-         for (Param p : ps.parameters()) {
+          for (Param p : annotation.parameters()) {
             String key = p.key();
             if (parameterizable.getParameters().containsKey(key)) {
                if (log.isDebugEnabled()) {

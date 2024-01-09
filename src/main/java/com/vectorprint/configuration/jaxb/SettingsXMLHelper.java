@@ -44,7 +44,7 @@ import org.xml.sax.SAXException;
 
 public class SettingsXMLHelper {
 
-    private static Logger logger = LoggerFactory.getLogger(SettingsXMLHelper.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(SettingsXMLHelper.class.getName());
 
     public static final String XSD = "/xsd/Settings.xsd";
 

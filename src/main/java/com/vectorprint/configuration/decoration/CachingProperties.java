@@ -181,10 +181,9 @@ public class CachingProperties extends AbstractPropertiesDecorator {
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
     * @return
-    * @throws ClassNotFoundException
     */
    @Override
-   public Class getClassProperty(Class defaultValue, String... keys) throws ClassNotFoundException {
+   public Class getClassProperty(Class defaultValue, String... keys) {
       return fromCache(defaultValue, Class.class, keys);
    }
 
@@ -193,10 +192,9 @@ public class CachingProperties extends AbstractPropertiesDecorator {
     * @param defaultValue the value of defaultValue
     * @param keys the value of keys
     * @return
-    * @throws ClassNotFoundException
     */
    @Override
-   public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
+   public Class[] getClassProperties(Class[] defaultValue, String... keys) {
       return fromCache(defaultValue, Class[].class, keys);
    }
 
@@ -211,12 +209,12 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
+   public URL[] getURLProperties(URL[] defaultValue, String... keys) {
       return fromCache(defaultValue, URL[].class, keys);
    }
 
    @Override
-   public URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException {
+   public URL getURLProperty(URL defaultValue, String... keys) {
       return fromCache(defaultValue, URL.class, keys);
    }
 
@@ -273,10 +271,5 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    public void clearCache() {
        cache.clear();
    }
-
-    @Override
-    public EnhancedMap clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
 
 }

@@ -32,7 +32,6 @@ import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 //~--- JDK imports ------------------------------------------------------------
 public class BindingHelperImpl implements BindingHelper {

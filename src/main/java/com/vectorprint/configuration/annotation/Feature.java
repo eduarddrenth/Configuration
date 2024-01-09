@@ -46,7 +46,7 @@ public @interface Feature {
     * requires a constructor with {@link EnhancedMap} as argument.
     * @return 
     */
-   public Class<? extends AbstractPropertiesDecorator> clazz();
+   Class<? extends AbstractPropertiesDecorator> clazz();
    /**
     * decorators may need input for their functionality, a URL to retrieve help info for example.
     * setting this argument requires a constructor with {@link EnhancedMap} and URL[] as arguments.
@@ -54,13 +54,13 @@ public @interface Feature {
     * @see HelpSupportedProperties
     * @return 
     */
-   public String[] urls() default {};
+   String[] urls() default {};
    
    /**
     * @see ParsingProperties
     * @see SpecificClassValidator
     * @return 
     */
-   public Class<? extends EnhancedMapBindingFactory> factoryClass() default EnhancedMapBindingFactoryImpl.class;
+   Class<? extends EnhancedMapBindingFactory> factoryClass() default EnhancedMapBindingFactoryImpl.class;
    
 }

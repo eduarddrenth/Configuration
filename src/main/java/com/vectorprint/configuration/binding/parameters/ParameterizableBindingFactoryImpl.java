@@ -32,7 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ParameterizableBindingFactoryImpl implements ParameterizableBindingFactory {
 
    private static final ParamBindingHelper bindingHelper = new EscapingBindingHelper();
-   private static Constructor<? extends ParameterizableParser> constructor;
+   private static final Constructor<? extends ParameterizableParser> constructor;
    
    static {
       try {

@@ -120,7 +120,8 @@ public class ParameterizableImpl implements Parameterizable {
     */
    @Override
    public Parameterizable clone() throws CloneNotSupportedException {
-      try {
+       Parameterizable parameterizable = (Parameterizable) super.clone();
+       try {
          Constructor con = getClass().getConstructor();
          ParameterizableImpl pi = (ParameterizableImpl) con.newInstance();
          paramProcessor.initParameters(pi);

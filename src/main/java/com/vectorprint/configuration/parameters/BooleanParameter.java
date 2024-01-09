@@ -30,9 +30,4 @@ public class BooleanParameter extends ParameterImpl<Boolean>{
       setDefault(Boolean.FALSE);
    }
 
-    @Override
-    public Parameter<Boolean> clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

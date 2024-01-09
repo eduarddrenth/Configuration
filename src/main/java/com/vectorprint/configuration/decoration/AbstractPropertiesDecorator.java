@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,7 +209,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends String[]> m) {
+    public void putAll(@NotNull Map<? extends String, ? extends String[]> m) {
         settings.putAll(m);
     }
 
@@ -217,17 +219,17 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
     }
 
     @Override
-    public Set<String> keySet() {
+    public @NotNull Set<String> keySet() {
         return settings.keySet();
     }
 
     @Override
-    public Collection values() {
+    public @NotNull Collection values() {
         return settings.values();
     }
 
     @Override
-    public Set<Entry<String, String[]>> entrySet() {
+    public @NotNull Set<Entry<String, String[]>> entrySet() {
         return settings.entrySet();
     }
 
@@ -264,7 +266,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
         return false;
     }
 
-    private final DecorationAware[] getDecorationAwares() {
+    private DecorationAware[] getDecorationAwares() {
         EnhancedMap inner = settings;
         List<DecorationAware> l = new ArrayList<>(1);
         while (inner != null) {

@@ -31,10 +31,5 @@ public class FloatParameter extends ParameterImpl<Float>{
       setDefault(0f);
    }
 
-    @Override
-    public Parameter<Float> clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
-
 
 }

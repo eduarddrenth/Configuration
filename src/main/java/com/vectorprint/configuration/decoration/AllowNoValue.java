@@ -134,10 +134,9 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
      * @param defaultValue the value of defaultValue
      * @param keys the value of keys
      * @return
-     * @throws ClassNotFoundException
      */
     @Override
-    public Class getClassProperty(Class defaultValue, String... keys) throws ClassNotFoundException {
+    public Class getClassProperty(Class defaultValue, String... keys) {
         return allowNoValue(defaultValue, Class.class, keys);
     }
 
@@ -146,10 +145,9 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
      * @param defaultValue the value of defaultValue
      * @param keys the value of keys
      * @return
-     * @throws ClassNotFoundException
      */
     @Override
-    public Class[] getClassProperties(Class[] defaultValue, String... keys) throws ClassNotFoundException {
+    public Class[] getClassProperties(Class[] defaultValue, String... keys) {
         return allowNoValue(defaultValue, Class[].class, keys);
     }
 
@@ -164,12 +162,12 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
     }
 
     @Override
-    public URL[] getURLProperties(URL[] defaultValue, String... keys) throws MalformedURLException {
+    public URL[] getURLProperties(URL[] defaultValue, String... keys) {
         return allowNoValue(defaultValue, URL[].class, keys);
     }
 
     @Override
-    public URL getURLProperty(URL defaultValue, String... keys) throws MalformedURLException {
+    public URL getURLProperty(URL defaultValue, String... keys) {
         return allowNoValue(defaultValue, URL.class, keys);
     }
 
@@ -221,11 +219,6 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
     @Override
     public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
         return allowNoValue(defaultValue, clazz, keys);
-    }
-
-    @Override
-    public EnhancedMap clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

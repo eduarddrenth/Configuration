@@ -53,7 +53,7 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
    private final Map<String, List<String>> commentBeforeKeys = new HashMap<>(50);
    private final List<String> trailingComment = new ArrayList<>(0);
    
-   public ParsingProperties(EnhancedMap properties) throws IOException {
+   public ParsingProperties(EnhancedMap properties) {
       super(properties);
    }
 

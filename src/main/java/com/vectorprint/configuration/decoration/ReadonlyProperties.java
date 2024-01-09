@@ -55,9 +55,4 @@ public class ReadonlyProperties extends AbstractPropertiesDecorator {
       throw new VectorPrintRuntimeException("Properties are readonly");
    }
 
-   @Override
-   public EnhancedMap clone() throws CloneNotSupportedException {
-      return super.clone();
-   }
-
 }

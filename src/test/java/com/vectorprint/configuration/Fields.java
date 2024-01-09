@@ -46,14 +46,7 @@ public class Fields implements Observer {
    private Float F;
    @Setting(keys = "ff")
    private float[] ff;
-   @SettingsField(
-       observable = true,
-       urls = {"src/test/resources/config/chart.properties"},
-       features = {
-          @Feature(clazz = ReadonlyProperties.class)
-       }
-   )
-   @Setting(keys = "settings")
+   @SettingsField(observable = true, readonly = true, cache = true)
    private EnhancedMap settings;
 
 

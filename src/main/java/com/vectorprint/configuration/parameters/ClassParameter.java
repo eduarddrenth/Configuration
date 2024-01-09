@@ -33,9 +33,4 @@ public class ClassParameter extends ParameterImpl<Class> {
       return value!=null?value.getName():"";
    }
 
-    @Override
-    public Parameter<Class> clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

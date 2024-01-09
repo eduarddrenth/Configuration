@@ -112,23 +112,23 @@ public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializa
 
    void listProperties(PrintStream ps);
 
-   public void setHelp(Map<String, PropertyHelp> h);
+   void setHelp(Map<String, PropertyHelp> h);
 
-   public EnhancedMap clone() throws CloneNotSupportedException;
+   EnhancedMap clone() throws CloneNotSupportedException;
 
    /**
     * return a collection of keys not used sofar in the settings.
     *
     * @return
     */
-   public Collection<String> getUnusedKeys();
+   Collection<String> getUnusedKeys();
 
    /**
     * return a collection of keys not present in the settings, for which defaults where used instead.
     *
     * @return
     */
-   public Collection<String> getKeysNotPresent();
+   Collection<String> getKeysNotPresent();
 
    /**
     * each set of properties is suggested to have a unique id

@@ -36,9 +36,4 @@ public class IntArrayParameter extends ParameterImpl<int[]>{
       return Arrays.toString(value);
    }
 
-    @Override
-    public Parameter<int[]> clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

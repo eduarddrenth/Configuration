@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xs:schema version="1.0" targetNamespace="http://www.vectorprint.nl/config/settings/1.6"
            xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vpconfig="http://www.vectorprint.nl/config/settings/1.6"
-           elementFormDefault="qualified" attributeFormDefault="unqualified">
+           elementFormDefault="qualified">
    <xs:annotation>
       <xs:documentation>Schema for Settings in applications.</xs:documentation>
    </xs:annotation>

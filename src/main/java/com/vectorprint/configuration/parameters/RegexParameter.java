@@ -31,10 +31,5 @@ public class RegexParameter extends ParameterImpl<Pattern>{
       super(key, help, Pattern.class);
    }
 
-    @Override
-    public Parameter<Pattern> clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
-
 
 }

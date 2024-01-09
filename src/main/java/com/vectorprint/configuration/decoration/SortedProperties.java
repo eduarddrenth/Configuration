@@ -22,6 +22,8 @@ package com.vectorprint.configuration.decoration;
 
 
 import com.vectorprint.configuration.EnhancedMap;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,24 +34,19 @@ public class SortedProperties extends AbstractPropertiesDecorator {
       super(settings);
    }
    
-   private static final Comparator<Entry<String, String[]>> ECOMP = Comparator.comparing(Entry::getKey);
+   private static final Comparator<Entry<String, String[]>> ECOMP = Entry.comparingByKey();
    
    @Override
-   public Set<Entry<String, String[]>> entrySet() {
+   public @NotNull Set<Entry<String, String[]>> entrySet() {
       TreeSet<Entry<String, String[]>> treeSet = new TreeSet<>(ECOMP);
       treeSet.addAll(super.entrySet());
       return treeSet;
    }
    
    @Override
-   public Set<String> keySet() {
+   public @NotNull Set<String> keySet() {
       return new TreeSet<>(super.keySet());
    }
 
-    @Override
-    public EnhancedMap clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
-   
-   
+
 }

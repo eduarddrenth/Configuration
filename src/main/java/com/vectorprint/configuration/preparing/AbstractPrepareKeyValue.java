@@ -21,12 +21,14 @@ package com.vectorprint.configuration.preparing;
  * #L%
  */
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class AbstractPrepareKeyValue implements PrepareKeyValue<String, String[]> {
 
+   @Serial
    private static final long serialVersionUID = 1;
    private final Set<String> keys = new HashSet<>(3);
    private boolean optIn = true;

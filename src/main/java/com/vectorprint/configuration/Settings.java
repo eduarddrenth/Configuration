@@ -29,9 +29,9 @@ import com.vectorprint.configuration.decoration.DecorationAware;
 import java.awt.*;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,11 +45,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class Settings implements EnhancedMap, DecorationAware {
 
+    @Serial
     private static final long serialVersionUID = 1;
     private static final Logger log = LoggerFactory.getLogger(Settings.class.getName());
     private final Map<String, String[]> backingMap;
@@ -158,7 +161,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     @Override
-    public final String[] get(Object key) {
+    public String[] get(Object key) {
         unused.remove(key);
         return backingMap.get(key);
     }
@@ -466,7 +469,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
         help.forEach((key, value) -> sb.append(key).append(": ").append(value.getType())
                 .append("; ")
                 .append(value.getExplanation())
-                .append(System.getProperty("line.separator")));
+                .append(System.lineSeparator()));
         return sb.toString();
     }
 
@@ -477,13 +480,13 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     @Override
-    public final String[] put(String key, String[] value) {
+    public String[] put(String key, String[] value) {
         if (!backingMap.containsKey(key)) unused.add(key);
         return backingMap.put(key, value);
     }
 
     @Override
-    public final void clear() {
+    public void clear() {
         unused.clear();
         notPresent.clear();
         help.clear();
@@ -492,7 +495,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     @Override
-    public final String[] remove(Object key) {
+    public String[] remove(Object key) {
         unused.remove(key);
         return backingMap.remove(key);
     }
@@ -708,9 +711,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
         }
         if (String[].class.equals(value.getClass())) {
 
-            if (entrySet().stream().anyMatch((e) -> (Arrays.equals(e.getValue(), (String[]) value)))) {
-                return true;
-            }
+            return entrySet().stream().anyMatch((e) -> (Arrays.equals(e.getValue(), (String[]) value)));
         }
         return false;
     }
@@ -748,17 +749,17 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     @Override
-    public Set<String> keySet() {
+    public @NotNull Set<String> keySet() {
         return backingMap.keySet();
     }
 
     @Override
-    public Collection<String[]> values() {
+    public @NotNull Collection<String[]> values() {
         return backingMap.values();
     }
 
     @Override
-    public Set<Entry<String, String[]>> entrySet() {
+    public @NotNull Set<Entry<String, String[]>> entrySet() {
         return backingMap.entrySet();
     }
 

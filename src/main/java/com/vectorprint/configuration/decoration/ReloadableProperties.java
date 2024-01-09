@@ -23,35 +23,12 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 public class ReloadableProperties extends ParsingProperties implements HiddenBy {
 
     public static final int POLL_INTERVAL = 10000;
-    private final transient FileAlterationMonitor monitor;
-    private final transient FileAlterationListener listener = new FileAlterationListenerAdaptor() {
-        @Override
-        public void onFileCreate(File file) {
-        }
-
-        @Override
-        public void onFileDelete(File file) {
-        }
-
-        @Override
-        public void onFileChange(File file) {
-            try {
-                reload(file.toPath());
-            } catch (IOException e) {
-                log.error("error reloading: " + file,e);
-            }
-        }
-    };
 
     public ReloadableProperties(EnhancedMap properties, int interval, File... files) throws IOException {
         super(properties, files);
-        monitor = new FileAlterationMonitor(interval);
-        List<File> observed =  new ArrayList<>();
+        FileAlterationMonitor monitor = new FileAlterationMonitor(interval);
         Map<File,List<File>> toObserve = new HashMap<>();
         for (File f : files) {
-            if (observed.contains(f)) {
-                continue;
-            }
             File dir = f.getParentFile();
             if (!toObserve.containsKey(dir)) {
                 toObserve.put(dir,new ArrayList<>());
@@ -61,6 +38,24 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
         for (Map.Entry<File,List<File>> entry: toObserve.entrySet()) {
             FileFilter ff = file -> entry.getValue().contains(file);
             FileAlterationObserver observer = new FileAlterationObserver(entry.getKey(),ff);
+            FileAlterationListener listener = new FileAlterationListenerAdaptor() {
+                @Override
+                public void onFileCreate(File file) {
+                }
+
+                @Override
+                public void onFileDelete(File file) {
+                }
+
+                @Override
+                public void onFileChange(File file) {
+                    try {
+                        reload(file.toPath());
+                    } catch (IOException e) {
+                        log.error("error reloading: " + file, e);
+                    }
+                }
+            };
             observer.addListener(listener);
             monitor.addObserver(observer);
         }
@@ -80,7 +75,7 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
     }
 
     private static File[] getFiles(String[] files) {
-        return Arrays.stream(files).map(File::new).collect(Collectors.toList()).toArray(new File[files.length]);
+        return Arrays.stream(files).map(File::new).toList().toArray(new File[files.length]);
     }
 
     public ReloadableProperties(EnhancedMap properties, File... files) throws IOException {
@@ -102,8 +97,4 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
         return ObservableProperties.class.isAssignableFrom(settings);
     }
 
-    @Override
-    public EnhancedMap clone() throws CloneNotSupportedException {
-        return super.clone(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
-    }
 }

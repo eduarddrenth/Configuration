@@ -23,13 +23,17 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Set;
 
 public class ThreadBoundProperties extends AbstractPropertiesDecorator implements HiddenBy {
 
+   @Serial
    private static final long serialVersionUID = 1;
    private transient ThreadLocal< EnhancedMap> propsFromThread;
 
@@ -77,24 +81,25 @@ public class ThreadBoundProperties extends AbstractPropertiesDecorator implement
 
    @Override
    public EnhancedMap clone() throws CloneNotSupportedException {
-      checkThread("clone");
+       EnhancedMap enhancedMap = super.clone();
+       checkThread("clone");
       return new ThreadBoundProperties(propsFromThread.get().clone());
    }
 
    @Override
-   public Set<Entry<String, String[]>> entrySet() {
+   public @NotNull Set<Entry<String, String[]>> entrySet() {
       checkThread("entrySet");
       return super.entrySet();
    }
 
    @Override
-   public Collection values() {
+   public @NotNull Collection values() {
       checkThread("values");
       return super.values();
    }
 
    @Override
-   public Set<String> keySet() {
+   public @NotNull Set<String> keySet() {
       checkThread("keySet");
       return super.keySet();
    }
@@ -117,12 +122,14 @@ public class ThreadBoundProperties extends AbstractPropertiesDecorator implement
       super.listProperties(ps);
    }
 
+   @Serial
    private void writeObject(java.io.ObjectOutputStream s)
        throws IOException {
       s.defaultWriteObject();
       super.writeEmbeddedSettings(s);
    }
 
+   @Serial
    private void readObject(java.io.ObjectInputStream s)
        throws IOException, ClassNotFoundException {
       s.defaultReadObject();

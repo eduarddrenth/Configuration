@@ -29,9 +29,4 @@ public class StringParameter extends ParameterImpl<String>{
       super(key, help, String.class);
    }
 
-    @Override
-    public Parameter<String> clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

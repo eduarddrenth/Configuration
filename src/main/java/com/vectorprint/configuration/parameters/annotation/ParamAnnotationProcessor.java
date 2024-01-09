@@ -31,7 +31,7 @@ public interface ParamAnnotationProcessor {
    /**
     * you can safely use this, also from different threads
     */
-   public static final ParamAnnotationProcessor PAP = new ParamAnnotationProcessorImpl();
+   ParamAnnotationProcessor PAP = new ParamAnnotationProcessorImpl();
    
    /**
     * Looks for {@link Parameters} and {@link Param} annotations to add parameters to the Parameterizable. Each Parameterizable should only be
