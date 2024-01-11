@@ -22,13 +22,14 @@ package com.vectorprint.configuration.decoration.visiting;
  */
 
 import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.Observer;
+
+import java.beans.PropertyChangeListener;
 
 public class ObservableVisitor extends AbstractVisitor<ObservableProperties> {
 
-   private final Observer observer;
+   private final PropertyChangeListener observer;
 
-   public ObservableVisitor(Observer observer) {
+   public ObservableVisitor(PropertyChangeListener observer) {
       this.observer = observer;
    }
 

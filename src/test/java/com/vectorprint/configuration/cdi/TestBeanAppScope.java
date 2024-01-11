@@ -72,6 +72,7 @@ public class TestBeanAppScope {
 
     @Inject
     public void setSome(@Property Boolean bprop) {
+
         bp = bprop;
     }
 

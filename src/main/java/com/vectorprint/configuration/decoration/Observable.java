@@ -23,10 +23,12 @@ package com.vectorprint.configuration.decoration;
  */
 
 
+import java.beans.PropertyChangeListener;
+
 public interface Observable {
    
-   void addObserver(Observer o);
-   void removeObserver(Observer o);
+   void addObserver(PropertyChangeListener o);
+   void removeObserver(PropertyChangeListener o);
    void notifyObservers(Changes changes);
 
 }

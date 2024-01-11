@@ -84,7 +84,7 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
 
     /**
      * This method does not clear existing settings, it just parses the changed property file.
-     * Registered {@link Observer Observers} will be notified of changes.
+     * Registered {@link java.beans.PropertyChangeListener Observers} will be notified of changes.
      * @param file
      * @throws IOException
      */

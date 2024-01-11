@@ -46,7 +46,6 @@ import com.vectorprint.configuration.decoration.FindableProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
 import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
@@ -71,6 +70,8 @@ import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.testing.ThreadTester;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -89,6 +90,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -248,14 +250,24 @@ public class PropertyTest {
       assertFalse(marks.equals(mtp.get("marks")[0]));
    }
 
-   static class MyObserver implements Observer {
+   static class MyObserver implements PropertyChangeListener {
 
-      private Changes changes = null;
+      private final List<String> added = new ArrayList<>();
+      private final List<String> changed = new ArrayList<>();
+      private final List<String> deleted = new ArrayList<>();
 
       @Override
-      public void update(Observable object, Changes changes) {
-         this.changes = changes;
+      public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+         if (propertyChangeEvent.getOldValue() == null) {
+            added.add(propertyChangeEvent.getPropertyName());
+         } else if (propertyChangeEvent.getNewValue()==null) {
+            deleted.add(propertyChangeEvent.getPropertyName());
+         } else {
+            changed.add(propertyChangeEvent.getPropertyName());
+         }
       }
+
+      void clear() {added.clear();changed.clear();deleted.clear();}
    }
    @Test
    public void testReloading() throws IOException, ParseException, InterruptedException {
@@ -275,14 +287,14 @@ public class PropertyTest {
       assertTrue(rp.getProperty("","alpha").equals("200"));
       Thread.sleep(2000);
       assertTrue(rp.getProperty("","font").equals("/MyriadPro-Regular.ttf"));
-      assertEquals(observer.changes.getAdded().size(),1);
-      assertEquals(observer.changes.getChanged().size(),0);
-      assertEquals(observer.changes.getAdded().get(0),"font");
+      assertEquals(observer.added.size(),1);
+      assertEquals(observer.changed.size(),0);
+      assertEquals(observer.changed.get(0),"font");
 
    }
 
    @Test
-   public void testObserving() throws IOException, ParseException {
+   public void testObserving() throws IOException {
 
       ObservableProperties mtp = new ObservableProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties"));
@@ -292,24 +304,28 @@ public class PropertyTest {
 
       String marks = mtp.get("marks")[0];
       mtp.put("marks", marks + "_nieuwe waarde");
-      assertTrue(os.changes.getChanged().contains("marks"));
+      assertTrue(os.changed.contains("marks"));
+      os.clear();
 
       mtp.put("testerdetest", "_nieuwe waarde");
-      assertTrue(os.changes.getChanged().isEmpty());
-      assertTrue(os.changes.getAdded().contains("testerdetest"));
+      assertTrue(os.changed.isEmpty());
+      assertTrue(os.added.contains("testerdetest"));
+      os.clear();
 
       Map<String, String[]> mm = new HashMap<>(2);
       mm.put("marks", new String[]{"weerveranderd"});
       mm.put("nogeennieuwe", new String[]{"bla"});
       mtp.putAll(mm);
-      assertTrue(os.changes.getAdded().contains("nogeennieuwe"));
-      assertTrue(os.changes.getChanged().contains("marks"));
+      assertTrue(os.added.contains("nogeennieuwe"));
+      assertTrue(os.changed.contains("marks"));
+      os.clear();
 
       mtp.remove("marks");
-      assertTrue(os.changes.getDeleted().contains("marks"));
+      assertTrue(os.deleted.contains("marks"));
+      os.clear();
 
       mtp.clear();
-      assertTrue(os.changes.getDeleted().contains("testerdetest"));
+      assertTrue(os.deleted.contains("testerdetest"));
    }
 
    @Test

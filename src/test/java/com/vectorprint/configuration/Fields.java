@@ -28,11 +28,13 @@ import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.decoration.Changes;
 import com.vectorprint.configuration.decoration.Observable;
-import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 
-public class Fields implements Observer {
+public class Fields implements PropertyChangeListener {
    
    @Setting(keys = "b")
    private boolean b;
@@ -79,8 +81,7 @@ public class Fields implements Observer {
    }
 
    @Override
-   public void update(Observable object, Changes changes) {
-      System.out.println(changes);
+   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+
    }
-   
 }

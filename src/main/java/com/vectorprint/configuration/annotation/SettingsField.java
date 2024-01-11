@@ -25,7 +25,6 @@ package com.vectorprint.configuration.annotation;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
@@ -73,7 +72,7 @@ public @interface SettingsField {
 
    /**
     * by default settings will not be {@link ObservableProperties observable}. If you want the object containing the
-    * settings to be added automatically as observer, just implement {@link Observer}.
+    * settings to be added automatically as observer, just implement {@link java.beans.PropertyChangeListener}.
     *
     * @see SettingsAnnotationProcessorImpl
     * @see ObservableVisitor

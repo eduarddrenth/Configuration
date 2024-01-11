@@ -23,19 +23,26 @@ package com.vectorprint.configuration.decoration;
 
 
 import com.vectorprint.configuration.EnhancedMap;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.WeakHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
 
-   private final Set<Observer> observers = new HashSet<>(1);
-   
+   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
    private static final Logger LOGGER = LoggerFactory.getLogger(ObservableProperties.class.getName());
 
    public ObservableProperties(EnhancedMap settings) {
@@ -43,20 +50,26 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    }
 
    @Override
-   public void addObserver(Observer o) {
-      if (!observers.add(o)) {
-         LOGGER.warn(String.format("observer %s already present", o));
-      }
+   public void addObserver(PropertyChangeListener o) {
+      propertyChangeSupport.addPropertyChangeListener(o);
    }
 
    @Override
-   public void removeObserver(Observer o) {
-      observers.remove(o);
+   public void removeObserver(PropertyChangeListener o) {
+      propertyChangeSupport.removePropertyChangeListener(o);
    }
 
    @Override
    public void notifyObservers(Changes changes) {
-       observers.forEach((o) -> o.update(this, changes));
+       changes.getChanged().forEach(c -> {
+          propertyChangeSupport.firePropertyChange(c,"old", "new");
+       });
+      changes.getAdded().forEach(c -> {
+         propertyChangeSupport.firePropertyChange(c,null, "new");
+      });
+      changes.getDeleted().forEach(c -> {
+         propertyChangeSupport.firePropertyChange(c,"old", null);
+      });
    }
 
    @Override
@@ -123,7 +136,8 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
    @Override
    public EnhancedMap clone() throws CloneNotSupportedException {
       ObservableProperties observableProperties = (ObservableProperties) super.clone();
-      observableProperties.observers.addAll(this.observers);
+      Arrays.stream(propertyChangeSupport.getPropertyChangeListeners()).forEach(l ->
+              observableProperties.propertyChangeSupport.addPropertyChangeListener(l));
       return observableProperties;
    }
 

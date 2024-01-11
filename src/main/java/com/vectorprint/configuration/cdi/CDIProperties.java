@@ -30,7 +30,6 @@ import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.Changes;
 import com.vectorprint.configuration.decoration.Observable;
-import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.visiting.CacheClearingVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -47,6 +46,8 @@ import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Inject;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -72,7 +73,7 @@ import java.util.stream.Stream;
  * @see PropertyResolver
  */
 @ApplicationScoped
-public class CDIProperties extends AbstractPropertiesDecorator implements Observer {
+public class CDIProperties extends AbstractPropertiesDecorator implements PropertyChangeListener {
 
     private static final BindingHelper bindingHelper = SettingsBindingService.getInstance().getFactory().getBindingHelper();
 
@@ -364,47 +365,41 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Observ
         return super.clone();
     }
 
+    private static final CacheClearingVisitor CACHE_CLEARING_VISITOR =
+            new CacheClearingVisitor();
+
     @Override
-    public void update(Observable object, Changes changes) {
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         /*
         via the changes and injectionpoints we should be able to set
         new values
          */
         BeanManager beanManager = CDI.current().getBeanManager();
 
-        List<ToUpdate> updates = new ArrayList<>();
-        Stream.concat(
-                changes.getChanged().stream(),
-                changes.getAdded().stream()
-        )
-        .forEach(c ->
-            injectionPoints.get(c).forEach(ip -> {
-                Annotated a = ip.getAnnotated();
-                if (a.getAnnotation(Property.class).updatable()) {
-                    Bean<?> bean = ip.getBean();
-                    // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
-                    Class bc = ip.getMember().getDeclaringClass();
-                    if (bean==null) {
-                        String name = a instanceof AnnotatedField ?
-                                ((AnnotatedField)a).getJavaMember().getName() :
-                                    ((AnnotatedParameter)a).getDeclaringCallable() instanceof AnnotatedMethod ?
+        String c = propertyChangeEvent.getPropertyName();
+        injectionPoints.get(c).forEach(ip -> {
+            Annotated a = ip.getAnnotated();
+            if (a.getAnnotation(Property.class).updatable()) {
+                Bean<?> bean = ip.getBean();
+                // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
+                Class bc = ip.getMember().getDeclaringClass();
+                if (bean==null) {
+                    String name = a instanceof AnnotatedField ?
+                            ((AnnotatedField)a).getJavaMember().getName() :
+                            ((AnnotatedParameter)a).getDeclaringCallable() instanceof AnnotatedMethod ?
                                     ((AnnotatedParameter)a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
-                        log.warn(String.format("Bean for %s not present, BeanManager cannot resolve Object holding %s", bc.getName(),name));
-                    } else {
-                        CreationalContext<?> creationalContext =
-                                beanManager.createCreationalContext(bean);
-                        Object reference = beanManager.getReference(bean, bc, creationalContext);
-                        updates.add(new ToUpdate(a, reference, c));
-                    }
+                    log.warn(String.format("Bean for %s not present, BeanManager cannot resolve Object holding %s", bc.getName(),name));
+                } else {
+                    CreationalContext<?> creationalContext =
+                            beanManager.createCreationalContext(bean);
+                    Object reference = beanManager.getReference(bean, bc, creationalContext);
+                    ToUpdate u = new ToUpdate(a, reference, c);
+                    u.update(getGenericProperty(null, (Class) a.getBaseType(), c));
                 }
-            })
-        );
+            }
+            });
         accept(CACHE_CLEARING_VISITOR);
-        updates.forEach(u -> u.update(getGenericProperty(null, (Class) u.annotated.getBaseType(), u.key)));
     }
-
-    private static final CacheClearingVisitor CACHE_CLEARING_VISITOR =
-            new CacheClearingVisitor();
 
     private record ToUpdate(Annotated annotated, Object reference, String key) {
 

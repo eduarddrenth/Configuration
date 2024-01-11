@@ -29,7 +29,6 @@ import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
-import com.vectorprint.configuration.decoration.Observer;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
 import com.vectorprint.configuration.decoration.ReadonlyProperties;
@@ -38,6 +37,8 @@ import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
+
+import java.beans.PropertyChangeListener;
 import java.beans.Statement;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -140,8 +141,8 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
                      }
                      settings = new ObservableProperties(settings);
                   }
-                  if (!isStatic && obj instanceof Observer) {
-                     ((AbstractPropertiesDecorator) settings).accept(new ObservableVisitor((Observer) obj));
+                  if (!isStatic && obj instanceof PropertyChangeListener) {
+                     ((AbstractPropertiesDecorator) settings).accept(new ObservableVisitor((PropertyChangeListener) obj));
                   }
                }
                if (se.urls().length > 0) {
