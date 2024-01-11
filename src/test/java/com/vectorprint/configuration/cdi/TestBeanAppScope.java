@@ -18,6 +18,7 @@ package com.vectorprint.configuration.cdi;
 import com.vectorprint.configuration.EnhancedMap;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.io.File;
 
 /**

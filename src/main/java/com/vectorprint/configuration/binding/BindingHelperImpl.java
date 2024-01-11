@@ -26,12 +26,14 @@ package com.vectorprint.configuration.binding;
 import com.vectorprint.ArrayHelper;
 import com.vectorprint.StringConverter;
 import com.vectorprint.VectorPrintRuntimeException;
-import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
+
 import java.awt.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+import static com.vectorprint.configuration.binding.AbstractBindingHelperDecorator.*;
 
 //~--- JDK imports ------------------------------------------------------------
 public class BindingHelperImpl implements BindingHelper {

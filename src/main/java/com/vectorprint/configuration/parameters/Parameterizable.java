@@ -25,11 +25,12 @@ package com.vectorprint.configuration.parameters;
 
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
+
+import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Observer;
 
-public interface Parameterizable extends Cloneable, Observer {
+public interface Parameterizable extends Cloneable, PropertyChangeListener {
 
    /**
     * contains parameters

@@ -26,6 +26,7 @@ package com.vectorprint.configuration.binding.parameters;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelperImpl;
 import com.vectorprint.configuration.parameters.Parameter;
+
 import java.io.Serializable;
 
 public class ParamBindingHelperImpl extends BindingHelperImpl implements ParamBindingHelper {

@@ -24,6 +24,7 @@ package com.vectorprint.configuration.decoration;
 
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.annotation.SettingsField;
+
 import java.util.List;
 
 public interface DecorationAware {

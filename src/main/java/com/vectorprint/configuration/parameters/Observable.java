@@ -21,10 +21,11 @@ package com.vectorprint.configuration.parameters;
  * #L%
  */
 
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
 
 public interface Observable {
 
-   void addObserver(Observer o);
+   void addObserver(PropertyChangeListener o);
+   void removeObserver(PropertyChangeListener o);
 
 }

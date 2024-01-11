@@ -24,12 +24,13 @@ package com.vectorprint.configuration.parameters.annotation;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.parameters.ParameterImpl;
 import com.vectorprint.configuration.parameters.Parameterizable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ParamAnnotationProcessorImpl implements ParamAnnotationProcessor {
 

@@ -23,23 +23,16 @@ package com.vectorprint.configuration.decoration;
 
 
 import com.vectorprint.configuration.EnhancedMap;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.WeakHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ObservableProperties extends AbstractPropertiesDecorator implements Observable {
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+
+public class ObservableProperties extends AbstractPropertiesDecorator {
 
    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -49,27 +42,12 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
       super(settings);
    }
 
-   @Override
    public void addObserver(PropertyChangeListener o) {
       propertyChangeSupport.addPropertyChangeListener(o);
    }
 
-   @Override
    public void removeObserver(PropertyChangeListener o) {
       propertyChangeSupport.removePropertyChangeListener(o);
-   }
-
-   @Override
-   public void notifyObservers(Changes changes) {
-       changes.getChanged().forEach(c -> {
-          propertyChangeSupport.firePropertyChange(c,"old", "new");
-       });
-      changes.getAdded().forEach(c -> {
-         propertyChangeSupport.firePropertyChange(c,null, "new");
-      });
-      changes.getDeleted().forEach(c -> {
-         propertyChangeSupport.firePropertyChange(c,"old", null);
-      });
    }
 
    @Override
@@ -81,55 +59,37 @@ public class ObservableProperties extends AbstractPropertiesDecorator implements
 
    @Override
    public String[] put(String key, String[] value) {
-      boolean exists = containsKey(key);
-      String[] v2 = get(key);
       String[] s = super.put(key, value);
-      if (exists) {
-         if (!Objects.deepEquals(value,v2)) {
-            notifyObservers(new Changes(null, Changes.fromKeys(key), null));
-         }
-      } else {
-         notifyObservers(new Changes(Changes.fromKeys(key), null, null));
+      if (!Objects.deepEquals(s,value)) {
+         propertyChangeSupport.firePropertyChange(key, s, value);
       }
       return s;
    }
 
    @Override
    public void putAll(Map<? extends String, ? extends String[]> m) {
-      List<String> added = new ArrayList<>(m.size());
-      List<String> changed = new ArrayList<>(m.size());
-      m.forEach((key, v1) -> {
-         if (containsKey(key)) {
-            String[] v2 = get(key);
-            if (!Objects.deepEquals(v1,v2)) {
-               changed.add(key);
-            }
-         } else {
-            added.add(key);
-         }
-      });
-      super.putAll(m);
-      if (!(added.isEmpty()&&changed.isEmpty())) {
-         notifyObservers(new Changes(added, changed, null));
-      }
+      m.forEach((k,v) -> put(k,v));
    }
 
    @Override
    public String[] remove(Object key) {
       String[] s = super.remove(key);
       if (s!=null) {
-         notifyObservers(new Changes(null, null, Changes.fromKeys((String) key)));
+         propertyChangeSupport.firePropertyChange(String.valueOf(key),s,null);
       }
       return s;
    }
 
    @Override
    public void clear() {
-      boolean notEmpty = !isEmpty();
-      List<String> gone = new ArrayList<>(keySet());
-      super.clear();
-      if (notEmpty) {
-         notifyObservers(new Changes(null, null, gone));
+      if (!isEmpty()) {
+          try {
+              EnhancedMap old = clone();
+             super.clear();
+             old.forEach((k,v) -> propertyChangeSupport.firePropertyChange(k,v,null));
+          } catch (CloneNotSupportedException e) {
+              throw new RuntimeException(e);
+          }
       }
    }
 

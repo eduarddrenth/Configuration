@@ -26,11 +26,12 @@ import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.preparing.KeyValue;
 import com.vectorprint.configuration.preparing.KeyValueObservable;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PreparingProperties extends AbstractPropertiesDecorator implements KeyValueObservable<String, String[]> {
    private static final Logger log = LoggerFactory.getLogger(PreparingProperties.class.getName());

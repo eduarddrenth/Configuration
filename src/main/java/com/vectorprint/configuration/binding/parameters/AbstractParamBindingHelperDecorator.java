@@ -25,6 +25,7 @@ package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.parameters.Parameter;
+
 import java.io.Serializable;
 
 public class AbstractParamBindingHelperDecorator extends AbstractBindingHelperDecorator<ParamBindingHelper> implements ParamBindingHelper {

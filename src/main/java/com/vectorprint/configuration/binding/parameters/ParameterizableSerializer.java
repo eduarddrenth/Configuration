@@ -24,6 +24,7 @@ package com.vectorprint.configuration.binding.parameters;
 
 import com.vectorprint.configuration.parameters.Parameter;
 import com.vectorprint.configuration.parameters.Parameterizable;
+
 import java.io.IOException;
 import java.io.Writer;
 

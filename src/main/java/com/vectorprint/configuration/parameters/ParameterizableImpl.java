@@ -32,14 +32,15 @@ import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ParameterizableImpl implements Parameterizable {
 
@@ -137,17 +138,6 @@ public class ParameterizableImpl implements Parameterizable {
       return parameters.containsKey(key) && parameters.get(key).getValue() != null;
    }
 
-   /**
-    * does nothing
-    *
-    * @param o
-    * @param arg
-    */
-   @Override
-   public void update(Observable o, Object arg) {
-
-   }
-
    @Override
    public int hashCode() {
       int hash = 7;
@@ -205,4 +195,8 @@ public class ParameterizableImpl implements Parameterizable {
       paramProcessor.initParameters(this);
    }
 
+   @Override
+   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+
+   }
 }

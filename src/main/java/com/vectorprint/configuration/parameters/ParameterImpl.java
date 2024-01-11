@@ -25,15 +25,19 @@ import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ParameterImpl<TYPE extends Serializable> extends Observable implements Parameter<TYPE> {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Objects;
+
+public abstract class ParameterImpl<TYPE extends Serializable> implements Parameter<TYPE> {
+
+   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
    @Serial
    private static final long serialVersionUID = 1;
@@ -95,9 +99,11 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
     */
    @Override
    public Parameter<TYPE> setValue(TYPE value) {
+      TYPE old = this.value;
       this.value = value;
-      setChanged();
-      notifyObservers();
+      if (!Objects.deepEquals(old,value)) {
+         propertyChangeSupport.firePropertyChange(key,old,value);
+      }
       return this;
    }
 
@@ -109,10 +115,27 @@ public abstract class ParameterImpl<TYPE extends Serializable> extends Observabl
     */
    @Override
    public Parameter<TYPE> setDefault(TYPE value) {
+      TYPE old = this.def;
       this.def = value;
-      setChanged();
-      notifyObservers();
+      if (!Objects.deepEquals(old,value)) {
+         propertyChangeSupport.firePropertyChange(key,old,value);
+      }
       return this;
+   }
+
+   @Override
+   public void addObserver(PropertyChangeListener o) {
+      propertyChangeSupport.addPropertyChangeListener(o);
+   }
+
+   @Override
+   public void removeObserver(PropertyChangeListener o) {
+      propertyChangeSupport.removePropertyChangeListener(o);
+   }
+
+   @Override
+   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+
    }
 
    /**

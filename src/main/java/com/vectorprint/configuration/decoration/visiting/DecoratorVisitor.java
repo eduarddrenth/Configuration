@@ -36,7 +36,7 @@ public interface DecoratorVisitor<E extends EnhancedMap> {
     *
     * @param e
     * @see SettingsField
-    * @see ObservableProperties#addObserver(com.vectorprint.configuration.decoration.Observer)
+    * @see ObservableProperties#addObserver(java.beans.PropertyChangeListener)
     */
    void visit(E e);
 

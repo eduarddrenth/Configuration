@@ -41,10 +41,8 @@ import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.AllowNoValue;
 import com.vectorprint.configuration.decoration.CachingProperties;
-import com.vectorprint.configuration.decoration.Changes;
 import com.vectorprint.configuration.decoration.FindableProperties;
 import com.vectorprint.configuration.decoration.HelpSupportedProperties;
-import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.PreparingProperties;
@@ -69,6 +67,10 @@ import com.vectorprint.configuration.preparing.NoEmptyValues;
 import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.testing.ThreadTester;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -101,10 +103,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 public class PropertyTest {
 
@@ -281,6 +281,7 @@ public class PropertyTest {
       rp.accept(new ObservableVisitor(observer));
       assertTrue(rp.getProperty("","alpha").equals("200"));
       assertFalse(rp.containsKey("font"));
+      observer.clear();
 
       Files.write(f.toPath(),Files.readAllBytes(new File("src/test/resources/config"
               + File.separator + "page.properties").toPath()), StandardOpenOption.APPEND);
@@ -289,7 +290,7 @@ public class PropertyTest {
       assertTrue(rp.getProperty("","font").equals("/MyriadPro-Regular.ttf"));
       assertEquals(observer.added.size(),1);
       assertEquals(observer.changed.size(),0);
-      assertEquals(observer.changed.get(0),"font");
+      assertEquals(observer.added.get(0),"font");
 
    }
 

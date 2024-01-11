@@ -22,7 +22,6 @@ package com.vectorprint.configuration.jaxb;
  */
 
 import com.vectorprint.ArrayHelper;
-import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.VectorPrintException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
@@ -42,11 +41,14 @@ import com.vectorprint.configuration.generated.jaxb.Preprocessortype;
 import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
 import jakarta.xml.bind.JAXBException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+
+import static com.vectorprint.ClassHelper.findConstructor;
 
 public class SettingsFromJAXB {
 

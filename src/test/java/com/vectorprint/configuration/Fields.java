@@ -23,12 +23,8 @@ package com.vectorprint.configuration;
  */
 
 
-import com.vectorprint.configuration.annotation.Feature;
 import com.vectorprint.configuration.annotation.Setting;
 import com.vectorprint.configuration.annotation.SettingsField;
-import com.vectorprint.configuration.decoration.Changes;
-import com.vectorprint.configuration.decoration.Observable;
-import com.vectorprint.configuration.decoration.ReadonlyProperties;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

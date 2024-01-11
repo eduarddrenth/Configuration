@@ -25,6 +25,7 @@ package com.vectorprint.configuration.parameters.annotation;
 
 import com.vectorprint.configuration.parameters.Parameterizable;
 import com.vectorprint.configuration.parameters.ParameterizableImpl;
+
 import java.lang.reflect.InvocationTargetException;
 
 public interface ParamAnnotationProcessor {

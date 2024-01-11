@@ -24,12 +24,11 @@ package com.vectorprint.configuration.cdi;
  * #L%
  */
 
+import com.vectorprint.StringConverter;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.binding.BindingHelper;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
-import com.vectorprint.configuration.decoration.Changes;
-import com.vectorprint.configuration.decoration.Observable;
 import com.vectorprint.configuration.decoration.visiting.CacheClearingVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -45,10 +44,12 @@ import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Inject;
+
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -61,7 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 /**
  * A CDI Producer of properties allowing you to use @Inject in combination with
@@ -69,6 +70,7 @@ import java.util.stream.Stream;
  * NOTE parameters option for javac (java 8+) must be used when {@link Property} is used on
  * method parameters without {@link Property#keys()}. Injected {@link Property properties} will be updated
  * when property file changes, {@link AutoReload} is true, {@link Property#updatable() } is true and the property is injected in a managed bean.
+ *
  * @author Eduard Drenth at VectorPrint.nl
  * @see PropertyResolver
  */
@@ -106,12 +108,12 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
 
     private String name(Annotated annotated) {
         String name = annotated instanceof AnnotatedField ?
-                ((AnnotatedField)annotated).getJavaMember().getName() :
-                ((AnnotatedParameter)annotated).getJavaParameter().getName();
+                ((AnnotatedField) annotated).getJavaMember().getName() :
+                ((AnnotatedParameter) annotated).getJavaParameter().getName();
         if (annotated instanceof AnnotatedParameter && ARGNAME.matcher(name).matches()) {
             throw new IllegalArgumentException(
                     String.format("compile using -parameters (java 8+) or use keys() argument to Property, to get" +
-                            " real name for %s", ((AnnotatedParameter)annotated).getDeclaringCallable())
+                            " real name for %s", ((AnnotatedParameter) annotated).getDeclaringCallable())
             );
         }
         return name;
@@ -371,7 +373,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         /*
-        via the changes and injectionpoints we should be able to set
+        via the changes and injection points we should be able to set
         new values
          */
         BeanManager beanManager = CDI.current().getBeanManager();
@@ -383,59 +385,68 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
                 Bean<?> bean = ip.getBean();
                 // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
                 Class bc = ip.getMember().getDeclaringClass();
-                if (bean==null) {
+                if (bean == null) {
                     String name = a instanceof AnnotatedField ?
-                            ((AnnotatedField)a).getJavaMember().getName() :
-                            ((AnnotatedParameter)a).getDeclaringCallable() instanceof AnnotatedMethod ?
-                                    ((AnnotatedParameter)a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
-                    log.warn(String.format("Bean for %s not present, BeanManager cannot resolve Object holding %s", bc.getName(),name));
+                            ((AnnotatedField) a).getJavaMember().getName() :
+                            ((AnnotatedParameter) a).getDeclaringCallable() instanceof AnnotatedMethod ?
+                                    ((AnnotatedParameter) a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
+                    log.warn(String.format("Bean for %s not present, BeanManager cannot resolve Object holding %s", bc.getName(), name));
                 } else {
                     CreationalContext<?> creationalContext =
                             beanManager.createCreationalContext(bean);
                     Object reference = beanManager.getReference(bean, bc, creationalContext);
-                    ToUpdate u = new ToUpdate(a, reference, c);
-                    u.update(getGenericProperty(null, (Class) a.getBaseType(), c));
+                    update(a, reference, (String[])propertyChangeEvent.getNewValue());
                 }
             }
-            });
+        });
         accept(CACHE_CLEARING_VISITOR);
     }
 
-    private record ToUpdate(Annotated annotated, Object reference, String key) {
 
-        void update(Object value) {
-                if (annotated instanceof AnnotatedField) {
-                    Field f = ((AnnotatedField) annotated).getJavaMember();
-                    try {
-                        boolean ac = f.canAccess(reference);
-                        f.setAccessible(true);
-                        f.set(reference, value);
-                        f.setAccessible(ac);
-                    } catch (IllegalAccessException e) {
-                        log.error(String.format("error updating %s with %s",
-                                f, value));
-                    }
-                } else {
-                    AnnotatedParameter ap = (AnnotatedParameter) annotated;
-                    AnnotatedCallable declaringCallable = ap.getDeclaringCallable();
-                    if (declaringCallable instanceof AnnotatedMethod) {
-                        Method method = ((AnnotatedMethod) declaringCallable).getJavaMember();
-                        if (method.getParameterCount() == 1) {
-                            try {
-                                method.invoke(reference, value);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                log.error(String.format("error calling %s with %s",
-                                        method, value));
-                            }
-                        } else {
-                            log.warn(String.format("%s has more than one argument, not supported yet",
-                                    method));
-                        }
-                    } else {
-                        log.warn(String.format("calling constructor %s not supported", declaringCallable));
-                    }
-                }
+    private void update(Annotated annotated, Object reference, String... strValue) {
+        Class clazz = (Class) annotated.getBaseType();
+        Object value = clazz.isAssignableFrom(String[].class) ? strValue :
+                clazz.isAssignableFrom(String.class) && strValue != null && strValue.length==1 ? strValue[0] : null;
+        if (value==null && strValue != null) {
+            StringConverter stringConverter = StringConverter.forClass(clazz);
+            if (clazz.isArray()&&strValue.length>0) {
+                Object ar = Array.newInstance(clazz, strValue.length);
+                IntStream.range(0,strValue.length).forEach(i -> Array.set(ar,i,stringConverter.convert(strValue[i])));
+            } else {
+                value = stringConverter.convert(strValue[0]);
             }
         }
+        if (annotated instanceof AnnotatedField) {
+            Field f = ((AnnotatedField) annotated).getJavaMember();
+            try {
+                boolean ac = f.canAccess(reference);
+                f.setAccessible(true);
+                f.set(reference, value);
+                f.setAccessible(ac);
+            } catch (IllegalAccessException e) {
+                log.error(String.format("error updating %s with %s",
+                        f, value));
+            }
+        } else {
+            AnnotatedParameter ap = (AnnotatedParameter) annotated;
+            AnnotatedCallable declaringCallable = ap.getDeclaringCallable();
+            if (declaringCallable instanceof AnnotatedMethod) {
+                Method method = ((AnnotatedMethod) declaringCallable).getJavaMember();
+                if (method.getParameterCount() == 1) {
+                    try {
+                        method.invoke(reference, value);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        log.error(String.format("error calling %s with %s",
+                                method, value));
+                    }
+                } else {
+                    log.warn(String.format("%s has more than one argument, not supported yet",
+                            method));
+                }
+            } else {
+                log.warn(String.format("calling constructor %s not supported", declaringCallable));
+            }
+        }
+    }
 
 }

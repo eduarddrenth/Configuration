@@ -21,7 +21,6 @@ package com.vectorprint.configuration.annotation;
  * #L%
  */
 
-import static com.vectorprint.ClassHelper.findConstructor;
 import com.vectorprint.VectorPrintRuntimeException;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.Settings;
@@ -37,6 +36,8 @@ import com.vectorprint.configuration.decoration.visiting.DecoratorVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.PreparingVisitor;
 import com.vectorprint.configuration.preparing.AbstractPrepareKeyValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyChangeListener;
 import java.beans.Statement;
@@ -50,8 +51,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static com.vectorprint.ClassHelper.findConstructor;
 
 public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProcessor {
 
