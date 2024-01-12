@@ -34,6 +34,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.PrintStream;
 import java.io.Serial;
+import java.lang.ref.Cleaner;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -52,10 +53,25 @@ import java.util.regex.Pattern;
 
 public final class Settings implements EnhancedMap, DecorationAware {
 
+    private static final Cleaner CLEANER = Cleaner.create();
     @Serial
     private static final long serialVersionUID = 1;
     private static final Logger log = LoggerFactory.getLogger(Settings.class.getName());
     private final Map<String, String[]> backingMap;
+
+    private transient final Runnable finalizer = new Runnable() {
+
+        @Override
+        public void run() {
+            log.warn("not used, possibly obsolete settings in: " + this + ": " + getUnusedKeys());
+        }
+    };
+
+    private final transient Cleaner.Cleanable cleanable;
+
+    static Settings createSettings() {
+        return new Settings();
+    }
 
     @Override
     public void listProperties(PrintStream ps) {
@@ -73,6 +89,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     public Settings() {
         backingMap = new HashMap<>();
+        cleanable = CLEANER.register(this, finalizer);
     }
 
     /**
@@ -83,6 +100,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
      */
     public Settings(int initialCapacity, float loadFactor) {
         backingMap = new HashMap<>(initialCapacity, loadFactor);
+        cleanable = CLEANER.register(this, finalizer);
     }
 
     /**
@@ -92,6 +110,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
      */
     public Settings(int initialCapacity) {
         backingMap = new HashMap<>(initialCapacity);
+        cleanable = CLEANER.register(this, finalizer);
     }
 
     /**
@@ -106,6 +125,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
             throw new IllegalArgumentException("instance of " + EnhancedMap.class.getName() + " not allowed");
         }
         backingMap = new HashMap<>(map);
+        cleanable = CLEANER.register(this, finalizer);
     }
 
     private void debug(Object val, String... keys) {
@@ -626,11 +646,6 @@ public final class Settings implements EnhancedMap, DecorationAware {
         return Collections.unmodifiableCollection(notPresent);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        log.warn("not used, possibly obsolete settings in: " + this + ": " + getUnusedKeys());
-        super.finalize();
-    }
 
     @Override
     public String toString() {
