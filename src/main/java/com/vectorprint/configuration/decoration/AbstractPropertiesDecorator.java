@@ -209,7 +209,7 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
     }
 
     @Override
-    public void putAll(@NotNull Map<? extends String, ? extends String[]> m) {
+    public void putAll(Map<? extends String, ? extends String[]> m) {
         settings.putAll(m);
     }
 
