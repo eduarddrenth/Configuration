@@ -166,29 +166,27 @@ public class ParsingProperties extends AbstractPropertiesDecorator {
     * @throws IOException
     */
    public void saveToUrl(URL url) throws IOException {
-      OutputStreamWriter osw = null;
-      try {
-         OutputStream o;
-         if ("file".equals(url.getProtocol())) {
-            o = new FileOutputStream(url.getFile());
-         } else {
-            URLConnection conn = url.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(false);
-            o = conn.getOutputStream();
-         }
-         osw  = new OutputStreamWriter(new BufferedOutputStream(o));
+      try (OutputStreamWriter osw = getOutputStreamWriter(url)) {
          SettingsBindingService.getInstance().getFactory().getSerializer().serialize(this, osw);
-      } finally {
-         if (osw != null) {
-            osw.close();
-         }
       }
+   }
+
+   private static OutputStreamWriter getOutputStreamWriter(URL url) throws IOException {
+      OutputStream o;
+      if ("file".equals(url.getProtocol())) {
+         o = new FileOutputStream(url.getFile());
+      } else {
+         URLConnection conn = url.openConnection();
+         conn.setDoOutput(true);
+         conn.setDoInput(false);
+         o = conn.getOutputStream();
+      }
+      return new OutputStreamWriter(new BufferedOutputStream(o));
    }
 
    /**
     * return the URL's from which the properties were loaded.
-    * @return 
+    * @return
     */
    public List<URL> getPropertyUrls() {
       return propertyUrls;
