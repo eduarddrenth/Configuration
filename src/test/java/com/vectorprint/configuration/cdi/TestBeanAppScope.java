@@ -66,7 +66,7 @@ public class TestBeanAppScope {
         TestBeanAppScope.s = s;
     }
 
-    public static String getS() {
+    public String getS() {
         return s;
     }
 
