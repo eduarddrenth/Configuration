@@ -32,18 +32,17 @@ import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.visiting.CacheClearingVisitor;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.Annotated;
 import jakarta.enterprise.inject.spi.AnnotatedCallable;
 import jakarta.enterprise.inject.spi.AnnotatedField;
 import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedParameter;
-import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -376,26 +375,25 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         via the changes and injection points we should be able to set
         new values
          */
-        BeanManager beanManager = CDI.current().getBeanManager();
 
         String c = propertyChangeEvent.getPropertyName();
         injectionPoints.get(c).forEach(ip -> {
             Annotated a = ip.getAnnotated();
             if (a.getAnnotation(Property.class).updatable()) {
-                Bean<?> bean = ip.getBean();
                 // if bean is null issue a warning, injectionpoint is not in a bean (i.e. webservlet)
                 Class bc = ip.getMember().getDeclaringClass();
-                if (bean == null) {
+                Object reference = CDI.current().select(bc).get();
+                if (reference == null) {
                     String name = a instanceof AnnotatedField ?
                             ((AnnotatedField) a).getJavaMember().getName() :
                             ((AnnotatedParameter) a).getDeclaringCallable() instanceof AnnotatedMethod ?
                                     ((AnnotatedParameter) a).getDeclaringCallable().getJavaMember().getName() : "unknown field or method";
                     log.warn(String.format("Bean for %s not present, BeanManager cannot resolve Object holding %s", bc.getName(), name));
                 } else {
-                    CreationalContext<?> creationalContext =
-                            beanManager.createCreationalContext(bean);
-                    Object reference = beanManager.getReference(bean, bc, creationalContext);
-                    update(a, reference, (String[])propertyChangeEvent.getNewValue());
+                    if (!ip.getBean().getScope().equals(Singleton.class)) {
+                        log.warn(String.format("updating %s with scope %s might fail, guaranteed to work for statics and in Singleton EJB".formatted(bc.getName(), ip.getBean().getScope().getSimpleName())));
+                    }
+                    update(a, reference, (String[]) propertyChangeEvent.getNewValue());
                 }
             }
         });

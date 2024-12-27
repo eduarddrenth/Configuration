@@ -70,7 +70,7 @@ public class CDIProperties2Test {
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(5000);
 
-        System.out.println("NOTE UPDATING FIELDS IN TEST IN %s WITH SCOPE OTHER THAN (EJB) Singleton DOES NOT WORK, YET!!".formatted(testBeanAppScope));
+        System.out.println("NOTE: UPDATING INJECTED PROPERTIES ONLY WORKS FOR STATICS AND IN SINGLETON BEANS!!");
         assertEquals("test", testBeanAppScope.getTestProp(), "SHOULD BE test2, CHANGE THIS assertion!!!");
         assertEquals(false, testBeanAppScope.isBp());
         assertEquals(true, testBeanAppScope.isBprop(),"SHOULD BE false, CHANGE THIS assertion!!!");
