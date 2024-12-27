@@ -49,7 +49,6 @@ public class CDIProperties2Test {
     private File propsorig = new File("src/test/resources/testorig.properties");
 
     @Inject
-    @AppTestBean
     private TestBeanAppScope testBeanAppScope;
 
     @AfterEach
@@ -58,7 +57,7 @@ public class CDIProperties2Test {
     }
     @Test
     public void testCDIPropsAppScope() throws InterruptedException, IOException {
-
+        
         assertEquals("test", testBeanAppScope.getTestProp());
         assertEquals("src/test/resources/test.properties", testBeanAppScope.getFprop().getPath());
         assertEquals(true, testBeanAppScope.isBprop());
@@ -71,7 +70,8 @@ public class CDIProperties2Test {
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(5000);
 
-        System.err.println("NOTE UPDATING FIELDS IN TEST IN BEAN WITH SCOPE OTHER THAN Singleton DOES NOT WORK, YET!!");
+        System.out.println("NOTE UPDATING FIELDS IN TEST IN %s WITH SCOPE OTHER THAN (EJB) Singleton DOES NOT WORK, YET!!".formatted(testBeanAppScope));
+        assertEquals("test", testBeanAppScope.getTestProp(), "SHOULD BE test2, CHANGE THIS assertion!!!");
         assertEquals(false, testBeanAppScope.isBp());
         assertEquals(true, testBeanAppScope.isBprop(),"SHOULD BE false, CHANGE THIS assertion!!!");
         assertEquals("s", testBeanAppScope.getS());

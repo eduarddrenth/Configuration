@@ -49,7 +49,6 @@ public class CDIPropertiesTest {
     private File propsorig = new File("src/test/resources/testorig.properties");
 
     @Inject
-    @SingTestBean
     private TestBean testBean;
 
     @AfterEach
@@ -71,6 +70,7 @@ public class CDIPropertiesTest {
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(1100);
 
+        assertEquals("test2", testBean.getTestProp());
         assertEquals(false, testBean.isBp());
         assertEquals(false, testBean.isBprop());
         assertEquals("s", testBean.getS());

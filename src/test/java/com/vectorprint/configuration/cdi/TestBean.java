@@ -16,6 +16,7 @@
 package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.EnhancedMap;
+import jakarta.ejb.Local;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -26,7 +27,7 @@ import java.io.File;
  * @author eduard
  */
 @Singleton
-@SingTestBean
+@Local(TestBean.class)
 public class TestBean {
 
     @Inject

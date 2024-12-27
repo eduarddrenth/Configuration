@@ -63,7 +63,7 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
         @Override
         public void run() {
-            log.warn("not used, possibly obsolete settings in: " + this + ": " + getUnusedKeys());
+            log.warn("not used, possibly obsolete settings in: %s: %s".formatted(this, getUnusedKeys()));
         }
     };
 
@@ -75,11 +75,11 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     @Override
     public void listProperties(PrintStream ps) {
-        ps.println("settings with id " + getId() + ":");
+        ps.printf("settings with id %s:%n", getId());
         ps.println();
-        backingMap.forEach((key, value) -> ps.println(key + "=" + (value != null ? Arrays.asList(value) : "")));
+        backingMap.forEach((key, value) -> ps.printf("%s=%s%n", key, value != null ? Arrays.asList(value) : ""));
         ps.println();
-        ps.println("settings wrapped by " + decorators);
+        ps.printf("settings wrapped by %s%n", decorators);
     }
     private String id;
     private final Map<String, PropertyHelp> help = new HashMap<>(50);
