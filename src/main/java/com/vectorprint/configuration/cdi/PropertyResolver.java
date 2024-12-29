@@ -42,6 +42,7 @@ import java.io.Reader;
  * Application scoped CDI bean responsible for providing {@link CDIProperties} with properties read from a Url. CDIProperties is
  * in its turn responsible for injecting properties based on @Inject and @Property. This Resolver needs an Application scoped bean that
  * produces urls, a boolean fromJar, a boolean autoReload and an int interval (for autoreload), it is up to users of this library to provide that bean. The bean can for example use System properties that are set in the environment to produce the values.
+ *
  * @author eduard
  */
 @ApplicationScoped
@@ -53,15 +54,15 @@ public class PropertyResolver {
      * Load properties from jar or url, needs a CDI producer for its arguments
      *
      * @param configFileUrls create an application scoped bean to produce this
-     * argument, pointing to a configfile
-     * @param fromJar create an application scoped bean to produce this
-     * argument, when true read from jar in classpath
-     * @param autoReload create an application scoped bean to produce this
-     * argument, when true autoreload properties
-     * @param interval poll interval in millisecond when autoreload is true
+     *                       argument, pointing to a configfile
+     * @param fromJar        create an application scoped bean to produce this
+     *                       argument, when true read from jar in classpath
+     * @param autoReload     create an application scoped bean to produce this
+     *                       argument, when true autoreload properties
+     * @param interval       poll interval in millisecond when autoreload is true
+     * @throws Exception
      * @see StringConverter.URLParser
      * @see SettingsXMLHelper#XSD
-     * @throws Exception
      */
     @Produces
     @PropertyProducer
@@ -71,8 +72,8 @@ public class PropertyResolver {
 
     private Reader getReader(String configFileUrl, boolean fromJar) throws IOException {
         InputStream is = fromJar
-                        ? Thread.currentThread().getContextClassLoader().getResourceAsStream(configFileUrl)
-                        : StringConverter.URL_PARSER.convert(configFileUrl).openStream();
+                ? Thread.currentThread().getContextClassLoader().getResourceAsStream(configFileUrl)
+                : StringConverter.URL_PARSER.convert(configFileUrl).openStream();
         if (is == null) {
             throw new IllegalArgumentException(String.format("%s not readable, reading from jar: %s", configFileUrl, fromJar));
         }
@@ -80,14 +81,13 @@ public class PropertyResolver {
     }
 
     /**
-     *
      * Try to read as either a {@link Settingstype xml configuration file} or
      * {@link PropertiesParser a property file} holding settings. Either {@link SettingsFromJAXB#fromJaxb(Reader)
      * } or {@link ParsingProperties#ParsingProperties(EnhancedMap, String...)
      * }
      * will be called. By default properties will be {@link CachingProperties cached} and {@link com.vectorprint.configuration.decoration.ReadonlyProperties read only}.
      *
-     * @param fromJar when true read from jar in classpath
+     * @param fromJar    when true read from jar in classpath
      * @param autoReload
      * @param interval
      * @param urls
@@ -97,15 +97,11 @@ public class PropertyResolver {
      * @throws IOException
      */
     private EnhancedMap readAsSettingsOrProperties(boolean fromJar, boolean autoReload, int interval, String... urls) throws Exception {
-        if (urls.length==1) {
+        if (urls.length == 1) {
             String url = urls[0];
-            try {
-                try (Reader in = getReader(url, fromJar)) {
-                    SettingsXMLHelper.validateXml(in);
-                }
-                try (Reader in = getReader(url, fromJar)) {
-                    return new SettingsFromJAXB().fromJaxb(getReader(url, fromJar));
-                }
+            try (Reader in = getReader(url, fromJar)) {
+                SettingsXMLHelper.validateXml(in);
+                return new SettingsFromJAXB().fromJaxb(getReader(url, fromJar));
             } catch (SAXException sAXException) {
                 LOGGER.warn(String.format("%s does not contain settings xml, trying to parse settings directly", url));
             }
@@ -113,6 +109,6 @@ public class PropertyResolver {
         return fromJar || !autoReload ?
                 new CachingProperties(new ParsingProperties(new Settings(), urls)) :
                 new CachingProperties(
-                    new ReloadableProperties(new ObservableProperties(new Settings()),interval, urls));
+                        new ReloadableProperties(new ObservableProperties(new Settings()), interval, urls));
     }
 }
