@@ -38,6 +38,7 @@ import java.lang.ref.Cleaner;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -620,15 +621,15 @@ public final class Settings implements EnhancedMap, DecorationAware {
     }
 
     @Override
-    public Date getDateProperty(Date defaultValue, String... keys) {
+    public LocalDate getLocalDateProperty(LocalDate defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : getFactory().getBindingHelper().convert(getFirst(key), Date.class);
+        return key == null ? defaultValue : getFactory().getBindingHelper().convert(getFirst(key), LocalDate.class);
     }
 
     @Override
-    public Date[] getDateProperties(Date[] defaultValue, String... keys) {
+    public LocalDate[] getLocalDateProperties(LocalDate[] defaultValue, String... keys) {
         String key = getKey(defaultValue, keys);
-        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),Date.class);
+        return key == null ? defaultValue : AbstractBindingHelperDecorator.parse(get(key),LocalDate.class);
     }
 
     private final Collection<String> unused = new HashSet<>(25);

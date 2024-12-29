@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,8 +45,8 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    private final Map<String, Object> cache = new HashMap<>();
 
    @Override
-   public Date[] getDateProperties(Date[] defaultValue, String... keys) {
-      return fromCache(defaultValue, Date[].class, keys);
+   public LocalDate[] getLocalDateProperties(LocalDate[] defaultValue, String... keys) {
+      return fromCache(defaultValue, LocalDate[].class, keys);
    }
 
    private <T> T fromCache(T defaultValue, Class<T> clazz, String... keys) {
@@ -89,8 +90,8 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    }
 
    @Override
-   public Date getDateProperty(Date defaultValue, String... keys) {
-      return fromCache(defaultValue, Date.class, keys);
+   public LocalDate getLocalDateProperty(LocalDate defaultValue, String... keys) {
+      return fromCache(defaultValue, LocalDate.class, keys);
    }
 
    @Override

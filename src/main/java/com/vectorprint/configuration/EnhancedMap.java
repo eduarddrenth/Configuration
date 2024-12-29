@@ -27,8 +27,8 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -90,9 +90,9 @@ public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializa
 
    Color[] getColorProperties(Color[] defaultValue, String... keys);
 
-   Date getDateProperty(Date defaultValue, String... keys);
+   LocalDate getLocalDateProperty(LocalDate defaultValue, String... keys);
 
-   Date[] getDateProperties(Date[] defaultValue, String... keys);
+   LocalDate[] getLocalDateProperties(LocalDate[] defaultValue, String... keys);
    
    /**
     * look for a setting, if one of the keys is found return its value.

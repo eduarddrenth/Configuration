@@ -36,9 +36,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -356,13 +356,13 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
     }
 
     @Override
-    public Date getDateProperty(Date defaultValue, String... keys) {
-        return settings.getDateProperty(defaultValue, keys);
+    public LocalDate getLocalDateProperty(LocalDate defaultValue, String... keys) {
+        return settings.getLocalDateProperty(defaultValue, keys);
     }
 
     @Override
-    public Date[] getDateProperties(Date[] defaultValue, String... keys) {
-        return settings.getDateProperties(defaultValue, keys);
+    public LocalDate[] getLocalDateProperties(LocalDate[] defaultValue, String... keys) {
+        return settings.getLocalDateProperties(defaultValue, keys);
     }
 
     @Override

@@ -38,7 +38,6 @@ import jakarta.enterprise.inject.spi.AnnotatedCallable;
 import jakarta.enterprise.inject.spi.AnnotatedField;
 import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedParameter;
-import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Inject;
@@ -54,6 +53,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -196,15 +196,15 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @CheckRequired
-    public Date[] getDateProperties(InjectionPoint ip) {
-        return getDateProperties((Date[]) getDefault(ip), getKeys(ip));
+    public LocalDate[] getDateProperties(InjectionPoint ip) {
+        return getLocalDateProperties((LocalDate[]) getDefault(ip), getKeys(ip));
     }
 
     @Produces
     @Property
     @CheckRequired
-    public Date getDateProperty(InjectionPoint ip) {
-        return getDateProperty((Date) getDefault(ip), getKeys(ip));
+    public LocalDate getDateProperty(InjectionPoint ip) {
+        return getLocalDateProperty((LocalDate) getDefault(ip), getKeys(ip));
     }
 
     @Produces

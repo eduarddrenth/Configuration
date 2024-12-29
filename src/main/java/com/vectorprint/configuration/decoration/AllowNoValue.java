@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -41,8 +42,8 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
     }
 
     @Override
-    public Date[] getDateProperties(Date[] defaultValue, String... keys) {
-        return allowNoValue(defaultValue, Date[].class, keys);
+    public LocalDate[] getLocalDateProperties(LocalDate[] defaultValue, String... keys) {
+        return allowNoValue(defaultValue, LocalDate[].class, keys);
     }
 
     private <T> T allowNoValue(T defaultValue, Class<T> clazz, String... keys) {
@@ -59,8 +60,8 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
     }
 
     @Override
-    public Date getDateProperty(Date defaultValue, String... keys) {
-        return allowNoValue(defaultValue, Date.class, keys);
+    public LocalDate getLocalDateProperty(LocalDate defaultValue, String... keys) {
+        return allowNoValue(defaultValue, LocalDate.class, keys);
     }
 
     @Override
