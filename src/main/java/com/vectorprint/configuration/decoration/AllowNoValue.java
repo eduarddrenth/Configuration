@@ -30,7 +30,6 @@ import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.regex.Pattern;
 
 public class AllowNoValue extends AbstractPropertiesDecorator {
