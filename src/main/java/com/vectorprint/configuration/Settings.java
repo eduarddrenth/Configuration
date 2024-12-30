@@ -69,10 +69,6 @@ public final class Settings implements EnhancedMap, DecorationAware {
 
     private final transient Cleaner.Cleanable cleanable;
 
-    static Settings createSettings() {
-        return new Settings();
-    }
-
     @Override
     public void listProperties(PrintStream ps) {
         ps.printf("settings with id %s:%n", getId());
@@ -137,43 +133,24 @@ public final class Settings implements EnhancedMap, DecorationAware {
             StringBuilder s = new StringBuilder(String.valueOf(val));
             if (val != null && val.getClass().isArray()) {
                 s = new StringBuilder();
-                Class compType = val.getClass().getComponentType();
-                if (!compType.isPrimitive()) {
-                    for (Object o : (Object[]) val) {
-                        s.append(o).append("; ");
-                    }
-                } else if (compType.equals(boolean.class)) {
-                    for (boolean o : (boolean[]) val) {
-                        s.append(o).append("; ");
-                    }
-                } else if (compType.equals(char.class)) {
-                    for (char o : (char[]) val) {
-                        s.append(o).append("; ");
-                    }
-                } else if (compType.equals(byte.class)) {
-                    for (byte o : (byte[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
-                    }
-                } else if (compType.equals(short.class)) {
-                    for (short o : (short[]) val) {
-                        s.append(String.valueOf(o)).append("; ");
-                    }
-                } else if (compType.equals(int.class)) {
-                    for (int o : (int[]) val) {
-                        s.append(o).append("; ");
-                    }
-                } else if (compType.equals(long.class)) {
-                    for (long o : (long[]) val) {
-                        s.append(o).append("; ");
-                    }
-                } else if (compType.equals(float.class)) {
-                    for (float o : (float[]) val) {
-                        s.append(o).append("; ");
-                    }
-                } else if (compType.equals(double.class)) {
-                    for (double o : (double[]) val) {
-                        s.append(o).append("; ");
-                    }
+                if (val instanceof boolean[] b) {
+                    for (boolean o : b) s.append(o).append("; ");
+                } else if (val instanceof char[] c) {
+                    for (char o : c) s.append(o).append("; ");
+                } else if (val instanceof byte[] b) {
+                    for (byte o : b) s.append(String.valueOf(o)).append("; ");
+                } else if (val instanceof short[] sh) {
+                    for (short o : sh) s.append(String.valueOf(o)).append("; ");
+                } else if (val instanceof int[] i) {
+                    for (int o : i) s.append(o).append("; ");
+                } else if (val instanceof long[] l) {
+                    for (long o : l) s.append(o).append("; ");
+                } else if (val instanceof float[] f) {
+                    for (float o : f) s.append(o).append("; ");
+                } else if (val instanceof double[] d) {
+                    for (double o : d) s.append(o).append("; ");
+                } else {
+                    for (Object o : (Object[])val) s.append(o).append("; ");
                 }
             }
             log.debug(String.format("looking for property %s in %s, using value %s", keys!=null?Arrays.asList(keys):null, getId(), s.append((defaultVal) ? " (default)" : "")));

@@ -32,8 +32,8 @@ public interface DecorationAware {
    /**
     * Called from {@link AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
     * }
-    * to build a list of decorators for settings. When decorated your code should call methods on the outermost
-    * decorator only, if you don't, functionality of decorators will not be called. The preferred way to achieve this is
+    * to build a list of decorators for settings. Your code should call methods on the outermost
+    * decorator only, if you don't, functionality of decorators will not be called. The preferred way to initialize decorated settings is
     * to use the {@link SettingsField} annotation in conjunction with a call to {@link com.vectorprint.configuration.annotation.SettingsAnnotationProcessor#initSettings(Object, EnhancedMap)}  }
     * }.
     *
@@ -43,12 +43,12 @@ public interface DecorationAware {
 
    /**
     * @see AbstractPropertiesDecorator#AbstractPropertiesDecorator(com.vectorprint.configuration.EnhancedMap)
-    * @return a list of decorators that wrap these settings
+    * @return a list of decorators that wrap settings
     */
    List<Class<? extends AbstractPropertiesDecorator>> getDecorators();
 
    /**
-    * The last added Decorator, if it is not null use it instead of these settings.
+    * The last added Decorator, if it is not null use it instead of wrapped/decorated settings.
     *
     * @see com.vectorprint.configuration.annotation.SettingsAnnotationProcessor
     * @return

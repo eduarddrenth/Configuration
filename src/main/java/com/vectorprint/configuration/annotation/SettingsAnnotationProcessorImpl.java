@@ -72,12 +72,12 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
     * @param settings when null create a new {@link Settings} instance.
     */
    @Override
-   public boolean initSettings(Object o, EnhancedMap settings) {
+   public EnhancedMap initSettings(Object o, EnhancedMap settings) {
       if (settings == null || settings.isEmpty()) {
          if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("settings null or empty, no initialization");
          }
-         return false;
+         return null;
       }
       if (settingsUsed == null) {
          settingsUsed = settings;
@@ -86,20 +86,27 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("assuming, based on equals, settings for %s already initialized with %s", o, settings));
          }
-         return false;
+         return null;
       }
-      initSettings(o instanceof Class ? (Class) o : o.getClass(), o instanceof Class ? null : o, settings, true);
+      EnhancedMap eh = initSettings(o instanceof Class ? (Class) o : o.getClass(), o instanceof Class ? null : o, settings, true);
       if (o instanceof Class) {
          objects.add(o);
       }
-      return true;
+      return eh;
    }
 
-   private void initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
+   @Override
+   public EnhancedMap initSettings(Object o) {
+      return initSettings(o,new Settings());
+   }
+
+   private EnhancedMap initSettings(Class c, Object obj, EnhancedMap eh, boolean notifyWrapping) {
       Field[] declaredFields = c.getDeclaredFields();
       if (LOGGER.isDebugEnabled()) {
          LOGGER.debug(String.format("looking for %s fields to apply settings to", (obj == null ? "static" : "instance")));
       }
+      EnhancedMap settings = eh;
+      SettingsField se=null;
       for (Field field : declaredFields) {
          // when looping use the original settings argument, each settings annotation should use its own setup
          boolean isStatic = Modifier.isStatic(field.getModifiers());
@@ -108,11 +115,13 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          } else if (!isStatic && obj == null) {
             continue;
          }
-         EnhancedMap settings = eh;
          field.setAccessible(true);
          Class type = field.getType();
          Setting a = field.getAnnotation(Setting.class);
-         SettingsField se = field.getAnnotation(SettingsField.class);
+         if (se!=null && field.getAnnotation(SettingsField.class)!=null) {
+            throw new IllegalStateException("only one @SettingsField supported, %s is offending".formatted(field.getName()));
+         }
+         se = field.getAnnotation(SettingsField.class);
          if (se != null) {
             if (a != null) {
                LOGGER.warn("Setting annotation is not processed because Settings is also present");
@@ -240,6 +249,7 @@ public class SettingsAnnotationProcessorImpl implements SettingsAnnotationProces
          // when recursing we use the original settings argument, each settings annotation should use its own setup
          initSettings(c.getSuperclass(), obj, eh, notifyWrapping);
       }
+      return settings;
    }
 
    private boolean executeSetter(Field f, Object o, Object value, boolean isStatic) {

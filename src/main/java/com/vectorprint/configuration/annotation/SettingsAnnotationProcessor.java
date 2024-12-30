@@ -32,8 +32,15 @@ public interface SettingsAnnotationProcessor {
     * only static fields will be initialized, otherwise only instance fields.
     * @param o the Class or Object
     * @param settings the settings to use for initialization
-    * @return true when initialization was executed
+    * @return the (wrapped) settings when initialization was executed, null otherwise
     */
-   boolean initSettings(Object o, EnhancedMap settings);
+   EnhancedMap initSettings(Object o, EnhancedMap settings);
+
+   /**
+    * Calls {@link #initSettings(Object, EnhancedMap)} with empty Settings.
+    * @param o
+    * @return
+    */
+   EnhancedMap initSettings(Object o);
 
 }
