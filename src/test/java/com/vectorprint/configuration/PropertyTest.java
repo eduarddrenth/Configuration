@@ -218,7 +218,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testMultipleKeys() throws IOException, ParseException {
+   public void testMultipleKeys() {
       EnhancedMap eh = new Settings();
       eh.put("k", "v");
       assertEquals("v", eh.getGenericProperty(null, String.class, "a", "b", "k"));
@@ -230,7 +230,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testHelp() throws IOException, ParseException {
+   public void testHelp() throws IOException {
       EnhancedMap mtp = new HelpSupportedProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"));
       assertEquals("wat een mooie\nhelp tekst\n\nis dit", mtp.getHelp("stoponerror").getExplanation());
@@ -238,7 +238,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testChangeProperty() throws IOException, ParseException {
+   public void testChangeProperty() throws IOException {
 
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
@@ -270,7 +270,7 @@ public class PropertyTest {
       void clear() {added.clear();changed.clear();deleted.clear();}
    }
    @Test
-   public void testReloading() throws IOException, ParseException, InterruptedException {
+   public void testReloading() throws IOException, InterruptedException {
       File f = File.createTempFile("props", "props");
       f.deleteOnExit();
       Files.write(f.toPath(),Files.readAllBytes(new File("src/test/resources/config"
@@ -330,7 +330,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testSplitValues() throws IOException, ParseException {
+   public void testSplitValues() throws IOException {
 
       EnhancedMap mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
@@ -346,7 +346,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testRemoveProperty() throws IOException, ParseException {
+   public void testRemoveProperty() throws IOException {
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
@@ -358,7 +358,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testSave() throws IOException, ParseException {
+   public void testSave() throws IOException {
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
       assertFalse(mtp.containsKey("m"));
@@ -381,7 +381,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testCombineProps() throws IOException, AssertionError, RuntimeException, InterruptedException, ParseException {
+   public void testCombineProps() throws IOException, AssertionError, RuntimeException, InterruptedException {
       ParsingProperties mp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
@@ -397,7 +397,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testIndependenceThreads() throws IOException, AssertionError, RuntimeException, InterruptedException, ParseException {
+   public void testIndependenceThreads() throws IOException, AssertionError, RuntimeException, InterruptedException {
       ParsingProperties mp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
@@ -410,7 +410,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testHandleEmptyValues() throws IOException, ParseException {
+   public void testHandleEmptyValues() throws IOException {
       new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
 
       NoEmptyValues emtiesNOTOK = (NoEmptyValues) new NoEmptyValues();
@@ -442,7 +442,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testArguments() throws IOException, ParseException {
+   public void testArguments() throws IOException {
       ParsingProperties vp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "styling.properties");
       EnhancedMapBindingFactory embf = SettingsBindingService.getInstance().getFactory();
@@ -461,7 +461,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testTrim() throws IOException, ParseException {
+   public void testTrim() {
       PreparingProperties vp = new PreparingProperties(new Settings());
       vp.addObserver(new TrimKeyValue().setOptIn(false));
       EnhancedMapBindingFactory embf = SettingsBindingService.getInstance().getFactory();
@@ -474,7 +474,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testRecordUnused() throws IOException, ParseException {
+   public void testRecordUnused() throws IOException {
       EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
       assertTrue(vp.getUnusedKeys().contains("small"));
       assertTrue(vp.getUnusedKeys().contains("bigbold"));
@@ -494,7 +494,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testRecordNotPresent() throws IOException, ParseException {
+   public void testRecordNotPresent() throws IOException {
       EnhancedMap vp = new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties");
       assertFalse(vp.getKeysNotPresent().contains("small"));
       assertFalse(vp.getKeysNotPresent().contains("bigbold"));
@@ -510,13 +510,13 @@ public class PropertyTest {
    }
 
    @Test
-   public void testNoValueAllowed() throws IOException, ParseException {
+   public void testNoValueAllowed() throws IOException {
       EnhancedMap vp = new AllowNoValue(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"));
       vp.getProperty(null,"smalllll");
    }
 
    @Test
-   public void testReadonly() throws IOException, ParseException {
+   public void testReadonly() throws IOException {
       EnhancedMap vp = new ReadonlyProperties(new ParsingProperties(new Settings(), "src/test/resources/config" + File.separator + "styling.properties"));
       assertTrue(vp.containsKey("bold"));
       try {
@@ -546,7 +546,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testClone() throws IOException, ParseException, CloneNotSupportedException {
+   public void testClone() throws IOException, CloneNotSupportedException {
       ParsingProperties mtp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
       new CachingProperties(mtp);
@@ -558,7 +558,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testDecorators() throws IOException, VectorPrintException, ParseException {
+   public void testDecorators() throws IOException, VectorPrintException {
       Settings vp = new Settings();
       HelpSupportedProperties helpSupportedProperties = new HelpSupportedProperties(new ParsingProperties(vp, "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"));
@@ -638,7 +638,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testSerializable() throws IOException, VectorPrintException, ParseException, InterruptedException, ClassNotFoundException {
+   public void testSerializable() throws IOException, VectorPrintException, InterruptedException, ClassNotFoundException {
       FindableProperties.clearStaticReferences();
       EnhancedMap mtp = new ThreadBoundProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
@@ -681,7 +681,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testSerializableParameters() throws IOException, VectorPrintException, ParseException, InterruptedException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+   public void testSerializableParameters() throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
       for (Class c : ClassHelper.fromPackage(Parameter.class.getPackage())) {
          if (!Modifier.isAbstract(c.getModifiers())) {
@@ -793,7 +793,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testParmeterizable() throws IOException, ParseException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+   public void testParmeterizable() throws IOException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
       Parameterizable p = new P();
       ParamAnnotationProcessorImpl.PAP.initParameters(p);
       assertEquals(p.getClass(), p.getParameter("b", BooleanParameter.class).getDeclaringClass());
@@ -823,7 +823,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testJsonParser() throws IOException, ParseException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+   public void testJsonParser() throws IOException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
       com.vectorprint.configuration.binding.parameters.SpecificClassValidator.setClazz(ParameterizableBindingFactoryJson.class);
       ParameterizableBindingFactory factoryImpl = ParamBindingService.getInstance().getFactory();
@@ -856,7 +856,7 @@ public class PropertyTest {
    private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
 
    @Test
-   public void testSettingAnnotations() throws IOException, ParseException {
+   public void testSettingAnnotations() throws IOException {
       Fields f = new Fields();
       AbstractPropertiesDecorator vp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties");
