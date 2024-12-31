@@ -53,7 +53,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -195,15 +195,15 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @CheckRequired
-    public LocalDate[] getDateProperties(InjectionPoint ip) {
-        return getLocalDateProperties((LocalDate[]) getDefault(ip), getKeys(ip));
+    public LocalDateTime[] getDateProperties(InjectionPoint ip) {
+        return getLocalDateTimeProperties((LocalDateTime[]) getDefault(ip), getKeys(ip));
     }
 
     @Produces
     @Property
     @CheckRequired
-    public LocalDate getDateProperty(InjectionPoint ip) {
-        return getLocalDateProperty((LocalDate) getDefault(ip), getKeys(ip));
+    public LocalDateTime getDateProperty(InjectionPoint ip) {
+        return getLocalDateTimeProperty((LocalDateTime) getDefault(ip), getKeys(ip));
     }
 
     @Produces

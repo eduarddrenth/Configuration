@@ -2,7 +2,7 @@
 
 This project is about configuration of applications and about parameterization of Objects.
 
-**Changes: removed xml based setup, removed Date support in favor of LocalDate!!**
+**Changes: removed xml based setup, removed Date support in favor of LocalDateTime!!**
 
 Use ```@Inject``` and ```@Property(default=..., keys=...)``` to Inject properties from urls (files).
 When configured, changes in property files will immediately cause injected field and method parameters to change accordingly, **NOTE** at the time this works only for Singleton beans. Updating always works for static properties and for ```@inject @Properties EnhancedMap```
