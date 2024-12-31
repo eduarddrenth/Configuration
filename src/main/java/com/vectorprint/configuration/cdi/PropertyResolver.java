@@ -23,15 +23,11 @@ import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.ReloadableProperties;
-import com.vectorprint.configuration.generated.jaxb.Settingstype;
 import com.vectorprint.configuration.generated.parser.PropertiesParser;
-import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
-import com.vectorprint.configuration.jaxb.SettingsXMLHelper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,7 +58,6 @@ public class PropertyResolver {
      * @param interval       poll interval in millisecond when autoreload is true
      * @throws Exception
      * @see StringConverter.URLParser
-     * @see SettingsXMLHelper#XSD
      */
     @Produces
     @PropertyProducer
@@ -81,9 +76,8 @@ public class PropertyResolver {
     }
 
     /**
-     * Try to read as either a {@link Settingstype xml configuration file} or
-     * {@link PropertiesParser a property file} holding settings. Either {@link SettingsFromJAXB#fromJaxb(Reader)
-     * } or {@link ParsingProperties#ParsingProperties(EnhancedMap, String...)
+     * Try to read a
+     * {@link PropertiesParser a property file} holding settings, see {@link ParsingProperties#ParsingProperties(EnhancedMap, String...)
      * }
      * will be called. By default properties will be {@link CachingProperties cached} and {@link com.vectorprint.configuration.decoration.ReadonlyProperties read only}.
      *
@@ -92,20 +86,10 @@ public class PropertyResolver {
      * @param interval
      * @param urls
      * @return
-     * @throws jakarta.xml.bind.JAXBException
      * @throws VectorPrintException
      * @throws IOException
      */
     private EnhancedMap readAsSettingsOrProperties(boolean fromJar, boolean autoReload, int interval, String... urls) throws Exception {
-        if (urls.length == 1) {
-            String url = urls[0];
-            try (Reader in = getReader(url, fromJar)) {
-                SettingsXMLHelper.validateXml(in);
-                return new SettingsFromJAXB().fromJaxb(getReader(url, fromJar));
-            } catch (SAXException sAXException) {
-                LOGGER.warn(String.format("%s does not contain settings xml, trying to parse settings directly", url));
-            }
-        }
         return fromJar || !autoReload ?
                 new CachingProperties(new ParsingProperties(new Settings(), urls)) :
                 new CachingProperties(

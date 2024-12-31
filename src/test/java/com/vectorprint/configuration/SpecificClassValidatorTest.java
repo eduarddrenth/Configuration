@@ -1,6 +1,8 @@
 
 
-package com.vectorprint.configuration.binding.parameters;
+package com.vectorprint.configuration;
+
+import com.vectorprint.configuration.binding.parameters.*;
 
 /*-
  * #%L
@@ -23,11 +25,13 @@ package com.vectorprint.configuration.binding.parameters;
  */
 
 
-public class SpecificClassValidator implements ParamFactoryValidator {
+public class SpecificClassValidatorTest implements ParamFactoryValidator {
+   
+   private Class<? extends ParameterizableBindingFactory> clazz = com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson.class;
 
    @Override
    public boolean isValid(ParameterizableBindingFactory bindingFactory) {
-      return true;
+      return clazz == null || clazz.isAssignableFrom(bindingFactory.getClass());
    }
 
 }

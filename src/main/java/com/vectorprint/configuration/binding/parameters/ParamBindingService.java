@@ -1,4 +1,3 @@
-
 package com.vectorprint.configuration.binding.parameters;
 
 /*-
@@ -20,97 +19,110 @@ package com.vectorprint.configuration.binding.parameters;
  * limitations under the License.
  * #L%
  */
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 public class ParamBindingService {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(ParamBindingService.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParamBindingService.class.getName());
 
-   private final ServiceLoader<ParameterizableBindingFactory> factories;
-   private final ServiceLoader<ParamFactoryValidator> validators;
+    private final ServiceLoader<ParameterizableBindingFactory> factories;
+    private final ServiceLoader<ParamFactoryValidator> validators;
 
-   private ParamBindingService() {
-      factories = ServiceLoader.load(ParameterizableBindingFactory.class);
-      validators = ServiceLoader.load(ParamFactoryValidator.class);
-   }
+    private ParamBindingService() {
+        factories = ServiceLoader.load(ParameterizableBindingFactory.class);
+        validators = ServiceLoader.load(ParamFactoryValidator.class);
+    }
 
-   private static final ParamBindingService instance = new ParamBindingService();
+    private static ParamBindingService instance = new ParamBindingService();
 
-   public static ParamBindingService getInstance() {
-      return instance;
-   }
+    public static ParamBindingService getInstance() {
+        return instance;
+    }
+    
+    private Set<Class<? extends ParamFactoryValidator>> exclude = new HashSet<>(3);
+    
+    public static void excludeValidator(Class<? extends ParamFactoryValidator> clazz) {
+        instance.exclude.add(clazz);
+    }
+    
+    public static void clearExcludedValidator() {
+        instance.exclude.clear();
+    }
 
-   /**
-    * Return the first implementation of {@link ParameterizableBindingFactory} found that is valid according to all
-    * {@link ParamFactoryValidator}s, or return null. When no validator is published return the first {@link ParameterizableBindingFactory} found.
-    *
-    * @return
-    */
-   public ParameterizableBindingFactory getFactory() {
-      for (ParameterizableBindingFactory f : factories) {
-         if (isValid(f)) {
-            return f;
-         }
-      }
-      return null;
-   }
-
-   /**
-    * 
-    * @return a list of factories found through SPI
-    */
-   public List<Class<? extends ParameterizableBindingFactory>> getFactoriesKnown() {
-      List<Class<? extends ParameterizableBindingFactory>> l = new ArrayList<>();
-      for (ParameterizableBindingFactory f : factories) {
-         l.add(f.getClass());
-      }
-      return l;
-   }
-   
-   public boolean isValid(ParameterizableBindingFactory f ) {
-         boolean ok = true;
-         for (ParamFactoryValidator validator : validators) {
-            if (!validator.isValid(f)) {
-               if (LOGGER.isDebugEnabled()) {
-                  LOGGER.debug(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
-               }
-               ok = false;
-               break;
+    /**
+     * Return the first implementation of {@link ParameterizableBindingFactory}
+     * found that is valid according to all {@link ParamFactoryValidator}s, or
+     * return null. When no validator is published return the first
+     * {@link ParameterizableBindingFactory} found.
+     *
+     * @return
+     */
+    public ParameterizableBindingFactory getFactory() {
+        for (ParameterizableBindingFactory f : factories) {
+            if (isValid(f)) {
+                return f;
             }
-         }
-         return ok;
-   }
+        }
+        return null;
+    }
 
-   /**
-    * 
-    * @return a list of valid factories found through SPI
-    */
-   public List<Class<? extends ParameterizableBindingFactory>> getValidFactories() {
-      List<Class<? extends ParameterizableBindingFactory>> l = new ArrayList<>();
-      for (ParameterizableBindingFactory f : factories) {
-         if (isValid(f)) {
+    /**
+     *
+     * @return a list of factories found through SPI
+     */
+    public List<Class<? extends ParameterizableBindingFactory>> getFactoriesKnown() {
+        List<Class<? extends ParameterizableBindingFactory>> l = new ArrayList<>();
+        for (ParameterizableBindingFactory f : factories) {
             l.add(f.getClass());
-         }
-      }
-      return l;
-   }
+        }
+        return l;
+    }
 
-   /**
-    * 
-    * @return a list of validators found through SPI
-    */
-   public List<Class<? extends ParamFactoryValidator>> getValidatorsKnown() {
-      List<Class<? extends ParamFactoryValidator>> l = new ArrayList<>();
-      for (ParamFactoryValidator f : validators) {
-         l.add(f.getClass());
-      }
-      return l;
-   }
+    public boolean isValid(ParameterizableBindingFactory f) {
+        boolean ok = true;
+        for (ParamFactoryValidator validator : validators) {
+            if (exclude.stream().noneMatch(e -> e.equals(validator.getClass())) && !validator.isValid(f)) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(String.format("%s does not pass validation by %s", f.getClass().getName(), validator.getClass().getName()));
+                }
+                ok = false;
+                break;
+            }
+        }
+        return ok;
+    }
+
+    /**
+     *
+     * @return a list of valid factories found through SPI
+     */
+    public List<Class<? extends ParameterizableBindingFactory>> getValidFactories() {
+        List<Class<? extends ParameterizableBindingFactory>> l = new ArrayList<>();
+        for (ParameterizableBindingFactory f : factories) {
+            if (isValid(f)) {
+                l.add(f.getClass());
+            }
+        }
+        return l;
+    }
+
+    /**
+     *
+     * @return a list of validators found through SPI
+     */
+    public List<Class<? extends ParamFactoryValidator>> getValidatorsKnown() {
+        List<Class<? extends ParamFactoryValidator>> l = new ArrayList<>();
+        for (ParamFactoryValidator f : validators) {
+            l.add(f.getClass());
+        }
+        return l;
+    }
 
 }

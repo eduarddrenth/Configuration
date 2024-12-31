@@ -25,15 +25,10 @@ package com.vectorprint.configuration.binding.settings;
 
 public class SpecificClassValidator implements SettingsFactoryValidator {
    
-   private static Class<? extends EnhancedMapBindingFactory> clazz;
-
    @Override
    public boolean isValid(EnhancedMapBindingFactory bindingFactory) {
-      return clazz == null || clazz.isAssignableFrom(bindingFactory.getClass());
+      return true;
    }
 
-   public static void setClazz(Class<? extends EnhancedMapBindingFactory> clazz) {
-      SpecificClassValidator.clazz = clazz;
-   }
 
 }

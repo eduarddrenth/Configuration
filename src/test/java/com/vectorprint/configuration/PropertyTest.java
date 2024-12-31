@@ -33,11 +33,9 @@ import com.vectorprint.configuration.binding.parameters.EscapingBindingHelper;
 import com.vectorprint.configuration.binding.parameters.ParamBindingService;
 import com.vectorprint.configuration.binding.parameters.ParameterizableBindingFactory;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
-import com.vectorprint.configuration.binding.parameters.json.ParameterizableBindingFactoryJson;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.EnhancedMapParser;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
-import com.vectorprint.configuration.binding.settings.SpecificClassValidator;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
 import com.vectorprint.configuration.decoration.AllowNoValue;
 import com.vectorprint.configuration.decoration.CachingProperties;
@@ -52,7 +50,6 @@ import com.vectorprint.configuration.decoration.ThreadBoundProperties;
 import com.vectorprint.configuration.decoration.visiting.ObservableVisitor;
 import com.vectorprint.configuration.decoration.visiting.ParsingVisitor;
 import com.vectorprint.configuration.generated.parser.ParseException;
-import com.vectorprint.configuration.jaxb.SettingsFromJAXB;
 import com.vectorprint.configuration.parameters.BooleanParameter;
 import com.vectorprint.configuration.parameters.CharPasswordParameter;
 import com.vectorprint.configuration.parameters.FloatArrayParameter;
@@ -68,7 +65,6 @@ import com.vectorprint.configuration.preparing.PrepareKeyValue;
 import com.vectorprint.configuration.preparing.TrimKeyValue;
 import com.vectorprint.testing.ThreadTester;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -77,7 +73,6 @@ import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -105,6 +100,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 
 public class PropertyTest {
 
@@ -112,11 +108,10 @@ public class PropertyTest {
    public static void setUpClass() {
       Logger.getLogger(Settings.class.getName()).setLevel(Level.FINE);
    }
-
+   
    @BeforeEach
    public void setUp() {
-      SpecificClassValidator.setClazz(null);
-      com.vectorprint.configuration.binding.parameters.SpecificClassValidator.setClazz(null);
+       ParamBindingService.excludeValidator(SpecificClassValidatorTest.class);
    }
 
    @Test
@@ -825,7 +820,7 @@ public class PropertyTest {
    @Test
    public void testJsonParser() throws IOException {
       String obj = "{'P':[{'a':[1,2]},{'b': true}]}";
-      com.vectorprint.configuration.binding.parameters.SpecificClassValidator.setClazz(ParameterizableBindingFactoryJson.class);
+      ParamBindingService.clearExcludedValidator();
       ParameterizableBindingFactory factoryImpl = ParamBindingService.getInstance().getFactory();
       EnhancedMap settings = new Settings();
       settings.put("staticBoolean", "true");
@@ -892,54 +887,6 @@ public class PropertyTest {
 
       vp.accept(new ParsingVisitor(f.getU()));
       assertTrue(vp.containsKey("dataclass"));
-   }
-
-   @Test
-   public void testXMLSettings() throws Exception {
-      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings.xml"));
-      assertEquals(settings.getProperty("percentageformat"), "#'%'");
-      assertTrue(settings instanceof AbstractPropertiesDecorator);
-      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
-      assertTrue(apd.hasProperties(CachingProperties.class));
-      assertTrue(apd.hasProperties(HelpSupportedProperties.class));
-      assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
-      assertEquals(settings.getHelp("stoponerror").getExplanation(), """
-              wat een mooie
-              help tekst
-
-              is dit""");
-   }
-
-   @Test
-   public void testXMLSettings2() throws Exception {
-      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings2.xml"));
-      assertEquals(settings.getProperty("percentageformat"), "#'%' ");
-      assertTrue(settings instanceof AbstractPropertiesDecorator);
-      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
-      assertTrue(apd.hasProperties(CachingProperties.class));
-      assertTrue(apd.hasProperties(HelpSupportedProperties.class));
-      assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
-      assertEquals(settings.getHelp("stoponerror").getExplanation(), """
-              wat een mooie
-              help tekst
-
-              is dit""");
-   }
-   
-   @Test
-   public void testXMLSettings3() throws Exception {
-      EnhancedMap settings = new SettingsFromJAXB().fromJaxb(new FileReader("src/test/resources/settings3.xml"));
-      assertEquals(settings.getProperty("percentageformat"), "#'%'");
-      assertTrue(settings instanceof AbstractPropertiesDecorator);
-      AbstractPropertiesDecorator apd = (AbstractPropertiesDecorator) settings;
-      assertTrue(apd.hasProperties(CachingProperties.class));
-      assertTrue(apd.hasProperties(HelpSupportedProperties.class));
-      assertTrue(settings.getHelp("stoponerror").getType().equals("boolean"));
-      assertEquals(settings.getHelp("stoponerror").getExplanation(), """
-              wat een mooie
-              help tekst
-
-              is dit""");
    }
 
    @Test
