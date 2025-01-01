@@ -434,7 +434,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
                         method.invoke(reference, value);
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         log.error(String.format("error calling %s with %s",
-                                method, value));
+                                method, value),e);
                     }
                 } else {
                     log.warn(String.format("%s has more than one argument, not supported yet",
