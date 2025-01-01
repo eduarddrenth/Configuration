@@ -95,6 +95,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
             };
 
     private String[] getKeys(final InjectionPoint ip) {
+        // TODO check supported scopes here before remembering injection point
         String[] rv = (ip.getAnnotated().getAnnotation(Property.class).keys().length > 0)
                 ? ip.getAnnotated().getAnnotation(Property.class).keys()
                 : new String[]{name(ip.getAnnotated())};
