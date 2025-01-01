@@ -23,16 +23,12 @@ import com.vectorprint.configuration.decoration.CachingProperties;
 import com.vectorprint.configuration.decoration.ObservableProperties;
 import com.vectorprint.configuration.decoration.ParsingProperties;
 import com.vectorprint.configuration.decoration.ReloadableProperties;
-import com.vectorprint.configuration.generated.parser.PropertiesParser;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
 /**
  * Application scoped CDI bean responsible for providing {@link CDIProperties} with properties read from a Url. CDIProperties is
@@ -65,25 +61,13 @@ public class PropertyResolver {
         return readAsSettingsOrProperties(fromJar, autoReload, interval, configFileUrls);
     }
 
-    private Reader getReader(String configFileUrl, boolean fromJar) throws IOException {
-        InputStream is = fromJar
-                ? Thread.currentThread().getContextClassLoader().getResourceAsStream(configFileUrl)
-                : StringConverter.URL_PARSER.convert(configFileUrl).openStream();
-        if (is == null) {
-            throw new IllegalArgumentException(String.format("%s not readable, reading from jar: %s", configFileUrl, fromJar));
-        }
-        return new InputStreamReader(is);
-    }
-
     /**
-     * Try to read a
-     * {@link PropertiesParser a property file} holding settings, see {@link ParsingProperties#ParsingProperties(EnhancedMap, String...)
-     * }
-     * will be called. By default properties will be {@link CachingProperties cached} and {@link com.vectorprint.configuration.decoration.ReadonlyProperties read only}.
+     * Try to read a property file, see {@link ParsingProperties#ParsingProperties(EnhancedMap, String...)}.
+     * Properties will be {@link CachingProperties cached}.
      *
      * @param fromJar    when true read from jar in classpath
-     * @param autoReload
-     * @param interval
+     * @param autoReload when true and fromJar is changes in the property file will be propagated to injected properties
+     * @param interval seconds to check for changes in the property file
      * @param urls
      * @return
      * @throws VectorPrintException
