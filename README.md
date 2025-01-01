@@ -20,23 +20,18 @@
             </dependency>
         </dependencies>
 ```
-
+### CDI, the preferred way
 ```java
 import jakarta.enterprise.context.ApplicationScoped;
 
-/**
- * Configure property (re)loading
- */
+/** Configure property (re)loading */
 @ApplicationScoped
 public class PropertyLocationProvider {
 
     @Produces @ConfigFileUrls
     public String[] getUrl() {return new String[]{"/etc/stdw.properties"};}
 
-    /**
-     * when true the url must be in the form "classpath:/pathto/my.properties"
-     * @return
-     */
+    /** when true the url must be in the form "classpath:/pathto/my.properties" */
     @Produces @FromJar
     public boolean fromJar() {return false;}
 
@@ -52,14 +47,12 @@ public class PropertyLocationProvider {
  */
 @ApplicationScoped
 public class MyBean {
-    /**
-     * A non required property that will not ber reloaded
-     */
+    
+    /** A non required property that will not be reloaded */
     @Inject @Property(defaultValue = "30",required = false,updatable = false)
     private int timeoutSeconds;
-    /**
-     * A required property that changes when the corresponding value in the properties file changes
-     */
+    
+    /** A required property that changes when the corresponding value in the properties file changes */
     @Inject @Property(required="true", keys="testkey")
     private static int[] test;
     
@@ -67,19 +60,62 @@ public class MyBean {
 
 ```
 
-Use ```@Inject``` and ```@Property(default=..., keys=...)``` to Inject properties from urls (files).
-When configured, changes in property files will immediately cause injected fields and method parameters to change accordingly, **NOTE** at the time this works only for Singleton beans, static properties and for ```@inject @Properties EnhancedMap```
+**NOTE** at the time reloading works only for Singleton beans, static properties and for `@inject @Properties EnhancedMap`
 
+### Plain Java example
+```java
+   static class MyObserver implements PropertyChangeListener {
+        @Override
+        public void propertyChange(PropertyChangeEvent propertyChangeEvent) {}
+    }
+    
+    public class Example {
 
+        private ObservableProperties mtp =
+                new ObservableProperties(new ParsingProperties(new Settings(), "/etc/app.properties"));
+        private MyObserver os = new MyObserver();
+        private boolean prop;
+        
+        public Example() {
+            mtp.addObserver(os);
+            prop=mtp.getBooleanProperty(null,"prop");
+        }
+    }
 
-This library offers annotations (and annotation processors), parsers, typing, observing changes, serialization,
-cloning and more when working with settings and/or object parameters. Settings and its features can be declared using annotations.
+```
 
-The library offers syntax support for settings and parameters in a loosely coupled manner. You are not restricted to the built in syntaxes, you
-can provide your own.
+### Java annotations example
 
-At runtime this library tracks keys for which a default is used because they are not found in settings. Also it tracks
-unused keys.
+```java
+public class Fields {
+    @Setting
+    private boolean b;
+    @SettingsField(observable = true, readonly = true, cache = true,....)
+    private EnhancedMap settings;
+}
 
-You can stack features for settings such as caching, preparing keys and values, autoreloading, readonlyness, threadsafety, helpsupport, reading / parsing from input. You can easily develop
+public class Fields2 {
+    @Setting
+    private static boolean b;
+}
+
+public class Example {
+    private final SettingsAnnotationProcessor sap = new SettingsAnnotationProcessorImpl();
+    private final EnhancedMap eh = new ParsingProperties(new Settings(), "/etc/app.properties");
+    private Fields f = new Fields();
+
+    public Example() {
+        sap.initSettings(f,eh);
+        sap.initSettings(Fields2.class,eh);
+    }
+
+}
+
+```
+The library offers syntax support for settings and parameters in a loosely coupled manner. You are not restricted to the built-in syntaxes, you can provide your own.
+
+At runtime this library tracks keys for which a default is used when no value is found. It tracks
+unused keys as well.
+
+You can stack features for settings such as caching, preparing keys and values, auto reloading, readonlyness, threadsafety, help for properties, reading / parsing from input. You can easily develop
 your own features for settings.
