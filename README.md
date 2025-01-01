@@ -8,6 +8,7 @@
 ```xml
         <dependencies>
             <dependency>
+                <!--only when working with CDI-->
                 <groupId>jakarta.platform</groupId>
                 <artifactId>jakarta.jakartaee-api</artifactId>
                 <version>10.0.0</version>
@@ -21,6 +22,7 @@
         </dependencies>
 ```
 ### CDI, the preferred way
+**NOTE** use `-parameters` when compiling or use the keys parameter in @Property
 ```java
 import jakarta.enterprise.context.ApplicationScoped;
 
