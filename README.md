@@ -53,8 +53,11 @@ public class MyBean {
     private int timeoutSeconds;
     
     /** A required property that changes when the corresponding value in the properties file changes */
-    @Inject @Property(required="true", keys="testkey")
     private static int[] test;
+    @Inject
+    private void setTest(@Property(required=true, keys="testkey") int[] test) {
+        MyBean.test=test;
+    }
     
 }
 
