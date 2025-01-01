@@ -431,7 +431,10 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
                 Method method = ((AnnotatedMethod) declaringCallable).getJavaMember();
                 if (method.getParameterCount() == 1) {
                     try {
+                        boolean ac = method.canAccess(reference);
+                        method.setAccessible(true);
                         method.invoke(reference, value);
+                        method.setAccessible(ac);
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         log.error(String.format("error calling %s with %s",
                                 method, value),e);
