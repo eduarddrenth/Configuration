@@ -121,5 +121,5 @@ The library offers syntax support for settings and parameters in a loosely coupl
 At runtime this library tracks keys for which a default is used when no value is found. It tracks
 unused keys as well.
 
-You can stack features for settings such as caching, preparing keys and values, auto reloading, readonlyness, threadsafety, help for properties, reading / parsing from input. You can easily develop
-your own features for settings.
+You can declare multiple features for settings such as caching, preparing keys and values, auto reloading, readonlyness, threadsafety, help for properties, reading / parsing from input. You can also develop your own features for settings.
+

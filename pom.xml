@@ -8,19 +8,15 @@
     <inceptionYear>2015</inceptionYear>
 
     <name>Config</name>
-    <description>This project is about configuration of applications and about parameterization of Objects.
+    <description>This project is about configuration of applications, most notably via CDI injection, and about parameterization of Objects.
 
-        This library offers annotations (and annotation processors), parsers, typing, observing changes, serialization,
-        cloning and more when working with settings and/or object parameters. Settings and its features can be declared using an xml format.
+        The library offers syntax support for settings and parameters in a loosely coupled manner. An enhanced java properties syntax and json are built-in. You are not restricted to the built-in syntaxes, you can provide your own, using javacc and spi, see SettinsBindingService.getFactory() and the junit tests.
 
-        The library offers syntax support for settings and parameters in a loosely coupled manner. You are not restricted to built in syntax, you
-        can provide your own.
+        For Java-SE annotaions and a SettingsAnnotationProcessor are available to set values of fields and to configure features for settings.
 
-        At runtime this library tracks keys for which a default is used because they are not found in settings. Also it tracks
-        unused keys.
+        At runtime this library tracks keys for which a default is used when no value is found. It tracks unused keys as well.
 
-        You can stack features for settings such as caching, preparing keys and values, readonlyness, threadsafety, helpsupport, reading / parsing from input. You can easily develop
-        your own features for settings.
+        You can declare multiple features for settings such as caching, preparing keys and values, auto reloading, readonlyness, threadsafety, help for properties, reading / parsing from input. You can also develop your own features for settings.
     </description>
     <licenses>
         <license>
