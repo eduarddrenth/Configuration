@@ -47,6 +47,7 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -95,11 +96,15 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
             };
 
     private String[] getKeys(final InjectionPoint ip) {
-        // TODO check supported scopes here before remembering injection point
         String[] rv = (ip.getAnnotated().getAnnotation(Property.class).keys().length > 0)
                 ? ip.getAnnotated().getAnnotation(Property.class).keys()
                 : new String[]{name(ip.getAnnotated())};
-        Arrays.stream(rv).forEach(a -> injectionPoints.get(a).add(ip));
+        Class<? extends Annotation> scope = ip.getBean().getScope();
+        if (scope.equals(Singleton.class) || scope.equals(ApplicationScoped.class)) {
+            Arrays.stream(rv).forEach(a -> injectionPoints.get(a).add(ip));
+        } else {
+            log.warn("reloading not supported for %s of %s".formatted(scope.getSimpleName(),ip.getBean().getBeanClass()));
+        }
         return rv;
     }
 

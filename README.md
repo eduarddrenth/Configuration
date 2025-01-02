@@ -1,8 +1,8 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.vectorprint/Config.svg)](https://maven-badges.herokuapp.com/maven-central/com.vectorprint/Config)
 
-# This project is about configuration of applications and about parameterization of Objects, most notably via CDI injection.
+# This project is about configuration of applications, most notably via CDI injection, and about parameterization of Objects.
 
-### Changes december 2024: removed xml based setup, removed Date support in favor of LocalDateTime!!
+### Changes december 2024: removed xml based setup, removed Date support in favor of LocalDateTime and improved docs and logging
 
 ## code example
 ```xml
