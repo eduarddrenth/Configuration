@@ -39,11 +39,9 @@ PARSER_BEGIN(PropertiesParser)
     import com.vectorprint.VectorPrintRuntimeException;
 
     /**
-      * A parser for properties in the form key=value, values can span lines by escaping the end of a line:
+      * A parser for properties in the form key=value;value2, values can span lines by escaping the end of a line:
       * <pre>
 
-          # To change this template, choose Tools | Templates
-          # and open the template in the editor.
           diameter=7
           marks=0;89;95
           markcolors=#ee0000;#f7931e;#\

@@ -22,7 +22,7 @@
         </dependencies>
 ```
 ### CDI, the preferred way
-**NOTE** use `-parameters` when compiling or use the keys parameter in @Property
+**NOTE** use `-parameters` when compiling or use the `keys` parameter in `@Property`
 ```java
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -44,18 +44,17 @@ public class PropertyLocationProvider {
     public int pollInterval() {return 10;}
 }
 
-/**
- * a bean with properties
- */
+/** a bean with properties */
 @ApplicationScoped
 public class MyBean {
     
     /** A non required property that will not be reloaded */
     @Inject @Property(defaultValue = "30",required = false,updatable = false)
     private int timeoutSeconds;
-    
-    /** A required property that changes when the corresponding value in the properties file changes */
+
+    /** workaround: using a static field makes reloading work */
     private static int[] test;
+    /** A required property that changes when the corresponding value in the properties file changes */
     @Inject
     public void setTest(@Property(required=true, keys="testkey") int[] test) {
         MyBean.test=test;
@@ -67,7 +66,7 @@ public class MyBean {
 
 **NOTE** at the time reloading works only for Singleton beans, static properties and for `@inject @Properties EnhancedMap`
 
-### Plain Java example
+### Plain Java example with an Observer
 ```java
    static class MyObserver implements PropertyChangeListener {
         @Override
@@ -117,7 +116,7 @@ public class Example {
 }
 
 ```
-The library offers syntax support for settings and parameters in a loosely coupled manner. You are not restricted to the built-in syntaxes, you can provide your own.
+The library offers syntax support for settings and parameters in a loosely coupled manner. An enhanced java properties syntax and json are built-in. You are not restricted to the built-in syntaxes, you can provide your own, using `javacc` and `spi`, see `SettinsBindingService.getFactory()` and the junit tests.
 
 At runtime this library tracks keys for which a default is used when no value is found. It tracks
 unused keys as well.
