@@ -28,8 +28,6 @@ import java.io.File;
 @ApplicationScoped
 public class TestBeanAppScope {
 
-    @Inject
-    @Property(keys = "prop", required = true)
     private String testProp;
     @Inject
     @Property(keys = "fprop", required = true)
@@ -40,6 +38,11 @@ public class TestBeanAppScope {
     @Inject
     @Property(keys = "zprop", required = false)
     private String zprop;
+
+    @Inject
+    public void setTestProp(@Property(keys = "prop", required = true) String testProp) {
+        this.testProp = testProp;
+    }
 
     @Inject
     @Property(keys = "i", defaultValue = "1")
@@ -53,17 +56,13 @@ public class TestBeanAppScope {
         return properties;
     }
 
-    /*
-        trick to be able to verify method parameter injection and update are working
-        An injected Testbean in the test class itself doesn't get updated
-         */
-    private static boolean bp;
+    private boolean bp;
 
-    private static String s;
+    private String s;
 
     @Inject
     public void setS(@Property(required = false) String s) {
-        TestBeanAppScope.s = s;
+        this.s = s;
     }
 
     public String getS() {

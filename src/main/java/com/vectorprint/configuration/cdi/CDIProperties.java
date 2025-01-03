@@ -396,7 +396,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
                     log.warn(String.format("Bean for %s not present, BeanManager cannot resolve Object holding %s", bc.getName(), name));
                 } else {
                     if (!ip.getBean().getScope().equals(Singleton.class)) {
-                        log.warn(String.format("updating %s with scope %s might fail, guaranteed to work for statics, for @Properties and in Singleton EJB".formatted(bc.getName(), ip.getBean().getScope().getSimpleName())));
+                        log.warn(String.format("updating %s with scope %s might fail, guaranteed to work for statics, for method parameters, for @Properties and in Singleton EJB".formatted(bc.getName(), ip.getBean().getScope().getSimpleName())));
                     }
                     update(a, reference, (String[]) propertyChangeEvent.getNewValue());
                 }

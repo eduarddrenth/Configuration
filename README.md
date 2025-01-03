@@ -52,8 +52,7 @@ public class MyBean {
     @Inject @Property(defaultValue = "30",required = false,updatable = false)
     private int timeoutSeconds;
 
-    /** workaround: using a static field makes reloading work */
-    private static int[] test;
+    private int[] test;
     /** A required property that changes when the corresponding value in the properties file changes */
     @Inject
     public void setTest(@Property(required=true, keys="testkey") int[] test) {
@@ -64,7 +63,7 @@ public class MyBean {
 
 ```
 
-**NOTE** at the time reloading works only for Singleton beans, static properties and for `@inject @Properties EnhancedMap`
+**NOTE** at the time reloading works for Singleton beans, static properties, method parameters and for `@inject @Properties EnhancedMap`
 
 ### Plain Java example with an Observer
 ```java

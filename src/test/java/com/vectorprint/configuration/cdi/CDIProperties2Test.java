@@ -15,6 +15,7 @@
  */
 package com.vectorprint.configuration.cdi;
 
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldJunit5Extension;
@@ -48,16 +49,13 @@ public class CDIProperties2Test {
     private File propsnew = new File("src/test/resources/testnew.properties");
     private File propsorig = new File("src/test/resources/testorig.properties");
 
-    @Inject
-    private TestBeanAppScope testBeanAppScope;
-
     @AfterEach
     public void init() throws IOException {
         Files.copy(propsorig.toPath(), props.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
     @Test
     public void testCDIPropsAppScope() throws InterruptedException, IOException {
-        
+        final TestBeanAppScope testBeanAppScope = CDI.current().select(TestBeanAppScope.class).get();
         assertEquals("test", testBeanAppScope.getTestProp());
         assertEquals("src/test/resources/test.properties", testBeanAppScope.getFprop().getPath());
         assertEquals(true, testBeanAppScope.isBprop());
@@ -70,11 +68,12 @@ public class CDIProperties2Test {
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(5000);
 
-        System.out.println("NOTE: UPDATING INJECTED PROPERTIES ONLY WORKS FOR STATICS, for @Properties AND IN SINGLETON BEANS!!");
-        assertEquals("test", testBeanAppScope.getTestProp(), "SHOULD BE test2, CHANGE THIS assertion!!!");
+        System.out.println("NOTE: UPDATING INJECTED PROPERTIES ONLY WORKS FOR STATICS, for method parameters, for @Properties AND IN SINGLETON BEANS!!");
+        assertEquals("test2", testBeanAppScope.getTestProp());
         assertEquals(false, testBeanAppScope.isBp());
         assertEquals(true, testBeanAppScope.isBprop(),"SHOULD BE false, CHANGE THIS assertion!!!");
         assertEquals(false, testBeanAppScope.getProperties().getBooleanProperty(null, "bprop"));
         assertEquals("s", testBeanAppScope.getS());
     }
+
 }
