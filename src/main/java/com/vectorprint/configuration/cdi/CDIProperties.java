@@ -419,8 +419,8 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
                 value = stringConverter.convert(strValue[0]);
             }
         }
-        if (annotated instanceof AnnotatedField) {
-            Field f = ((AnnotatedField) annotated).getJavaMember();
+        if (annotated instanceof AnnotatedField af) {
+            Field f = af.getJavaMember();
             try {
                 boolean ac = f.canAccess(reference);
                 f.setAccessible(true);
@@ -433,8 +433,8 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         } else {
             AnnotatedParameter ap = (AnnotatedParameter) annotated;
             AnnotatedCallable declaringCallable = ap.getDeclaringCallable();
-            if (declaringCallable instanceof AnnotatedMethod) {
-                Method method = ((AnnotatedMethod) declaringCallable).getJavaMember();
+            if (declaringCallable instanceof AnnotatedMethod am) {
+                Method method = am.getJavaMember();
                 if (method.getParameterCount() == 1) {
                     try {
                         boolean ac = method.canAccess(reference);
