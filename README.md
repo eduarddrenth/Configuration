@@ -62,7 +62,7 @@ public class MyBean {
 }
 
 ```
-**NOTE** for method parameter injection the corresponding name(s) in the properties file is(are) either the method name or the `keys` parameter in `@Property`
+**NOTE** for method injection the corresponding name(s) in the properties file is(are) either the method name or the `keys` parameter in `@Property`
 
 **NOTE** Reloading works for Singleton beans, static properties, method parameters and for `@inject @Properties EnhancedMap`
 
