@@ -37,6 +37,7 @@ package com.vectorprint.configuration.cdi;
 
 import jakarta.enterprise.util.Nonbinding;
 import jakarta.inject.Qualifier;
+import jakarta.inject.Scope;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -46,12 +47,12 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Use together with @Inject, {@link CDIProperties} will provide values;
+ * Use together with @Inject, {@link CDIProperties} will provide values.
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier
 @Retention(RUNTIME)
-@Target({FIELD,ElementType.METHOD,ElementType.PARAMETER})
+@Target({FIELD,ElementType.METHOD})
 public @interface Property {
    
     /**
@@ -73,7 +74,9 @@ public @interface Property {
    @Nonbinding String[] defaultValue() default {};
 
    /**
-    * When true (default) the property will be updated when the property source changes
+    * When true (default) the property will be updated when the property source changes. This works for
+    * Method annotations in {@link jakarta.enterprise.context.ApplicationScoped} and for {@link jakarta.inject.Singleton}.
+    * Depends on {@link AutoReload}.
     * @return 
     */
    @Nonbinding boolean updatable() default true;

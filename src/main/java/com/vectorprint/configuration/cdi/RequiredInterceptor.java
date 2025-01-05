@@ -17,6 +17,7 @@ package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.NoValueException;
 import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.spi.Annotated;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
@@ -32,10 +33,9 @@ class RequiredInterceptor {
 
    @AroundInvoke
    public Object checkRequired(InvocationContext ctx) throws Exception {
+       // TODO this check uses the @Property annotation on the producer methods, not the one on the field or method
        if (ctx.getMethod().isAnnotationPresent(Property.class)) {
-           InjectionPoint ip = (InjectionPoint) ctx.getParameters()[0];
-           boolean required = ip.getAnnotated().getAnnotation(Property.class).required()
-                   && ip.getAnnotated().getAnnotation(Property.class).defaultValue().length==0;
+           final boolean required = ctx.getMethod().getAnnotation(Property.class).required();
            try {
                return ctx.proceed();
            } catch (NoValueException ex) { // thrown by Settings#handleNoValue
@@ -43,7 +43,7 @@ class RequiredInterceptor {
                else return null;
            }
        } else {
-           return ctx.proceed();
+           return null;
        }
    }    
 }

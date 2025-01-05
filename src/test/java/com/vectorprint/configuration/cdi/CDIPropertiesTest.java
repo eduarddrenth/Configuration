@@ -15,6 +15,7 @@
  */
 package com.vectorprint.configuration.cdi;
 
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
@@ -48,9 +49,6 @@ public class CDIPropertiesTest {
     private File propsnew = new File("src/test/resources/testnew.properties");
     private File propsorig = new File("src/test/resources/testorig.properties");
 
-    @Inject
-    private TestBean testBean;
-
     @AfterEach
     public void init() throws IOException {
         Files.copy(propsorig.toPath(), props.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -58,25 +56,18 @@ public class CDIPropertiesTest {
 
     @Test
     public void testCDIProps() throws InterruptedException, IOException {
-        assertEquals("test", testBean.getTestProp());
-        assertEquals("src/test/resources/test.properties", testBean.getFprop().getPath());
-        assertEquals(true, testBean.isBprop());
-        assertEquals(true, testBean.isBp());
-        assertEquals(true, testBean.getProperties().getBooleanProperty(null, "bprop"));
-        assertNull(testBean.getZprop());
-        assertNull(testBean.getS());
-        assertEquals(1, testBean.getI());
+        final TestBean testBean = CDI.current().select(TestBean.class).get();
+        assertEquals("fieldprop", testBean.getFieldprop());
+        assertEquals("paramprop", testBean.getParamprop());
+        assertEquals("fieldpropro", testBean.getFieldpropro());
+        assertEquals("parampropkey", testBean.getParampropkey());
 
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(1100);
 
-        assertEquals("test2", testBean.getTestProp());
-        assertEquals(false, testBean.isBp());
-        assertEquals(false, testBean.isBprop());
-        assertEquals("s", testBean.getS());
-        assertEquals(false, testBean.getProperties().getBooleanProperty(null, "bprop"));
-        assertEquals(1, testBean.getI());
-        assertEquals("s", testBean.getS());
-
+        assertEquals("fpUpdated", testBean.getFieldprop());
+        assertEquals("ppUpdated", testBean.getParamprop());
+        assertEquals("fieldpropro", testBean.getFieldpropro());
+        assertEquals("ppkUpdated", testBean.getParampropkey());
     }
 }

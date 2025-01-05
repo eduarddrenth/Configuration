@@ -45,12 +45,12 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Use together with @Inject, {@link CDIProperties} will provide {@link com.vectorprint.configuration.EnhancedMap}
+ * Use together with @Inject, {@link PropertyResolver} will provide {@link com.vectorprint.configuration.EnhancedMap}
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier
 @Retention(RUNTIME)
-@Target({FIELD,ElementType.METHOD,ElementType.PARAMETER})
+@Target({FIELD,ElementType.METHOD})
 public @interface Properties {
 
 }

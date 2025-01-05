@@ -15,11 +15,8 @@
  */
 package com.vectorprint.configuration.cdi;
 
-import com.vectorprint.configuration.EnhancedMap;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import java.io.File;
 
 /**
  *
@@ -27,75 +24,50 @@ import java.io.File;
  */
 @ApplicationScoped
 public class TestBeanAppScope {
-
-    private String testProp;
+    @Inject @Property
+    private String fieldprop;
+    @Inject @Property(updatable = false)
+    private String fieldpropro;
+    private String parampropkey;
+    private String paramprop;
     @Inject
-    @Property(keys = "fprop", required = true)
-    private File fprop;
-    @Inject
-    @Property(required = true)
-    private Boolean bprop;
-    @Inject
-    @Property(keys = "zprop", required = false)
-    private String zprop;
+    private String key;
 
-    @Inject
-    public void setTestProp(@Property(keys = "prop", required = true) String testProp) {
-        this.testProp = testProp;
+    public String getFieldprop() {
+        return fieldprop;
     }
 
-    @Inject
-    @Property(keys = "i", defaultValue = "1")
-    private int i;
-
-    @Inject
-    @Properties
-    private EnhancedMap properties;
-
-    public EnhancedMap getProperties() {
-        return properties;
+    public void setFieldprop(String fieldprop) {
+        this.fieldprop = fieldprop;
     }
 
-    private boolean bp;
-
-    private String s;
-
-    @Inject
-    public void setS(@Property(required = false) String s) {
-        this.s = s;
+    public String getFieldpropro() {
+        return fieldpropro;
     }
 
-    public String getS() {
-        return s;
+    public void setFieldpropro(String fieldpropro) {
+        this.fieldpropro = fieldpropro;
     }
 
-    @Inject
-    public void setSome(@Property Boolean bprop) {
-
-        bp = bprop;
+    public String getParampropkey() {
+        return parampropkey;
     }
 
-    public String getTestProp() {
-        return testProp;
+    @Inject @Property(keys = "key")
+    public void setParampropkey(String parampropkey) {
+        this.parampropkey = parampropkey;
     }
 
-    public File getFprop() {
-        return fprop;
+    public String getParamprop() {
+        return paramprop;
     }
 
-    public boolean isBprop() {
-        return bprop;
+    @Inject @Property
+    public void setParamprop(String paramprop) {
+        this.paramprop = paramprop;
     }
 
-    public String getZprop() {
-        return zprop;
-    }
-
-    public int getI() {
-        return i;
-    }
-
-    public boolean isBp() {
-        return bp;
+    public String getKey() {
+        return key;
     }
 }

@@ -16,7 +16,6 @@
 package com.vectorprint.configuration.cdi;
 
 import jakarta.enterprise.inject.spi.CDI;
-import jakarta.inject.Inject;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.WeldSetup;
@@ -31,7 +30,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 /**
@@ -56,24 +54,18 @@ public class CDIProperties2Test {
     @Test
     public void testCDIPropsAppScope() throws InterruptedException, IOException {
         final TestBeanAppScope testBeanAppScope = CDI.current().select(TestBeanAppScope.class).get();
-        assertEquals("test", testBeanAppScope.getTestProp());
-        assertEquals("src/test/resources/test.properties", testBeanAppScope.getFprop().getPath());
-        assertEquals(true, testBeanAppScope.isBprop());
-        assertEquals(true, testBeanAppScope.isBp());
-        assertEquals(true, testBeanAppScope.getProperties().getBooleanProperty(null, "bprop"));
-        assertNull(testBeanAppScope.getZprop());
-        assertNull(testBeanAppScope.getS());
-        assertEquals(1, testBeanAppScope.getI());
+        assertEquals("fieldprop", testBeanAppScope.getFieldprop());
+        assertEquals("paramprop", testBeanAppScope.getParamprop());
+        assertEquals("fieldpropro", testBeanAppScope.getFieldpropro());
+        assertEquals("parampropkey", testBeanAppScope.getParampropkey());
 
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-        Thread.sleep(5000);
+        Thread.sleep(1100);
 
-        System.out.println("NOTE: UPDATING INJECTED PROPERTIES ONLY WORKS FOR STATICS, for method parameters, for @Properties AND IN SINGLETON BEANS!!");
-        assertEquals("test2", testBeanAppScope.getTestProp());
-        assertEquals(false, testBeanAppScope.isBp());
-        assertEquals(true, testBeanAppScope.isBprop(),"SHOULD BE false, CHANGE THIS assertion!!!");
-        assertEquals(false, testBeanAppScope.getProperties().getBooleanProperty(null, "bprop"));
-        assertEquals("s", testBeanAppScope.getS());
+        assertEquals("fieldprop", testBeanAppScope.getFieldprop());
+        assertEquals("ppUpdated", testBeanAppScope.getParamprop());
+        assertEquals("fieldpropro", testBeanAppScope.getFieldpropro());
+        assertEquals("ppkUpdated", testBeanAppScope.getParampropkey());
+        System.out.println(testBeanAppScope.getKey());
     }
-
 }

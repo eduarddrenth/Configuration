@@ -15,89 +15,53 @@
  */
 package com.vectorprint.configuration.cdi;
 
-import com.vectorprint.configuration.EnhancedMap;
-import jakarta.ejb.Local;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-
-import java.io.File;
 
 /**
  *
  * @author eduard
  */
 @Singleton
-@Local(TestBean.class)
 public class TestBean {
+    @Inject @Property
+    private String fieldprop;
+    @Inject @Property(updatable = false)
+    private String fieldpropro;
+    private String parampropkey;
+    private String paramprop;
 
-    @Inject
-    @Property(keys = "prop", required = true)
-    private String testProp;
-    @Inject
-    @Property(keys = "fprop", required = true)
-    private File fprop;
-    @Inject
-    @Property(required = true)
-    private boolean bprop;
-    @Inject
-    @Property(keys = "zprop", required = false)
-    private String zprop;
-
-    @Inject
-    @Property(keys = "i", defaultValue = "1", updatable = false)
-    private int i;
-
-    @Inject
-    @Properties
-    private EnhancedMap properties;
-
-    public EnhancedMap getProperties() {
-        return properties;
+    public String getFieldprop() {
+        return fieldprop;
     }
 
-    /*
-        trick to be able to verify method parameter injection and update are working
-        An injected Testbean in the test class itself doesn't get updated
-         */
-    private static boolean bp;
-
-    private static String s;
-
-    @Inject
-    public void setS(@Property(required = false) String s) {
-        TestBean.s = s;
+    public void setFieldprop(String fieldprop) {
+        this.fieldprop = fieldprop;
     }
 
-    public static String getS() {
-        return s;
+    public String getFieldpropro() {
+        return fieldpropro;
     }
 
-    @Inject
-    public void setSome(@Property Boolean bprop) {
-        bp = bprop;
+    public void setFieldpropro(String fieldpropro) {
+        this.fieldpropro = fieldpropro;
     }
 
-    public String getTestProp() {
-        return testProp;
+    public String getParampropkey() {
+        return parampropkey;
     }
 
-    public File getFprop() {
-        return fprop;
+    @Inject @Property(keys = "key")
+    public void setParampropkey(String parampropkey) {
+        this.parampropkey = parampropkey;
     }
 
-    public boolean isBprop() {
-        return bprop;
+    public String getParamprop() {
+        return paramprop;
     }
 
-    public String getZprop() {
-        return zprop;
-    }
-
-    public int getI() {
-        return i;
-    }
-
-    public boolean isBp() {
-        return bp;
+    @Inject @Property
+    public void setParamprop(String paramprop) {
+        this.paramprop = paramprop;
     }
 }

@@ -22,7 +22,6 @@
         </dependencies>
 ```
 ### CDI, the preferred way
-**NOTE** use `-parameters` when compiling or use the `keys` parameter in `@Property`
 ```java
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -48,22 +47,24 @@ public class PropertyLocationProvider {
 @ApplicationScoped
 public class MyBean {
     
-    /** A non required property that will not be reloaded */
-    @Inject @Property(defaultValue = "30",required = false,updatable = false)
+    /** A non required property that will not be reloaded despite update is true */
+    @Inject @Property(defaultValue = "30",required = false,updatable = true)
     private int timeoutSeconds;
 
     private int[] test;
     /** A required property that changes when the corresponding value in the properties file changes */
     @Inject
-    public void setTest(@Property(required=true, keys="testkey") int[] test) {
-        MyBean.test=test;
+    @Property(required=true, keys="testkey")
+    public void setTest(int[] test) {
+        test=test;
     }
     
 }
 
 ```
+**NOTE** for method parameter injection the corresponding name(s) in the properties file is(are) either the method name or the `keys` parameter in `@Property`
 
-**NOTE** at the time reloading works for Singleton beans, static properties, method parameters and for `@inject @Properties EnhancedMap`
+**NOTE** Reloading works for Singleton beans, static properties, method parameters and for `@inject @Properties EnhancedMap`
 
 ### Plain Java example with an Observer
 ```java
