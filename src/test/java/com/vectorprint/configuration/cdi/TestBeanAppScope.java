@@ -15,6 +15,7 @@
  */
 package com.vectorprint.configuration.cdi;
 
+import com.vectorprint.configuration.EnhancedMap;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -32,6 +33,13 @@ public class TestBeanAppScope {
     private String paramprop;
     @Inject
     private String key;
+
+    @Inject @Properties
+    private EnhancedMap properties;
+
+    public EnhancedMap getProperties() {
+        return properties;
+    }
 
     public String getFieldprop() {
         return fieldprop;
