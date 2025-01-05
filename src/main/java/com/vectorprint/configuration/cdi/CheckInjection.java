@@ -33,6 +33,6 @@ import static java.lang.annotation.ElementType.TYPE;
 @InterceptorBinding
 @Target({METHOD, TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@interface CheckRequired {
+@interface CheckInjection {
     
 }

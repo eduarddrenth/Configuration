@@ -110,6 +110,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         if (property.updatable() && isUpdatable(ip)) {
             Arrays.stream(rv).forEach(a -> injectionPoints.get(a).add(ip));
         }
+        // TODO here we could log/register where in the application properties are injected
         return rv;
     }
 
@@ -165,7 +166,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public File[] getFileProperties(InjectionPoint ip) {
         return getFileProperties((File[]) getDefault(ip), getKeys(ip));
     }
@@ -173,7 +174,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public File getFileProperty(InjectionPoint ip) {
         return getFileProperty((File) getDefault(ip), getKeys(ip));
     }
@@ -181,7 +182,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public Pattern[] getRegexProperties(InjectionPoint ip) {
         return getRegexProperties((Pattern[]) getDefault(ip), getKeys(ip));
     }
@@ -189,7 +190,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public Pattern getRegexProperty(InjectionPoint ip) {
         return getRegexProperty((Pattern) getDefault(ip), getKeys(ip));
     }
@@ -197,7 +198,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public Class[] getClassProperties(InjectionPoint ip) throws ClassNotFoundException {
         return getClassProperties((Class[]) getDefault(ip), getKeys(ip));
     }
@@ -205,7 +206,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public Class getClassProperty(InjectionPoint ip) throws ClassNotFoundException {
         return getClassProperty((Class) getDefault(ip), getKeys(ip));
     }
@@ -213,7 +214,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public LocalDateTime[] getDateProperties(InjectionPoint ip) {
         return getLocalDateTimeProperties((LocalDateTime[]) getDefault(ip), getKeys(ip));
     }
@@ -221,7 +222,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public LocalDateTime getDateProperty(InjectionPoint ip) {
         return getLocalDateTimeProperty((LocalDateTime) getDefault(ip), getKeys(ip));
     }
@@ -229,7 +230,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public byte[] getByteProperties(InjectionPoint ip) {
         return getByteProperties((byte[]) getDefault(ip), getKeys(ip));
     }
@@ -237,7 +238,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public char[] getCharProperties(InjectionPoint ip) {
         return getCharProperties((char[]) getDefault(ip), getKeys(ip));
     }
@@ -245,7 +246,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public short[] getShortProperties(InjectionPoint ip) {
         return getShortProperties((short[]) getDefault(ip), getKeys(ip));
     }
@@ -253,7 +254,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public byte getByteProperty(InjectionPoint ip) {
         return getByteProperty((Byte) getDefault(ip), getKeys(ip));
     }
@@ -261,7 +262,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public char getCharProperty(InjectionPoint ip) {
         return getCharProperty((Character) getDefault(ip), getKeys(ip));
     }
@@ -269,7 +270,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public short getShortProperty(InjectionPoint ip) {
         return getShortProperty((Short) getDefault(ip), getKeys(ip));
     }
@@ -277,7 +278,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public URL[] getURLProperties(InjectionPoint ip) throws MalformedURLException {
         return getURLProperties((URL[]) getDefault(ip), getKeys(ip));
     }
@@ -285,7 +286,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public URL getURLProperty(InjectionPoint ip) throws MalformedURLException {
         return getURLProperty((URL) getDefault(ip), getKeys(ip));
     }
@@ -293,7 +294,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public Color[] getColorProperties(InjectionPoint ip) {
         return getColorProperties((Color[]) getDefault(ip), getKeys(ip));
     }
@@ -301,7 +302,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public boolean[] getBooleanProperties(InjectionPoint ip) {
         return getBooleanProperties((boolean[]) getDefault(ip), getKeys(ip));
     }
@@ -309,7 +310,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public long[] getLongProperties(InjectionPoint ip) {
         return getLongProperties((long[]) getDefault(ip), getKeys(ip));
     }
@@ -317,7 +318,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public int[] getIntegerProperties(InjectionPoint ip) {
         return getIntegerProperties((int[]) getDefault(ip), getKeys(ip));
     }
@@ -325,7 +326,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public double[] getDoubleProperties(InjectionPoint ip) {
         return getDoubleProperties((double[]) getDefault(ip), getKeys(ip));
     }
@@ -333,7 +334,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public float[] getFloatProperties(InjectionPoint ip) {
         return getFloatProperties((float[]) getDefault(ip), getKeys(ip));
     }
@@ -341,7 +342,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public String[] getStringProperties(InjectionPoint ip) {
         return getStringProperties((String[]) getDefault(ip), getKeys(ip));
     }
@@ -349,7 +350,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public String getProperty(InjectionPoint ip) {
         return getProperty((String) getDefault(ip), getKeys(ip));
     }
@@ -357,7 +358,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public long getLongProperty(InjectionPoint ip) {
         return getLongProperty((Long) getDefault(ip), getKeys(ip));
     }
@@ -365,7 +366,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public int getIntegerProperty(InjectionPoint ip) {
         return getIntegerProperty((Integer) getDefault(ip), getKeys(ip));
     }
@@ -373,7 +374,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public float getFloatProperty(InjectionPoint ip) {
         return getFloatProperty((Float) getDefault(ip), getKeys(ip));
     }
@@ -381,7 +382,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public double getDoubleProperty(InjectionPoint ip) {
         return getDoubleProperty((Double) getDefault(ip), getKeys(ip));
     }
@@ -389,7 +390,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public Color getColorProperty(InjectionPoint ip) {
         return getColorProperty((Color) getDefault(ip), getKeys(ip));
     }
@@ -397,7 +398,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
     @Produces
     @Property
     @Default
-    @CheckRequired
+    @CheckInjection
     public boolean getBooleanProperty(InjectionPoint ip) {
         return getBooleanProperty((Boolean) getDefault(ip), getKeys(ip));
     }

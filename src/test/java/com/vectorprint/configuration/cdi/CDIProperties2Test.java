@@ -30,6 +30,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 /**
@@ -66,5 +67,6 @@ public class CDIProperties2Test {
         assertEquals("ppUpdated", testBeanAppScope.getParamprop());
         assertEquals("fieldpropro", testBeanAppScope.getFieldpropro());
         assertEquals("ppkUpdated", testBeanAppScope.getParampropkey());
+        assertNull(testBeanAppScope.getKey());
     }
 }

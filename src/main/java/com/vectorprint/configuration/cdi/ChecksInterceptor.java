@@ -17,7 +17,6 @@ package com.vectorprint.configuration.cdi;
 
 import com.vectorprint.configuration.NoValueException;
 import jakarta.annotation.Priority;
-import jakarta.enterprise.inject.spi.Annotated;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
@@ -27,12 +26,13 @@ import jakarta.interceptor.InvocationContext;
  *
  * @author eduard
  */
-@CheckRequired @Interceptor
+@CheckInjection
+@Interceptor
 @Priority(Interceptor.Priority.APPLICATION)
-class RequiredInterceptor {
+class ChecksInterceptor {
 
    @AroundInvoke
-   public Object checkRequired(InvocationContext ctx) throws Exception {
+   public Object check(InvocationContext ctx) throws Exception {
        InjectionPoint ip = (InjectionPoint) ctx.getParameters()[0];
        final Property property = CDIProperties.fromIp(ip);
        if (property != null) {
