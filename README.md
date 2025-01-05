@@ -5,7 +5,7 @@
 ### Changes january 2025: improved reflexive code, restricted CDI property annotation to fields and methods
 ### Changes december 2024: removed xml based setup, removed Date support in favor of LocalDateTime and improved docs and logging
 
-## code example
+## code examples
 ```xml
         <dependencies>
             <dependency>
