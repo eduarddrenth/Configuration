@@ -121,7 +121,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         return property.keys().length > 0 ? property.keys() : new String[]{ip.getMember().getName()};
     }
 
-    private Property fromIp(InjectionPoint ip) {
+    public static Property fromIp(InjectionPoint ip) {
         final Member member = ip.getMember();
         return member instanceof Method m ?
                 m.getAnnotation(Property.class) :
@@ -162,7 +162,6 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         return this;
     }
 
-    // TODO the @Default causes CDIProperties to try and produce values for @Inject on fields and methods without @Property
     @Produces
     @Property
     @Default

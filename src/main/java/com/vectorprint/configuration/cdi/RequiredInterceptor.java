@@ -33,9 +33,10 @@ class RequiredInterceptor {
 
    @AroundInvoke
    public Object checkRequired(InvocationContext ctx) throws Exception {
-       // TODO this check uses the @Property annotation on the producer methods, not the one on the field or method
-       if (ctx.getMethod().isAnnotationPresent(Property.class)) {
-           final boolean required = ctx.getMethod().getAnnotation(Property.class).required();
+       InjectionPoint ip = (InjectionPoint) ctx.getParameters()[0];
+       final Property property = CDIProperties.fromIp(ip);
+       if (property != null) {
+           final boolean required = property.required();
            try {
                return ctx.proceed();
            } catch (NoValueException ex) { // thrown by Settings#handleNoValue

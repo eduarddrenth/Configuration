@@ -66,6 +66,5 @@ public class CDIProperties2Test {
         assertEquals("ppUpdated", testBeanAppScope.getParamprop());
         assertEquals("fieldpropro", testBeanAppScope.getFieldpropro());
         assertEquals("ppkUpdated", testBeanAppScope.getParampropkey());
-        System.out.println(testBeanAppScope.getKey());
     }
 }
