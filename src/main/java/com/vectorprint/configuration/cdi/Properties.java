@@ -45,7 +45,8 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Use together with @Inject, {@link PropertyResolver} will provide {@link com.vectorprint.configuration.EnhancedMap}
+ * Use together with @Inject, {@link CDIProperties} will provide {@link com.vectorprint.configuration.EnhancedMap}.
+ * When {@link AutoReload} is true properties will be in sync with the properties file.
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier
