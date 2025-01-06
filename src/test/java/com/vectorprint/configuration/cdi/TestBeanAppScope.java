@@ -30,6 +30,18 @@ public class TestBeanAppScope {
     @Inject @Property(updatable = false)
     private String fieldpropro;
     private String parampropkey;
+    private String parampropkey2;
+
+    public String getMultiarg() {
+        return multiarg;
+    }
+
+    @Inject @Property(keys = "multiarg", defaultValue = "arg")
+    public void setMultiarg(String arg, int arg2) {
+        this.multiarg = arg;
+    }
+
+    private String multiarg;
     private String paramprop;
     @Inject
     private String key;
@@ -64,6 +76,15 @@ public class TestBeanAppScope {
     @Inject @Property(keys = "key")
     public void setParampropkey(String parampropkey) {
         this.parampropkey = parampropkey;
+    }
+
+    public String getParampropkey2() {
+        return parampropkey2;
+    }
+
+    @Inject @Property(keys = "key")
+    public void setParampropkey2(String parampropkey2) {
+        this.parampropkey2 = parampropkey2;
     }
 
     public String getParamprop() {

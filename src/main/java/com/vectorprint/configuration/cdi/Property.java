@@ -47,7 +47,7 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Use together with @Inject, {@link CDIProperties} will provide values.
+ * Use together with @Inject, {@link CDIProperties} will provide values. When used to annotate a method this must have exactly one argument.
  * @author Eduard Drenth at VectorPrint.nl
  */
 @Qualifier

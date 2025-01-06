@@ -21,6 +21,11 @@ import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  *
@@ -30,11 +35,16 @@ import jakarta.interceptor.InvocationContext;
 @Interceptor
 @Priority(Interceptor.Priority.APPLICATION)
 class ChecksInterceptor {
+    private final static Logger log = LoggerFactory.getLogger(ChecksInterceptor.class);
 
    @AroundInvoke
    public Object check(InvocationContext ctx) throws Exception {
        InjectionPoint ip = (InjectionPoint) ctx.getParameters()[0];
        final Property property = CDIProperties.fromIp(ip);
+       boolean ok = ip.getMember() instanceof Field || (ip.getMember() instanceof Method m && m.getParameterCount() == 1);
+       if (!ok) {
+           throw new IllegalStateException("Method %s#%s must have one argument".formatted(ip.getMember().getDeclaringClass(),ip.getMember().getName()));
+       }
        if (property != null) {
            final boolean required = property.required();
            try {

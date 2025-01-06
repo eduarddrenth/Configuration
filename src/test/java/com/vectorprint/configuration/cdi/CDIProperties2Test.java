@@ -59,7 +59,9 @@ public class CDIProperties2Test {
         assertEquals("paramprop", testBeanAppScope.getParamprop());
         assertEquals("fieldpropro", testBeanAppScope.getFieldpropro());
         assertEquals("parampropkey", testBeanAppScope.getParampropkey());
+        assertEquals("parampropkey", testBeanAppScope.getParampropkey2());
         assertEquals("paramprop", testBeanAppScope.getProperties().getProperty(null,"setParamprop"));
+        assertNull(testBeanAppScope.getMultiarg());
 
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(1100);
@@ -68,6 +70,7 @@ public class CDIProperties2Test {
         assertEquals("ppUpdated", testBeanAppScope.getParamprop());
         assertEquals("fieldpropro", testBeanAppScope.getFieldpropro());
         assertEquals("ppkUpdated", testBeanAppScope.getParampropkey());
+        assertEquals("ppkUpdated", testBeanAppScope.getParampropkey2());
         assertEquals("ppUpdated", testBeanAppScope.getProperties().getProperty(null,"setParamprop"));
         assertNull(testBeanAppScope.getKey());
     }
