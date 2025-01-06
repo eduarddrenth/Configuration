@@ -32,16 +32,6 @@ public class TestBeanAppScope {
     private String parampropkey;
     private String parampropkey2;
 
-    public String getMultiarg() {
-        return multiarg;
-    }
-
-    @Inject @Property(keys = "multiarg", defaultValue = "arg")
-    public void setMultiarg(String arg, int arg2) {
-        this.multiarg = arg;
-    }
-
-    private String multiarg;
     private String paramprop;
     @Inject
     private String key;

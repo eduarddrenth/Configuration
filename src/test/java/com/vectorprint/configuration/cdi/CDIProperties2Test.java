@@ -15,6 +15,7 @@
  */
 package com.vectorprint.configuration.cdi;
 
+import com.vectorprint.configuration.NoValueException;
 import jakarta.enterprise.inject.spi.CDI;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldJunit5Extension;
@@ -29,8 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -61,7 +61,6 @@ public class CDIProperties2Test {
         assertEquals("parampropkey", testBeanAppScope.getParampropkey());
         assertEquals("parampropkey", testBeanAppScope.getParampropkey2());
         assertEquals("paramprop", testBeanAppScope.getProperties().getProperty(null,"setParamprop"));
-        assertNull(testBeanAppScope.getMultiarg());
 
         Files.write(props.toPath(), Files.readAllBytes(propsnew.toPath()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         Thread.sleep(1100);
@@ -73,5 +72,17 @@ public class CDIProperties2Test {
         assertEquals("ppkUpdated", testBeanAppScope.getParampropkey2());
         assertEquals("ppUpdated", testBeanAppScope.getProperties().getProperty(null,"setParamprop"));
         assertNull(testBeanAppScope.getKey());
+    }
+
+    @Test
+    public void testNovalue() throws InterruptedException, IOException {
+        final TestNovalue testNovalue = CDI.current().select(TestNovalue.class).get();
+        assertThrows(NoValueException.class,() -> testNovalue.getNoValue());
+    }
+
+    @Test
+    public void testMultiarg() throws InterruptedException, IOException {
+        final TestMultiarg testMultiarg = CDI.current().select(TestMultiarg.class).get();
+        assertThrows(IllegalStateException.class,() -> testMultiarg.getMultiarg());
     }
 }
