@@ -85,4 +85,5 @@ public class CDIProperties2Test {
         final TestMultiarg testMultiarg = CDI.current().select(TestMultiarg.class).get();
         assertThrows(IllegalStateException.class,() -> testMultiarg.getMultiarg());
     }
+    
 }

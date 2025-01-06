@@ -23,7 +23,6 @@ package com.vectorprint.configuration.cdi;
  * limitations under the License.
  * #L%
  */
-
 import com.vectorprint.StringConverter;
 import com.vectorprint.configuration.EnhancedMap;
 import com.vectorprint.configuration.binding.BindingHelper;
@@ -39,6 +38,7 @@ import jakarta.enterprise.inject.spi.AnnotatedCallable;
 import jakarta.enterprise.inject.spi.AnnotatedField;
 import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Inject;
@@ -67,9 +67,10 @@ import java.util.stream.IntStream;
 
 /**
  * A CDI Producer of properties allowing you to use @Inject in combination with
- * {@link Property} on fields or methods with one parameter.
- * Injected {@link Property properties} will be updated
- * when property file changes, {@link AutoReload} is true, {@link Property#updatable() } is true and the property is injected in a managed bean.
+ * {@link Property} on fields or methods with one parameter. Injected
+ * {@link Property properties} will be updated when property file changes,
+ * {@link AutoReload} is true, {@link Property#updatable() } is true and the
+ * property is injected in a managed bean.
  *
  * @author Eduard Drenth at VectorPrint.nl
  * @see PropertyResolver
@@ -85,22 +86,31 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         ((AbstractPropertiesDecorator) settings).accept(new ObservableVisitor(this));
     }
 
-    private final Map<String, List<InjectionPoint>> injectionPoints =
-            new HashMap<String, List<InjectionPoint>>(100) {
-                @Override
-                public List<InjectionPoint> get(Object key) {
-                    if (!containsKey(key)) {
-                        put((String) key, new ArrayList<>(3));
-                    }
-                    return super.get(key);
-                }
-            };
+    private final Map<String, List<InjectionPoint>> injectionPoints
+            = new HashMap<String, List<InjectionPoint>>(100) {
+        @Override
+        public List<InjectionPoint> get(Object key) {
+            if (!containsKey(key)) {
+                put((String) key, new ArrayList<>(3));
+            }
+            return super.get(key);
+        }
+    };
 
     private boolean isUpdatable(InjectionPoint ip) {
-        Class<? extends Annotation> scope = ip.getBean().getScope();
-        boolean rv = scope.equals(Singleton.class) ||
-                (scope.equals(ApplicationScoped.class) && ip.getMember() instanceof Method);
-       if (!rv) log.warn("reloading not supported for %s in %s %s".formatted(List.of(names(ip)),scope.getSimpleName(),ip.getBean().getBeanClass()));
+        Bean<?> bean = ip.getBean();
+        boolean rv = bean != null;
+        if (rv) {
+            Class<? extends Annotation> scope = bean.getScope();
+            rv = scope.equals(Singleton.class)
+                    || (scope.equals(ApplicationScoped.class) && ip.getMember() instanceof Method);
+            if (!rv) {
+                log.warn("reloading not supported for %s in %s %s".formatted(List.of(names(ip)), scope.getSimpleName(), ip.getBean().getBeanClass()));
+            }
+
+        } else {
+                log.warn("reloading not supported for %s".formatted(ip.getMember().getDeclaringClass().getName()+"#"+names(ip)));
+        }
         return rv;
     }
 
@@ -114,19 +124,19 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         return rv;
     }
 
-    private static String[] names(InjectionPoint ip) {
-        return names(ip,ip.getAnnotated().getAnnotation(Property.class));
+    public static String[] names(InjectionPoint ip) {
+        return names(ip, ip.getAnnotated().getAnnotation(Property.class));
     }
 
-    private static String[] names(InjectionPoint ip, Property property) {
+    public static String[] names(InjectionPoint ip, Property property) {
         return property.keys().length > 0 ? property.keys() : new String[]{ip.getMember().getName()};
     }
 
     public static Property fromIp(InjectionPoint ip) {
         final Member member = ip.getMember();
-        return member instanceof Method m ?
-                m.getAnnotation(Property.class) :
-                ip.getAnnotated().getAnnotation(Property.class);
+        return member instanceof Method m
+                ? m.getAnnotation(Property.class)
+                : ip.getAnnotated().getAnnotation(Property.class);
     }
 
     private Object getDefault(final InjectionPoint ip) {
@@ -408,8 +418,8 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         return super.clone();
     }
 
-    private static final CacheClearingVisitor CACHE_CLEARING_VISITOR =
-            new CacheClearingVisitor();
+    private static final CacheClearingVisitor CACHE_CLEARING_VISITOR
+            = new CacheClearingVisitor();
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
@@ -432,17 +442,16 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
         accept(CACHE_CLEARING_VISITOR);
     }
 
-
     private void update(InjectionPoint ip, Object reference, String... strValue) {
         Annotated annotated = ip.getAnnotated();
         Class clazz = (Class) annotated.getBaseType();
-        Object value = clazz.isAssignableFrom(String[].class) ? strValue :
-                clazz.isAssignableFrom(String.class) && strValue != null && strValue.length==1 ? strValue[0] : null;
-        if (value==null && strValue != null) {
+        Object value = clazz.isAssignableFrom(String[].class) ? strValue
+                : clazz.isAssignableFrom(String.class) && strValue != null && strValue.length == 1 ? strValue[0] : null;
+        if (value == null && strValue != null) {
             StringConverter stringConverter = StringConverter.forClass(clazz);
-            if (clazz.isArray()&&strValue.length>0) {
+            if (clazz.isArray() && strValue.length > 0) {
                 Object ar = Array.newInstance(clazz, strValue.length);
-                IntStream.range(0,strValue.length).forEach(i -> Array.set(ar,i,stringConverter.convert(strValue[i])));
+                IntStream.range(0, strValue.length).forEach(i -> Array.set(ar, i, stringConverter.convert(strValue[i])));
             } else {
                 value = stringConverter.convert(strValue[0]);
             }
@@ -469,7 +478,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
                         method.invoke(reference, value);
                         method.setAccessible(ac);
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        log.error(String.format("error calling %s with %s", method, value),e);
+                        log.error(String.format("error calling %s with %s", method, value), e);
                     }
                 } else {
                     log.warn(String.format("%s has more than one argument, not supported yet", method));

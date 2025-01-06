@@ -40,11 +40,11 @@ class ChecksInterceptor {
    @AroundInvoke
    public Object check(InvocationContext ctx) throws Exception {
        InjectionPoint ip = (InjectionPoint) ctx.getParameters()[0];
-       final Property property = CDIProperties.fromIp(ip);
        boolean ok = ip.getMember() instanceof Field || (ip.getMember() instanceof Method m && m.getParameterCount() == 1);
        if (!ok) {
            throw new IllegalStateException("Method %s#%s must have one argument".formatted(ip.getMember().getDeclaringClass(),ip.getMember().getName()));
        }
+       final Property property = CDIProperties.fromIp(ip);
        if (property != null) {
            final boolean required = property.required();
            try {
