@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotate a method with {@link javax.enterprise.inject.Produces} and this annotation in an application scoped bean
+ * Annotate a method with {@link jakarta.enterprise.inject.Produces} and this annotation in an application scoped bean
  * that will return the interval when {@link AutoReload autoreload} is active. Note that for auto reloading the properties should be in a file.
  * @author Eduard Drenth at VectorPrint.nl
  */

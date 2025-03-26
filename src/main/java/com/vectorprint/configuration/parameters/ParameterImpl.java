@@ -188,7 +188,7 @@ public abstract class ParameterImpl<TYPE extends Serializable> implements Parame
    /**
     * Called from
     * {@link ParamAnnotationProcessorImpl#initParameters(com.vectorprint.configuration.parameters.Parameterizable)}.
-    *
+    * <p>
     * Call this if you don't use annotations and want to know the declaring class
     *
     * @param declaringClass
