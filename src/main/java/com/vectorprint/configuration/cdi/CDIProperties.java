@@ -105,7 +105,7 @@ public class CDIProperties extends AbstractPropertiesDecorator implements Proper
             rv = scope.equals(Singleton.class)
                     || (scope.equals(ApplicationScoped.class) && ip.getMember() instanceof Method);
             if (!rv) {
-                log.warn("reloading not supported for %s in %s %s".formatted(List.of(names(ip)), scope.getSimpleName(), ip.getBean().getBeanClass()));
+                log.warn("reloading only supported for @Singleton and setters in @ApplicationScoped, not for %s in %s %s".formatted(List.of(names(ip)), scope.getSimpleName(), ip.getBean().getBeanClass()));
             }
 
         } else {
