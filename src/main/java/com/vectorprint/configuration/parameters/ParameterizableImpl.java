@@ -29,7 +29,6 @@ import com.vectorprint.configuration.annotation.SettingsAnnotationProcessorImpl;
 import com.vectorprint.configuration.annotation.SettingsField;
 import com.vectorprint.configuration.binding.parameters.ParameterizableParser;
 import com.vectorprint.configuration.decoration.CachingProperties;
-import com.vectorprint.configuration.generated.parser.ParameterizableParserImpl;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessor;
 import com.vectorprint.configuration.parameters.annotation.ParamAnnotationProcessorImpl;
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ public class ParameterizableImpl implements Parameterizable {
    };
 
    /**
-    * will be initialized from parsing {@link ParameterizableParserImpl}
+    * will be initialized from parsing
     */
    @SettingsField
    private EnhancedMap settings = new CachingProperties(new Settings(0));

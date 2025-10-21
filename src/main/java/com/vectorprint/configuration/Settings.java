@@ -571,7 +571,12 @@ public final class Settings implements EnhancedMap, DecorationAware {
         return getGenericProperty(key, defaultValue, clazz);
     }
 
-    private final AllowNoValue allowNoValue = new AllowNoValue(this);
+    private final AllowNoValue allowNoValue;
+
+    {
+        allowNoValue = new AllowNoValue(this);
+        decorators.clear();
+    }
 
     @Override
     public <T> Optional<T> getOptional(Class<T> clazz, String... keys) {
