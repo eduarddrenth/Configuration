@@ -36,12 +36,12 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -322,6 +322,11 @@ public abstract class AbstractPropertiesDecorator implements EnhancedMap, Decora
     @Override
     public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
         return settings.getGenericProperty(defaultValue, clazz, keys);
+    }
+
+    @Override
+    public <T> Optional<T> getOptional(Class<T> clazz, String... keys) {
+        return settings.getOptional(clazz, keys);
     }
 
     @Override

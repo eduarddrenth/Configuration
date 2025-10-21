@@ -25,6 +25,7 @@ import com.vectorprint.configuration.binding.AbstractBindingHelperDecorator;
 import com.vectorprint.configuration.binding.settings.EnhancedMapBindingFactory;
 import com.vectorprint.configuration.binding.settings.SettingsBindingService;
 import com.vectorprint.configuration.decoration.AbstractPropertiesDecorator;
+import com.vectorprint.configuration.decoration.AllowNoValue;
 import com.vectorprint.configuration.decoration.DecorationAware;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -567,6 +569,13 @@ public final class Settings implements EnhancedMap, DecorationAware {
     public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
         String key = getKey(defaultValue, keys);
         return getGenericProperty(key, defaultValue, clazz);
+    }
+
+    private final AllowNoValue allowNoValue = new AllowNoValue(this);
+
+    @Override
+    public <T> Optional<T> getOptional(Class<T> clazz, String... keys) {
+        return Optional.ofNullable(allowNoValue.getGenericProperty(null,clazz,keys));
     }
 
     /**

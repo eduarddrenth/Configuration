@@ -31,6 +31,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class CachingProperties extends AbstractPropertiesDecorator {
@@ -48,26 +49,33 @@ public class CachingProperties extends AbstractPropertiesDecorator {
       return fromCache(defaultValue, LocalDateTime[].class, keys);
    }
 
-   private <T> T fromCache(T defaultValue, Class<T> clazz, String... keys) {
+    private <T> Optional<T> fromCache(Class<T> clazz, String... keys) {
+        return (Optional<T>) fromCache(true,null, clazz, keys);
+    }
+
+    private <T> T fromCache(T defaultValue, Class<T> clazz, String... keys) {
+       return fromCache(false,defaultValue, clazz, keys);
+    }
+    private <T> T fromCache(boolean optional, T defaultValue, Class<T> clazz, String... keys) {
       String key = keys.length == 1 ? keys[0] : String.join("", keys);
       Object value = cache.get(key);
       if (cache.containsKey(key) && (clazz.isInstance(value) || (clazz.isPrimitive() && checkPrimitive(clazz, value.getClass())))) {
          return (T) value;
       }
       if (!cache.containsKey(key)) {
-         cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
+         cache.put(key, optional?super.getOptional(clazz,keys):super.getGenericProperty(defaultValue, clazz, keys));
       } else if (null != value) {
          if (clazz.isPrimitive()) {
             Class c = value.getClass();
             if (!checkPrimitive(clazz, c)) {
-               cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
+                cache.put(key, optional?super.getOptional(clazz,keys):super.getGenericProperty(defaultValue, clazz, keys));
                if (LOGGER.isWarnEnabled()) {
                   LOGGER.warn(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
                       key, c.getName(), clazz.getName()));
                }
             }
          } else if (!clazz.isInstance(value)) {
-            cache.put(key, super.getGenericProperty(defaultValue, clazz, keys));
+             cache.put(key, optional?super.getOptional(clazz,keys):super.getGenericProperty(defaultValue, clazz, keys));
             if (LOGGER.isWarnEnabled()) {
                LOGGER.warn(String.format("class for %s in cache is %s, this does not match requested class: %s. New type put in cache.",
                    key, value.getClass().getName(), clazz.getName()));
@@ -267,8 +275,13 @@ public class CachingProperties extends AbstractPropertiesDecorator {
    public <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys) {
       return fromCache(defaultValue, clazz, keys);
    }
-   
-   public void clearCache() {
+
+    @Override
+    public <T> Optional<T> getOptional(Class<T> clazz, String... keys) {
+        return fromCache(clazz, keys);
+    }
+
+    public void clearCache() {
        cache.clear();
    }
 

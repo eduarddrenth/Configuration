@@ -27,10 +27,10 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializable {
@@ -104,6 +104,8 @@ public interface EnhancedMap extends Map<String, String[]>, Cloneable, Serializa
     * @return 
     */
    <T> T getGenericProperty(T defaultValue, Class<T> clazz, String... keys);
+
+   <T> Optional<T> getOptional(Class<T> clazz, String... keys);
 
    PropertyHelp getHelp(String key);
 

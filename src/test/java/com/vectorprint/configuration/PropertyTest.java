@@ -224,6 +224,21 @@ public class PropertyTest {
       }
    }
 
+
+    @Test
+    public void testOptional() {
+        EnhancedMap eh = new Settings();
+        eh.put("k", "v");
+        eh.put("ka",new String[]{"a","b"});
+        assertTrue(eh.getOptional(String.class, "k").isPresent());
+        assertTrue(eh.getOptional(String.class, "n").isEmpty());
+        EnhancedMap c = new CachingProperties(eh);
+        assertTrue(eh.getOptional(String.class, "k").isPresent());
+        assertTrue(eh.getOptional(String.class, "n").isEmpty());
+        assertTrue(eh.getOptional(String[].class, "ka").isPresent());
+        assertArrayEquals(eh.getOptional(String[].class, "ka").get(),new String[]{"a","b"});
+    }
+
    @Test
    public void testHelp() throws IOException {
       EnhancedMap mtp = new HelpSupportedProperties(new ParsingProperties(new Settings(), "src/test/resources/config"

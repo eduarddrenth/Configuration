@@ -30,6 +30,7 @@ import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class AllowNoValue extends AbstractPropertiesDecorator {
@@ -221,4 +222,8 @@ public class AllowNoValue extends AbstractPropertiesDecorator {
         return allowNoValue(defaultValue, clazz, keys);
     }
 
+    @Override
+    public <T> Optional<T> getOptional(Class<T> clazz, String... keys) {
+        return Optional.ofNullable(allowNoValue(null,clazz, keys));
+    }
 }
