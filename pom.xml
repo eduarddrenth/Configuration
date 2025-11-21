@@ -3,7 +3,7 @@
 
     <groupId>com.vectorprint</groupId>
     <artifactId>Config</artifactId>
-    <version>15.2-SNAPSHOT</version>
+    <version>16.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <inceptionYear>2015</inceptionYear>
 
@@ -101,7 +101,7 @@
                             <goal>javacc</goal>
                         </goals>
                         <configuration>
-                            <jdkVersion>17</jdkVersion>
+                            <jdkVersion>21</jdkVersion>
                             <javadocFriendlyComments>true</javadocFriendlyComments>
                         </configuration>
                     </execution>
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>VectorPrintCommon</artifactId>
-            <version>9.0</version>
+            <version>10.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -228,7 +228,7 @@
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
-            <version>9.0</version>
+            <version>10.0</version>
         </dependency>
     </dependencies>
     <profiles>
