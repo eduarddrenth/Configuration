@@ -51,6 +51,9 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
             @Override
             public void onFileChange(File file) {
                 try {
+                    if (log.isDebugEnabled()) {
+                        log.debug("%s changed".formatted(file.getPath()));
+                    }
                     reload(file.toPath());
                 } catch (IOException e) {
                     log.error("error reloading: " + file, e);
