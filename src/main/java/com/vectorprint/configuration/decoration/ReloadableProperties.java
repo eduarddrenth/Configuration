@@ -5,6 +5,7 @@ import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.io.monitor.FileEntry;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -29,33 +30,38 @@ public class ReloadableProperties extends ParsingProperties implements HiddenBy 
         FileAlterationMonitor monitor = new FileAlterationMonitor(interval);
         Map<File,List<File>> toObserve = new HashMap<>();
         for (File f : files) {
+            if (!f.isFile()) {
+                throw new IllegalStateException("%s is not a file!".formatted(f.getName()));
+            }
             File dir = f.getParentFile();
             if (!toObserve.containsKey(dir)) {
                 toObserve.put(dir,new ArrayList<>());
             }
             toObserve.get(dir).add(f);
         }
+        FileAlterationListener listener = new FileAlterationListenerAdaptor() {
+            @Override
+            public void onFileCreate(File file) {
+            }
+
+            @Override
+            public void onFileDelete(File file) {
+            }
+
+            @Override
+            public void onFileChange(File file) {
+                try {
+                    reload(file.toPath());
+                } catch (IOException e) {
+                    log.error("error reloading: " + file, e);
+                }
+            }
+        };
         for (Map.Entry<File,List<File>> entry: toObserve.entrySet()) {
             FileFilter ff = file -> entry.getValue().contains(file);
-            FileAlterationObserver observer = new FileAlterationObserver(entry.getKey(),ff);
-            FileAlterationListener listener = new FileAlterationListenerAdaptor() {
-                @Override
-                public void onFileCreate(File file) {
-                }
-
-                @Override
-                public void onFileDelete(File file) {
-                }
-
-                @Override
-                public void onFileChange(File file) {
-                    try {
-                        reload(file.toPath());
-                    } catch (IOException e) {
-                        log.error("error reloading: " + file, e);
-                    }
-                }
-            };
+            FileAlterationObserver observer = FileAlterationObserver.builder()
+                            .setFileFilter(ff)
+                            .setRootEntry(new FileEntry(null,entry.getKey())).get();
             observer.addListener(listener);
             monitor.addObserver(observer);
         }
