@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Watches files (only those via constructor arguments) for changes and reloads settings in those files.
+ * Watches files (polling every 10 seconds) (only those via constructor arguments) for changes (length and lastModified)
+ * and reloads settings in those files.
+ * NOTE: this mey not work with docker bind mounts and changing files on the host.
  */
 public class ReloadableProperties extends ParsingProperties implements HiddenBy {
 
