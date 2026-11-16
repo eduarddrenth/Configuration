@@ -2,6 +2,7 @@
 
 ## This project is about configuration of applications, most notably via CDI injection, and about parameterization of Objects.
 
+### Changes november 2026: improved reloading and clarity around reloading from docker volumes when changing files on the host
 ### Changes january 2025: improved reflexive code, restricted CDI property annotation to fields and methods
 ### Changes december 2024: removed xml based setup, removed Date support in favor of LocalDateTime and improved docs and logging
 

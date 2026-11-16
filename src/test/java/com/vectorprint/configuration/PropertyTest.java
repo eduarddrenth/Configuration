@@ -124,7 +124,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testMultiThreadProps() throws Exception {
+   public void testMultiThreadProps() throws Throwable {
       final PropCreator pc = new PropCreator();
       ThreadTester.testInThread(pc);
       Collection<Runnable> toRun = new HashSet<>(1);
@@ -391,7 +391,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testCombineProps() throws IOException, AssertionError, RuntimeException, InterruptedException {
+   public void testCombineProps() throws Throwable {
       ParsingProperties mp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
@@ -407,7 +407,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testIndependenceThreads() throws IOException, AssertionError, RuntimeException, InterruptedException {
+   public void testIndependenceThreads() throws Throwable {
       ParsingProperties mp = new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties", "src/test/resources/config"
           + File.separator + "run.properties");
@@ -648,7 +648,7 @@ public class PropertyTest {
    }
 
    @Test
-   public void testSerializable() throws IOException, VectorPrintException, InterruptedException, ClassNotFoundException {
+   public void testSerializable() throws Throwable {
       FindableProperties.clearStaticReferences();
       EnhancedMap mtp = new ThreadBoundProperties(new FindableProperties(new HelpSupportedProperties(new ParsingProperties(new Settings(), "src/test/resources/config"
           + File.separator + "chart.properties"), new URL("file:src/test/resources/help.properties"))));
